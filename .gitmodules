@@ -1,0 +1,3 @@
+[submodule "deps/yoga"]
+	path = deps/yoga
+	url = https://github.com/facebook/yoga
