@@ -1,5 +1,14 @@
 cmake_minimum_required(VERSION 2.8)
 
 add_executable(sdl_gl3 main.cpp)
-target_include_directories(sdl_gl3 PUBLIC ${SDL2_INCLUDE_DIR})
-target_link_libraries(sdl_gl3 flexui ${SDL2_LIBRARY})
+target_link_libraries(sdl_gl3 flexui)
+
+if(EMSCRIPTEN)
+	target_link_libraries(sdl_gl3 "-s WASM=1")
+	target_link_libraries(sdl_gl3 "-s DEMANGLE_SUPPORT=1")
+	target_link_libraries(sdl_gl3 "-s USE_SDL=2")
+	target_link_libraries(sdl_gl3 "-o index.html")
+else()
+	target_include_directories(sdl_gl3 PUBLIC ${SDL2_INCLUDE_DIR})
+	target_link_libraries(sdl_gl3 ${SDL2_LIBRARY} ${OPENGL_LIBRARIES})
+endif()
