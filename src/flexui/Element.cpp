@@ -1,6 +1,6 @@
 #include "Element.hpp"
 
-#include <yoga/Yoga.h>
+#include "Yoga.hpp"
 
 namespace flexui {
 

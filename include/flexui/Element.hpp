@@ -3,7 +3,7 @@
 #include <vector>
 
 // forward def to avoid include
-class YGNode;
+struct YGNode;
 
 namespace flexui {
 	
