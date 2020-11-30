@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 2.8)
+
+add_executable(glfw_gl3 main.cpp)
+target_link_libraries(glfw_gl3 flexui)
+target_link_libraries(glfw_gl3 glm)
+
+if(EMSCRIPTEN)
+	target_link_libraries(glfw_gl3 "-s WASM=1")
+	target_link_libraries(glfw_gl3 "-s DEMANGLE_SUPPORT=1")
+	target_link_libraries(glfw_gl3 "-s USE_GLFW=3")
+	target_link_libraries(glfw_gl3 "-s USE_WEBGL2=1")
+	target_link_libraries(glfw_gl3 "-s FULL_ES3=1")
+	target_link_libraries(glfw_gl3 "-o index.html")
+else()
+	target_link_libraries(glfw_gl3 ${OPENGL_LIBRARIES} glfw glm)
+endif()
