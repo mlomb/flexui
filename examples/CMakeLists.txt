@@ -7,8 +7,8 @@ if(NOT EMSCRIPTEN)
 	add_subdirectory(libs/glfw EXCLUDE_FROM_ALL)
 
 	# glew
-	# add_definitions(-DGLEW_STATIC)
-	# add_subdirectory(libs/glew EXCLUDE_FROM_ALL)
+	add_definitions(-DGLEW_STATIC)
+	add_subdirectory(libs/glew EXCLUDE_FROM_ALL)
 endif()
 
 # glm
