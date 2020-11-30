@@ -1,3 +1,12 @@
 [submodule "deps/yoga"]
 	path = deps/yoga
 	url = https://github.com/facebook/yoga
+[submodule "examples/libs/glew"]
+	path = examples/libs/glew
+	url = https://github.com/Perlmint/glew-cmake.git
+[submodule "examples/libs/glfw"]
+	path = examples/libs/glfw
+	url = https://github.com/glfw/glfw.git
+[submodule "examples/libs/glm"]
+	path = examples/libs/glm
+	url = https://github.com/g-truc/glm.git
