@@ -2,10 +2,11 @@
 #include <cassert>
 
 #include <SDL.h>
-#include <SDL_opengl.h>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
+#else
+#include <GL/glew.h>
 #endif
 
 #include <flexui/Element.hpp>
@@ -37,6 +38,19 @@ void main_loop() {
 	glViewport(0, 0, width, height);
 	
 	{
+		const float verts[] = {
+			1.0,  1.0,
+		   -1.0,  1.0,
+		   -1.0, -1.0,
+		   -1.0, -1.0,
+			1.0, -1.0,
+			1.0,  1.0
+		};
+		unsigned int VBO;
+		glGenBuffers(1, &VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, 12, verts, GL_STATIC_DRAW);
+
 		using namespace flexui;
 		Element* e = new Element();
 		delete e;
