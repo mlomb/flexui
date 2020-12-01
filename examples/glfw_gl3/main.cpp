@@ -11,43 +11,197 @@
 
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+using namespace glm;
+
 #include <flexui/Element.hpp>
+
+void CheckOpenGLError(const char* stmt, const char* fname, int line)
+{
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+	{
+		printf("OpenGL error %08x, at %s:%i - for %s\n", err, fname, line, stmt);
+		// abort();
+	}
+}
+
+#ifdef _DEBUG
+#define GL_CHECK(stmt) do { \
+            stmt; \
+            CheckOpenGLError(#stmt, __FILE__, __LINE__); \
+        } while (0)
+#else
+#define GL_CHECK(stmt) stmt
+#endif
 
 GLFWwindow* window = nullptr;
 static bool main_loop_running = false;
 
+GLuint vbo, ibo, vao;
+GLuint shader;
+GLuint loc_matrix;
+
+static bool CheckShader(GLuint handle, const char* desc)
+{
+	GLint status = 0, log_length = 0;
+	glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
+	glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &log_length);
+	if ((GLboolean)status == GL_FALSE)
+		fprintf(stderr, "ERROR: Shader: failed to compile %s!\n", desc);
+	if (log_length > 1)
+	{
+		std::vector<char> buf;
+		buf.resize((int)(log_length + 1));
+		glGetShaderInfoLog(handle, log_length, NULL, buf.data());
+		fprintf(stderr, "%s\n", buf.begin());
+	}
+	return (GLboolean)status == GL_TRUE;
+}
+
+void create_shader() {
+	const GLchar* vertex_shader_glsl_130 =
+		"#version 130\n"
+		"uniform mat4 ProjMtx;\n"
+		"in vec2 Position;\n"
+		"in vec2 UV;\n"
+		"in vec4 Color;\n"
+		"out vec2 Frag_UV;\n"
+		"out vec4 Frag_Color;\n"
+		"void main()\n"
+		"{\n"
+		"    Frag_UV = UV;\n"
+		"    Frag_Color = Color;\n"
+		"    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
+		"}\n";
+
+	const GLchar* fragment_shader_glsl_130 =
+		"#version 130\n"
+		"uniform sampler2D Texture;\n"
+		"in vec2 Frag_UV;\n"
+		"in vec4 Frag_Color;\n"
+		"out vec4 Out_Color;\n"
+		"void main()\n"
+		"{\n"
+		"    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
+			"Out_Color = Frag_Color.rgba;\n"
+		"}\n";
+
+	GLuint vert = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vert, 1, &vertex_shader_glsl_130, NULL);
+	glCompileShader(vert);
+	CheckShader(vert, "VERT");
+
+	GLuint frag = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(frag, 1, &fragment_shader_glsl_130, NULL);
+	glCompileShader(frag);
+	CheckShader(frag, "FRAG");
+
+	shader = glCreateProgram();
+	glAttachShader(shader, vert);
+	glAttachShader(shader, frag);
+	glLinkProgram(shader);
+
+	GL_CHECK(glUseProgram(shader));
+	loc_matrix = glGetUniformLocation(shader, "ProjMtx");
+}
+
+void init() {
+	create_shader();
+
+	GL_CHECK(glGenVertexArrays(1, &vao));
+	GL_CHECK(glGenBuffers(1, &vbo));
+	GL_CHECK(glGenBuffers(1, &ibo));
+
+	GL_CHECK(glBindVertexArray(vao));
+	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+	GLuint vtx_pos = (GLuint)glGetAttribLocation(shader, "Position");
+	GLuint vtx_uv = (GLuint)glGetAttribLocation(shader, "UV");
+	GLuint vtx_col = (GLuint)glGetAttribLocation(shader, "Color");
+	GL_CHECK(glEnableVertexAttribArray(vtx_pos));
+	GL_CHECK(glEnableVertexAttribArray(vtx_uv));
+	GL_CHECK(glEnableVertexAttribArray(vtx_col));
+	GL_CHECK(glVertexAttribPointer(vtx_pos, 2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, x)));
+	GL_CHECK(glVertexAttribPointer(vtx_uv,  2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, u)));
+	GL_CHECK(glVertexAttribPointer(vtx_col, 4, GL_UNSIGNED_BYTE,  GL_TRUE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, color)));
+
+	glEnable(GL_BLEND);
+	glBlendEquation(GL_FUNC_ADD);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+	//glEnable(GL_SCISSOR_TEST);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+}
+
+void shutdown() {
+	glDeleteVertexArrays(1, &vao);
+	glDeleteBuffers(1, &vbo);
+	glDeleteBuffers(1, &ibo);
+}
+
 void main_loop() {
-	glClearColor(1.0, 0.3, 0.3, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
+	using namespace flexui;
 
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
-	glViewport(0, 0, width, height);
-	
-	{
-		const float verts[] = {
-			1.0,  1.0,
-		   -1.0,  1.0,
-		   -1.0, -1.0,
-		   -1.0, -1.0,
-			1.0, -1.0,
-			1.0,  1.0
-		};
-		unsigned int VBO;
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, 12, verts, GL_STATIC_DRAW);
+	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
-		using namespace flexui;
+	glClearColor(0.3, 0.3, 0.3, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	float L = 0;
+	float R = 0 + width;
+	float T = 0;
+	float B = 0 + height;
+	const float ortho_projection[4][4] = {
+        { 2.0f/(R-L),   0.0f,         0.0f,   0.0f },
+        { 0.0f,         2.0f/(T-B),   0.0f,   0.0f },
+        { 0.0f,         0.0f,        -1.0f,   0.0f },
+        { (R+L)/(L-R),  (T+B)/(B-T),  0.0f,   1.0f },
+	};
+	GL_CHECK(glUseProgram(shader));
+	GL_CHECK(glUniformMatrix4fv(loc_matrix, 1, GL_FALSE, &ortho_projection[0][0]));
+
+	{
+		std::vector<UIVertex> verts = {
+			{   0,   0, 0, 0, 0xFFFF0000 },
+			{ 100,   0, 1, 0, 0xFF00FF00 },
+			{   0, 100, 0, 1, 0xFF0000FF },
+		};
+		std::vector<UIIndex> idxs = {
+			0, 1, 2
+		};
+
+		/*for (int i = 1; i < 3; i++) {
+			verts.push_back({ 0, 0, 0, 0, 0 });
+			verts.push_back({ (float)(rand() % width), 0, 0, 0, 0 });
+			verts.push_back({ 0, (float)(rand() % height), 0, 0, 0 });
+
+			idxs.push_back(i * 3 + 0);
+			idxs.push_back(i * 3 + 1);
+			idxs.push_back(i * 3 + 2);
+		}*/
+
+		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+		GL_CHECK(glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)verts.size() * (int)sizeof(UIVertex), (const GLvoid*)verts.data(), GL_STREAM_DRAW));
+		GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)idxs.size() * (int)sizeof(UIIndex), (const GLvoid*)idxs.data(), GL_STREAM_DRAW));
+
+		GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)idxs.size(), sizeof(UIIndex) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, 0));
+	}
+
+	{
 		Element* e = new Element();
 		delete e;
-
-		glDeleteBuffers(1, &VBO);
 	}
 
 	glfwSwapBuffers(window);
 	glfwPollEvents();
 }
+
 static void error_callback(int error, const char* description)
 {
 	fprintf(stderr, "Error: %s\n", description);
@@ -78,6 +232,8 @@ int main(int, char**) {
 	std::cout << "Renderer: " << renderer << std::endl;
 	std::cout << "OpenGL version supported " << version << std::endl;
 
+	init();
+
 	main_loop_running = true;
 
 	#ifdef __EMSCRIPTEN__
@@ -85,6 +241,8 @@ int main(int, char**) {
 	#else
 	while (main_loop_running) main_loop();
 	#endif
+
+	shutdown();
 
 	glfwDestroyWindow(window);
 	glfwTerminate();

@@ -6,7 +6,14 @@
 struct YGNode;
 
 namespace flexui {
-	
+
+	typedef uint16_t UIIndex;
+	struct UIVertex {
+		float x, y;
+		float u, v;
+		uint32_t color;
+	};
+
 	class Element {
 	public:
 		Element();
