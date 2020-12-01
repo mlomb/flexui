@@ -61,40 +61,83 @@ static bool CheckShader(GLuint handle, const char* desc)
 }
 
 void create_shader() {
-	const GLchar* vertex_shader_glsl_130 =
-		"#version 130\n"
-		"uniform mat4 ProjMtx;\n"
-		"in vec2 Position;\n"
-		"in vec2 UV;\n"
-		"in vec4 Color;\n"
-		"out vec2 Frag_UV;\n"
-		"out vec4 Frag_Color;\n"
-		"void main()\n"
-		"{\n"
-		"    Frag_UV = UV;\n"
-		"    Frag_Color = Color;\n"
-		"    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
-		"}\n";
+	#ifdef __EMSCRIPTEN__ // GLES
+	const GLchar* vertex_shader = R"(
+		#version 100
+		precision mediump float;
 
-	const GLchar* fragment_shader_glsl_130 =
-		"#version 130\n"
-		"uniform sampler2D Texture;\n"
-		"in vec2 Frag_UV;\n"
-		"in vec4 Frag_Color;\n"
-		"out vec4 Out_Color;\n"
-		"void main()\n"
-		"{\n"
-		"    Out_Color = Frag_Color * texture(Texture, Frag_UV.st);\n"
-			"Out_Color = Frag_Color.rgba;\n"
-		"}\n";
+		uniform mat4 proj;
+
+		attribute vec2 in_position;
+		attribute vec2 in_uv;
+		attribute vec4 in_color;
+
+		varying vec2 var_uv;
+		varying vec4 var_color;
+
+		void main() {
+		    gl_Position = proj * vec4(in_position.xy, 0, 1);
+		    var_color = in_color;
+		    var_uv = in_uv;
+		}
+	)";
+
+	const GLchar* fragment_shader = R"(
+		#version 100
+		precision mediump float;
+
+		uniform sampler2D atlas;
+
+		varying vec2 var_uv;
+		varying vec4 var_color;
+
+		void main()
+		{
+			gl_FragColor = var_color;
+		}
+	)";
+	#else
+	const GLchar* vertex_shader = R"(
+		#version 130
+		uniform mat4 proj;
+
+		in vec2 in_position;
+		in vec2 in_uv;
+		in vec4 in_color;
+
+		out vec2 var_uv;
+		out vec4 var_color;
+
+		void main() {
+		    gl_Position = proj * vec4(in_position.xy, 0, 1);
+		    var_color = in_color;
+		    var_uv = in_uv;
+		}
+	)";
+
+	const GLchar* fragment_shader = R"(
+		#version 130
+		uniform sampler2D atlas;
+
+		in vec2 var_uv;
+		in vec4 var_color;
+
+		out vec4 out_color;
+
+		void main()
+		{
+			out_color = var_color;
+		}
+	)";
+	#endif
 
 	GLuint vert = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vert, 1, &vertex_shader_glsl_130, NULL);
+	glShaderSource(vert, 1, &vertex_shader, NULL);
 	glCompileShader(vert);
 	CheckShader(vert, "VERT");
 
 	GLuint frag = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(frag, 1, &fragment_shader_glsl_130, NULL);
+	glShaderSource(frag, 1, &fragment_shader, NULL);
 	glCompileShader(frag);
 	CheckShader(frag, "FRAG");
 
@@ -104,7 +147,7 @@ void create_shader() {
 	glLinkProgram(shader);
 
 	GL_CHECK(glUseProgram(shader));
-	loc_matrix = glGetUniformLocation(shader, "ProjMtx");
+	loc_matrix = glGetUniformLocation(shader, "proj");
 }
 
 void init() {
@@ -117,9 +160,9 @@ void init() {
 	GL_CHECK(glBindVertexArray(vao));
 	GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 	GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-	GLuint vtx_pos = (GLuint)glGetAttribLocation(shader, "Position");
-	GLuint vtx_uv = (GLuint)glGetAttribLocation(shader, "UV");
-	GLuint vtx_col = (GLuint)glGetAttribLocation(shader, "Color");
+	GLuint vtx_pos = (GLuint)glGetAttribLocation(shader, "in_position");
+	GLuint vtx_uv = (GLuint)glGetAttribLocation(shader, "in_uv");
+	GLuint vtx_col = (GLuint)glGetAttribLocation(shader, "in_color");
 	GL_CHECK(glEnableVertexAttribArray(vtx_pos));
 	GL_CHECK(glEnableVertexAttribArray(vtx_uv));
 	GL_CHECK(glEnableVertexAttribArray(vtx_col));
