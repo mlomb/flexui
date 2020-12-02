@@ -2,7 +2,7 @@
 #include <cassert>
 
 #ifdef __EMSCRIPTEN__
-#include <emscripten.h>
+#include <emscripten/emscripten.h>
 #define GLFW_INCLUDE_ES3
 #else
 #define GLFW_INCLUDE_NONE
@@ -245,14 +245,7 @@ void main_loop() {
 	glfwPollEvents();
 }
 
-static void error_callback(int error, const char* description)
-{
-	fprintf(stderr, "Error: %s\n", description);
-}
-
 int main(int, char**) {
-	glfwSetErrorCallback(error_callback);
-
 	if (glfwInit() != GLFW_TRUE) {
 		throw new std::runtime_error("GLFW failed to initialize");
 	}
@@ -268,6 +261,11 @@ int main(int, char**) {
 	if (glewInit() != GLEW_OK) {
 		throw new std::runtime_error("GLEW failed to initialize");
 	}
+	#endif
+
+	#ifdef __EMSCRIPTEN__
+	// dirty hack to apply the initial window size
+	EM_ASM({ window.dispatchEvent(new Event('resize')); });
 	#endif
 
 	const GLubyte* renderer = glGetString(GL_RENDERER);

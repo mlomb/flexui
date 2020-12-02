@@ -11,7 +11,7 @@ namespace flexui {
 	struct UIVertex {
 		float x, y;
 		float u, v;
-		uint32_t color;
+		uint32_t color; // AABBGGRR
 	};
 
 	class Element {
