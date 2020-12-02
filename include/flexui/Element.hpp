@@ -5,14 +5,9 @@
 // forward def to avoid include
 struct YGNode;
 
-namespace flexui {
+#include "Structs.hpp"
 
-	typedef uint16_t UIIndex;
-	struct UIVertex {
-		float x, y;
-		float u, v;
-		uint32_t color; // AABBGGRR
-	};
+namespace flexui {
 
 	class Element {
 	public:
@@ -22,13 +17,19 @@ namespace flexui {
 		void addElement(Element* child, int index = -1);
 		void removeElement(Element* child);
 
-
 	private:
+		friend class Surface;
+		friend class LayoutTreeUpdater;
+
 		Element* m_Parent;
 		std::vector<Element*> m_Childrens;
 		int m_Depth;
 
 		YGNode* m_YogaNode;
+		UIRect m_LayoutRect;
+		UIRect m_BoundingRect;
+
+		Surface* m_Surface;
 	};
 
 }

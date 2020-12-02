@@ -16,6 +16,7 @@
 using namespace glm;
 
 #include <flexui/Element.hpp>
+#include <flexui/Surface.hpp>
 
 void CheckOpenGLError(const char* stmt, const char* fname, int line)
 {
@@ -43,15 +44,15 @@ GLuint vbo, ibo, vao;
 GLuint shader;
 GLuint loc_matrix;
 
-static bool CheckShader(GLuint handle, const char* desc)
-{
+flexui::Surface* ui_surface = nullptr;
+
+bool check_shader(GLuint handle, const char* desc) {
 	GLint status = 0, log_length = 0;
 	glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
 	glGetShaderiv(handle, GL_INFO_LOG_LENGTH, &log_length);
 	if ((GLboolean)status == GL_FALSE)
-		fprintf(stderr, "ERROR: Shader: failed to compile %s!\n", desc);
-	if (log_length > 1)
-	{
+		fprintf(stderr, "ERROR: Shader failed to compile %s!\n", desc);
+	if (log_length > 1) {
 		std::vector<char> buf;
 		buf.resize((int)(log_length + 1));
 		glGetShaderInfoLog(handle, log_length, NULL, buf.data());
@@ -134,12 +135,12 @@ void create_shader() {
 	GLuint vert = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vert, 1, &vertex_shader, NULL);
 	glCompileShader(vert);
-	CheckShader(vert, "VERT");
+	check_shader(vert, "Vertex");
 
 	GLuint frag = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(frag, 1, &fragment_shader, NULL);
 	glCompileShader(frag);
-	CheckShader(frag, "FRAG");
+	check_shader(frag, "Fragment");
 
 	shader = glCreateProgram();
 	glAttachShader(shader, vert);
@@ -148,6 +149,13 @@ void create_shader() {
 
 	GL_CHECK(glUseProgram(shader));
 	loc_matrix = glGetUniformLocation(shader, "proj");
+
+	// init ui
+	using namespace flexui;
+	ui_surface = new Surface();
+
+	Element* div = new Element();
+	ui_surface->getRoot()->addElement(div);
 }
 
 void init() {
@@ -166,8 +174,8 @@ void init() {
 	GL_CHECK(glEnableVertexAttribArray(vtx_pos));
 	GL_CHECK(glEnableVertexAttribArray(vtx_uv));
 	GL_CHECK(glEnableVertexAttribArray(vtx_col));
-	GL_CHECK(glVertexAttribPointer(vtx_pos, 2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, x)));
-	GL_CHECK(glVertexAttribPointer(vtx_uv,  2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, u)));
+	GL_CHECK(glVertexAttribPointer(vtx_pos, 2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, pos)));
+	GL_CHECK(glVertexAttribPointer(vtx_uv,  2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, uv)));
 	GL_CHECK(glVertexAttribPointer(vtx_col, 4, GL_UNSIGNED_BYTE,  GL_TRUE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, color)));
 
 	glEnable(GL_BLEND);
@@ -186,8 +194,6 @@ void shutdown() {
 }
 
 void main_loop() {
-	using namespace flexui;
-
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
@@ -209,10 +215,14 @@ void main_loop() {
 	GL_CHECK(glUniformMatrix4fv(loc_matrix, 1, GL_FALSE, &ortho_projection[0][0]));
 
 	{
+		using namespace flexui;
+		
+		ui_surface->updateTree();
+
 		std::vector<UIVertex> verts = {
-			{   0,   0, 0, 0, 0xFFFF0000 },
-			{ 100,   0, 1, 0, 0xFF00FF00 },
-			{   0, 100, 0, 1, 0xFF0000FF },
+			{ {   0,   0 }, { 0, 0 }, 0xFFFF0000 },
+			{ { 100,   0 }, { 1, 0 }, 0xFF00FF00 },
+			{ {   0, 100 }, { 0, 1 }, 0xFF0000FF },
 		};
 		std::vector<UIIndex> idxs = {
 			0, 1, 2
@@ -234,11 +244,6 @@ void main_loop() {
 		GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)idxs.size() * (int)sizeof(UIIndex), (const GLvoid*)idxs.data(), GL_STREAM_DRAW));
 
 		GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)idxs.size(), sizeof(UIIndex) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, 0));
-	}
-
-	{
-		Element* e = new Element();
-		delete e;
 	}
 
 	glfwSwapBuffers(window);
