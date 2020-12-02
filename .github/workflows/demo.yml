@@ -39,6 +39,10 @@ jobs:
             cp index.js deploy/
             cp index.wasm deploy/
         working-directory: build-emscripten/examples/glfw_gl3
+      - name: Install SSH Client for deployment
+        uses: webfactory/ssh-agent@v0.4.1
+        with:
+          ssh-private-key: ${{ secrets.DEPLOY_KEY }}
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@3.7.1
         with:
