@@ -1,0 +1,49 @@
+name: Build web demo
+
+on: [push]
+
+env:
+  EM_VERSION: 2.0.9
+  EM_CACHE_FOLDER: 'emsdk-cache'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - name: Setup cache
+        id: cache-system-libraries
+        uses: actions/cache@v2
+        with:
+          path: ${{env.EM_CACHE_FOLDER}}
+          key: emscripten-${{env.EM_VERSION}}-${{ runner.os }}
+      - name: Setup emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: ${{env.EM_VERSION}}
+          actions-cache-folder: ${{env.EM_CACHE_FOLDER}}
+      - name: Run CMake
+        run: |
+            mkdir build-emscripten
+            cd build-emscripten
+            emcmake cmake ..
+      - name: Build
+        run: make glfw_gl3
+        working-directory: build-emscripten
+      - name: Copy output files
+        run: |
+            mkdir deploy
+            cp index.html deploy/
+            cp index.js deploy/
+            cp index.wasm deploy/
+        working-directory: build-emscripten/examples/glfw_gl3
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          BASE_BRANCH: master
+          BRANCH: gh-pages
+          FOLDER: build-emscripten/examples/glfw_gl3/deploy
+          CLEAN: true
+          SSH: true

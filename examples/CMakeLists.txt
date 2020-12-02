@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 
-find_package(OpenGL REQUIRED)
-
 if(NOT EMSCRIPTEN)
+	find_package(OpenGL REQUIRED)
+
 	# glfw
 	add_subdirectory(libs/glfw EXCLUDE_FROM_ALL)
 
