@@ -17,6 +17,8 @@ using namespace glm;
 
 #include <flexui/Element.hpp>
 #include <flexui/Surface.hpp>
+#include <flexui/Style/StyleSheet.hpp>
+#include <flexui/Style/StyleParse.hpp>
 
 void CheckOpenGLError(const char* stmt, const char* fname, int line)
 {
@@ -150,12 +152,28 @@ void create_shader() {
 	GL_CHECK(glUseProgram(shader));
 	loc_matrix = glGetUniformLocation(shader, "proj");
 
-	// init ui
 	using namespace flexui;
+	// load css
+
+	std::string css_source = R"(
+		* {
+			background-color: red;
+		}
+	)";
+	StyleParseResult pr;
+	StyleSheet* ss = ParseStyleSheet(css_source, pr);
+
+	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
+	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
+
+	// init ui
 	ui_surface = new Surface();
+	Element* root = ui_surface->getRoot();
+	root->setID("root");
+	root->addStyleSheet(ss);
 
 	Element* div = new Element();
-	ui_surface->getRoot()->addElement(div);
+	root->addElement(div);
 }
 
 void init() {
@@ -198,13 +216,13 @@ void main_loop() {
 	glfwGetFramebufferSize(window, &width, &height);
 	glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 
-	glClearColor(0.3, 0.3, 0.3, 1.0);
+	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	float L = 0;
-	float R = 0 + width;
-	float T = 0;
-	float B = 0 + height;
+	float L = 0.0f;
+	float R = 0.0f + width;
+	float T = 0.0f;
+	float B = 0.0f + height;
 	const float ortho_projection[4][4] = {
         { 2.0f/(R-L),   0.0f,         0.0f,   0.0f },
         { 0.0f,         2.0f/(T-B),   0.0f,   0.0f },

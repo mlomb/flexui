@@ -1,6 +1,7 @@
 #include "Surface.hpp"
 
 #include "Layout/LayoutTreeUpdater.hpp"
+#include "Style/StyleTreeUpdater.hpp"
 
 namespace flexui {
 
@@ -8,6 +9,7 @@ namespace flexui {
 		: m_Size({ 100, 100 })
 	{
 		m_LayoutUpdater = new LayoutTreeUpdater(this);
+		m_StyleTreeUpdater = new StyleTreeUpdater(this);
 
 		m_Root = new Element();
 		m_Root->m_Depth = 1;
@@ -21,6 +23,7 @@ namespace flexui {
 
 	void Surface::updateTree()
 	{
+		m_StyleTreeUpdater->process();
 		m_LayoutUpdater->process();
 	}
 

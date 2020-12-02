@@ -5,6 +5,7 @@
 namespace flexui {
 
 	class LayoutTreeUpdater;
+	class StyleTreeUpdater;
 
 	class Surface {
 	public:
@@ -23,6 +24,7 @@ namespace flexui {
 		Element* m_Root;
 
 		LayoutTreeUpdater* m_LayoutUpdater;
+		StyleTreeUpdater* m_StyleTreeUpdater;
 
 		UIVec2 m_Size;
 	};
