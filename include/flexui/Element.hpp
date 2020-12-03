@@ -6,7 +6,7 @@
 // forward def to avoid include
 struct YGNode;
 
-#include "Structs.hpp"
+#include "Math.hpp"
 #include "Style/StyleDefinitions.hpp"
 
 namespace flexui {
@@ -14,6 +14,7 @@ namespace flexui {
 	class StyleSheet;
 	struct StyleComputed;
 	class Surface;
+	class Painter;
 
 	class Element {
 	public:
@@ -39,6 +40,8 @@ namespace flexui {
 		int getDepth() const;
 		Surface* getSurface() const;
 		std::string getQualifiedName() const;
+
+		virtual void paintContent(Painter* painter);
 
 	protected:
 		StyleComputed* m_ComputedStyle;

@@ -2,6 +2,7 @@
 
 #include "Layout/LayoutTreeUpdater.hpp"
 #include "Style/StyleTreeUpdater.hpp"
+#include "Render/TreePainter.hpp"
 
 namespace flexui {
 
@@ -10,6 +11,7 @@ namespace flexui {
 	{
 		m_LayoutUpdater = new LayoutTreeUpdater(this);
 		m_StyleTreeUpdater = new StyleTreeUpdater(this);
+		m_TreePainter = new TreePainter(this);
 
 		m_Root = new Element();
 		m_Root->m_Depth = 1;
@@ -25,6 +27,7 @@ namespace flexui {
 	{
 		m_StyleTreeUpdater->process();
 		m_LayoutUpdater->process();
+		m_TreePainter->process();
 	}
 
 	Element* Surface::getRoot() const
@@ -68,6 +71,11 @@ namespace flexui {
 	UIVec2 Surface::getSize() const
 	{
 		return m_Size;
+	}
+
+	Painter* Surface::getPainter() const
+	{
+		return m_TreePainter->getPainter();
 	}
 
 }

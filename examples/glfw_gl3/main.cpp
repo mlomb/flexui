@@ -17,6 +17,7 @@ using namespace glm;
 
 #include <flexui/Element.hpp>
 #include <flexui/Surface.hpp>
+#include <flexui/Render/Painter.hpp> // TODO: move structs to another file
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
 
@@ -159,6 +160,11 @@ void create_shader() {
 		* {
 			background-color: red;
 		}
+		.test {
+			background-color: orange;
+			width: 50px;
+			height: 50px;
+		}
 	)";
 	StyleParseResult pr;
 	StyleSheet* ss = ParseStyleSheet(css_source, pr);
@@ -173,6 +179,7 @@ void create_shader() {
 	root->addStyleSheet(ss);
 
 	Element* div = new Element();
+	div->addClass("test");
 	root->addElement(div);
 }
 
@@ -201,8 +208,8 @@ void init() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glEnable(GL_SCISSOR_TEST);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 void shutdown() {
@@ -237,31 +244,14 @@ void main_loop() {
 		
 		ui_surface->updateTree();
 
-		std::vector<UIVertex> verts = {
-			{ {   0,   0 }, { 0, 0 }, 0xFFFF0000 },
-			{ { 100,   0 }, { 1, 0 }, 0xFF00FF00 },
-			{ {   0, 100 }, { 0, 1 }, 0xFF0000FF },
-		};
-		std::vector<UIIndex> idxs = {
-			0, 1, 2
-		};
-
-		/*for (int i = 1; i < 3; i++) {
-			verts.push_back({ 0, 0, 0, 0, 0 });
-			verts.push_back({ (float)(rand() % width), 0, 0, 0, 0 });
-			verts.push_back({ 0, (float)(rand() % height), 0, 0, 0 });
-
-			idxs.push_back(i * 3 + 0);
-			idxs.push_back(i * 3 + 1);
-			idxs.push_back(i * 3 + 2);
-		}*/
+		Painter* p = ui_surface->getPainter();
 
 		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-		GL_CHECK(glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)verts.size() * (int)sizeof(UIVertex), (const GLvoid*)verts.data(), GL_STREAM_DRAW));
-		GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)idxs.size() * (int)sizeof(UIIndex), (const GLvoid*)idxs.data(), GL_STREAM_DRAW));
+		GL_CHECK(glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)p->getVertexCount() * (int)sizeof(UIVertex), (const GLvoid*)p->getVertexPtr(), GL_STREAM_DRAW));
+		GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)p->getIndexCount() * (int)sizeof(UIIndex), (const GLvoid*)p->getIndexPtr(), GL_STREAM_DRAW));
 
-		GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)idxs.size(), sizeof(UIIndex) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, 0));
+		GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)p->getIndexCount() * 3, sizeof(UIIndex) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, 0));
 	}
 
 	glfwSwapBuffers(window);

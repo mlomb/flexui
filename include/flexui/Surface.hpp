@@ -6,6 +6,7 @@ namespace flexui {
 
 	class LayoutTreeUpdater;
 	class StyleTreeUpdater;
+	class TreePainter;
 
 	class Surface {
 	public:
@@ -19,12 +20,14 @@ namespace flexui {
 
 		Element* getRoot() const;
 		UIVec2 getSize() const;
+		Painter* getPainter() const;
 
 	private:
 		Element* m_Root;
 
 		LayoutTreeUpdater* m_LayoutUpdater;
 		StyleTreeUpdater* m_StyleTreeUpdater;
+		TreePainter* m_TreePainter;
 
 		UIVec2 m_Size;
 	};
