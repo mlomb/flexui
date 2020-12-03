@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "TreeProcessor.hpp"
+#include "flexui/TreeProcessor.hpp"
 
-#include "Style/StyleSelectorMatcher.hpp"
+#include "flexui/Style/StyleSelectorMatcher.hpp"
 
 namespace flexui {
 

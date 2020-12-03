@@ -14,7 +14,6 @@ file(GLOB_RECURSE flexui_SRC
 	src/flexui/*.cpp
 )
 add_library(flexui ${flexui_SRC})
-target_include_directories(flexui PRIVATE include/flexui)
 target_include_directories(flexui PUBLIC include)
 target_link_libraries(flexui PUBLIC yogacore)
 

@@ -1,7 +1,7 @@
-#include "Style/StyleParse.hpp"
+#include "flexui/Style/StyleParse.hpp"
 
-#include "NamedColors.hpp"
-#include "Style/StyleSheet.hpp"
+#include "flexui/Style/NamedColors.hpp"
+#include "flexui/Style/StyleSheet.hpp"
 
 /// Eventually we want to move away from std::string.
 /// We'll have slices of the original buffer

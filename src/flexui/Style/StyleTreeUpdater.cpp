@@ -1,12 +1,12 @@
-#include "Style/StyleTreeUpdater.hpp"
+#include "flexui/Style/StyleTreeUpdater.hpp"
 
-#include "Element.hpp"
-#include "Surface.hpp"
+#include "flexui/Element.hpp"
+#include "flexui/Surface.hpp"
 
-#include "Style/StyleSheet.hpp"
-#include "Style/StyleComputed.hpp"
+#include "flexui/Style/StyleSheet.hpp"
+#include "flexui/Style/StyleComputed.hpp"
 
-#include "Layout/Yoga.hpp"
+#include "flexui/Layout/Yoga.hpp"
 
 namespace flexui {
 

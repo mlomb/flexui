@@ -1,8 +1,8 @@
-#include "Style/StyleSelectorMatcher.hpp"
+#include "flexui/Style/StyleSelectorMatcher.hpp"
 
-#include "Element.hpp"
-#include "Style/StyleDefinitions.hpp"
-#include "Style/StyleSheet.hpp"
+#include "flexui/Element.hpp"
+#include "flexui/Style/StyleDefinitions.hpp"
+#include "flexui/Style/StyleSheet.hpp"
 
 namespace flexui {
 

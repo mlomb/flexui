@@ -1,7 +1,7 @@
-#include "Layout/LayoutTreeUpdater.hpp"
+#include "flexui/Layout/LayoutTreeUpdater.hpp"
 
-#include "Surface.hpp"
-#include "Layout/Yoga.hpp"
+#include "flexui/Surface.hpp"
+#include "flexui/Layout/Yoga.hpp"
 
 namespace flexui {
 

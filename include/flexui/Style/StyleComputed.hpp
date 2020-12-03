@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Style/StyleDefinitions.hpp"
+#include "flexui/Style/StyleDefinitions.hpp"
 
 namespace flexui {
 

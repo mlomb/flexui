@@ -1,4 +1,4 @@
-#include "TreeProcessor.hpp"
+#include "flexui/TreeProcessor.hpp"
 
 namespace flexui {
 

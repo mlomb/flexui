@@ -4,7 +4,7 @@
 #include <string>
 
 #include <yoga/YGEnums.h>
-#include "Math.hpp"
+#include "flexui/Math.hpp"
 
 // weird macros
 #undef RELATIVE
