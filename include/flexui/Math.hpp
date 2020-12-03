@@ -44,4 +44,5 @@ namespace flexui {
 		inline bool operator!=(const UIRect& b) const { return x != b.x || y != b.y || width != b.width || height != b.height; }
 	};
 
+	typedef uint32_t UIColor;
 }

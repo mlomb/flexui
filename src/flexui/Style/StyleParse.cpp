@@ -50,17 +50,22 @@ namespace flexui {
 	}
 
 	/// Converts the hex character to its decimal representation
-	int hexToDec(char c) {
+	unsigned char hexToDec(unsigned char c) {
 		if (c >= '0' && c <= '9') return c - '0';
 		if (c >= 'a' && c <= 'f') return c - 'a' + 10;
 		if (c >= 'A' && c <= 'F') return c - 'A' + 10;
 		return 0;
 	}
 
-	// Converts a two digit hex into a scalar float
-	// ie. FF -> 1.0, 80 -> 0.5, 00 -> 0.0
-	float hexToFloat(char l, char r) {
-		return (16 * hexToDec(l) + hexToDec(r)) / 255.0f;
+	// Converts a two digit hex to its decimal representation
+	unsigned char hexToDec(unsigned char l, unsigned char r) {
+		return 16 * hexToDec(l) + hexToDec(r);
+	}
+
+	/// Converts decimal colors to StyleColor
+	StyleColor buildColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
+		// AABBGGRR
+		return ((uint32_t)(a) << 24) | ((uint32_t)(b) << 16) | ((uint32_t)(g) << 8) | ((uint32_t)(r));
 	}
 
 	/// Advances pos until there is no more whitespace
@@ -324,10 +329,12 @@ namespace flexui {
 				if (isHex(input[1]) &&
 					isHex(input[2]) &&
 					isHex(input[3])) {
-					output.r = hexToFloat(input[1], input[1]);
-					output.g = hexToFloat(input[2], input[2]);
-					output.b = hexToFloat(input[3], input[3]);
-					output.a = 1.0f;
+					output = buildColor(
+						hexToDec(input[1], input[1]),
+						hexToDec(input[2], input[2]),
+						hexToDec(input[3], input[3]),
+						(unsigned char)0xFF
+					);
 					return true;
 				}
 				else {
@@ -343,10 +350,12 @@ namespace flexui {
 					isHex(input[4]) &&
 					isHex(input[5]) &&
 					isHex(input[6])) {
-					output.r = hexToFloat(input[1], input[2]);
-					output.g = hexToFloat(input[3], input[4]);
-					output.b = hexToFloat(input[5], input[6]);
-					output.a = 1.0f;
+					output = buildColor(
+						hexToDec(input[1], input[2]),
+						hexToDec(input[3], input[4]),
+						hexToDec(input[5], input[6]),
+						(unsigned char)0xFF
+					);
 					return true;
 				}
 				else {
@@ -363,9 +372,10 @@ namespace flexui {
 			bool has_alpha = input[3] == 'a';
 			int num_components = has_alpha ? 4 : 3;
 			int pos = has_alpha ? 5 : 4;
+			float components[4];
 
 			for (int i = 0; i < num_components; i++) {
-				if (parseNumber(input, pos, output.components[i], parseResult)) {
+				if (parseNumber(input, pos, components[i], parseResult)) {
 					if (pos < input.size()) {
 						if (input[pos] == '%') {
 							pos++; // skip %
@@ -386,8 +396,12 @@ namespace flexui {
 								return false; // too few components
 							}
 
-							if (!has_alpha)
-								output.a = 1.0f;
+							output = buildColor(
+								(unsigned char)components[0],
+								(unsigned char)components[1],
+								(unsigned char)components[2],
+								has_alpha ? (unsigned char)((float)components[3] * 255.0f) : 0xFF
+							);
 							return true;
 						}
 					}
@@ -410,10 +424,12 @@ namespace flexui {
 			auto it = NAMED_COLORS.find(input);
 			if (it != NAMED_COLORS.end()) {
 				const auto& color = (*it).second;
-				output.r = (float)std::get<0>(color) / 255.0f;
-				output.g = (float)std::get<1>(color) / 255.0f;
-				output.b = (float)std::get<2>(color) / 255.0f;
-				output.a = (float)std::get<3>(color);
+				output = buildColor(
+					(unsigned char)std::get<0>(color),
+					(unsigned char)std::get<1>(color),
+					(unsigned char)std::get<2>(color),
+					(unsigned char)((float)std::get<3>(color) * 255.0f)
+				);
 				return true;
 			}
 		}

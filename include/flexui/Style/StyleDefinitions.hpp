@@ -4,6 +4,7 @@
 #include <string>
 
 #include <yoga/YGEnums.h>
+#include "Math.hpp"
 
 // weird macros
 #undef RELATIVE
@@ -163,14 +164,7 @@ namespace flexui {
 		StyleLengthUnit unit;
 	};
 
-	struct StyleColor {
-		union {
-			struct {
-				float r, g, b, a;
-			};
-			float components[4];
-		};
-	};
+	typedef UIColor StyleColor;
 
 	struct StyleValue {
 		union {

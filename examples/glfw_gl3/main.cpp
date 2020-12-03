@@ -241,7 +241,7 @@ void main_loop() {
 
 	{
 		using namespace flexui;
-		
+
 		ui_surface->updateTree();
 
 		Painter* p = ui_surface->getPainter();
@@ -251,7 +251,7 @@ void main_loop() {
 		GL_CHECK(glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)p->getVertexCount() * (int)sizeof(UIVertex), (const GLvoid*)p->getVertexPtr(), GL_STREAM_DRAW));
 		GL_CHECK(glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)p->getIndexCount() * (int)sizeof(UIIndex), (const GLvoid*)p->getIndexPtr(), GL_STREAM_DRAW));
 
-		GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)p->getIndexCount() * 3, sizeof(UIIndex) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, 0));
+		GL_CHECK(glDrawElements(GL_TRIANGLES, (GLsizei)p->getIndexCount(), sizeof(UIIndex) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, 0));
 	}
 
 	glfwSwapBuffers(window);

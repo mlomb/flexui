@@ -85,9 +85,9 @@ namespace flexui {
 		auto color = m_ComputedStyle->backgroundColor.value;
 		auto border_color = m_ComputedStyle->borderColor.value;
 
-		if (color.a > 0.01)
-			painter->drawRoundedRectangle(m_BoundingRect, /* color */ 0xFFFF00FF, roundedParams);
-		if (border_color.a > 0.01) {
+		if ((color & 0xFF000000) > 0)
+			painter->drawRoundedRectangle(m_BoundingRect, color, roundedParams);
+		if ((border_color & 0xFF000000) > 0) {
 			RoundedBordersParams borderParams;
 			borderParams.rectParams = roundedParams;
 			// TODO: units
@@ -95,7 +95,7 @@ namespace flexui {
 			borderParams.widths[1] = m_ComputedStyle->borderTopWidth.value.number;
 			borderParams.widths[2] = m_ComputedStyle->borderRightWidth.value.number;
 			borderParams.widths[3] = m_ComputedStyle->borderBottomWidth.value.number;
-			painter->drawRoundedBorders(m_BoundingRect, /* border_color */ 0xFFFF00FF, borderParams);
+			painter->drawRoundedBorders(m_BoundingRect, border_color, borderParams);
 		}
 	}
 

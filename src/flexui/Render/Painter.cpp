@@ -28,10 +28,11 @@ namespace flexui {
 
 	Painter::~Painter()
 	{
-		assert(m_pVertex == NULL && m_pIndex == NULL);
+		delete m_BaseVertex;
+		delete m_BaseIndex;
 	}
 
-	void Painter::drawRectangle(const UIRect& rect, const uint32_t color)
+	void Painter::drawRectangle(const UIRect& rect, const UIColor color)
 	{
 		if (rect.width < UI_EPS || rect.height < UI_EPS)
 			return; // skip invalid rects
@@ -65,7 +66,7 @@ namespace flexui {
 		m_VertexCount += 4;
 	}
 
-	void Painter::drawRoundedCorner(const UIVec2& center, const UIVec2& radii, const Corner corner, const uint32_t color)
+	void Painter::drawRoundedCorner(const UIVec2& center, const UIVec2& radii, const Corner corner, const UIColor color)
 	{
 		if (radii.x < UI_EPS || radii.y < UI_EPS) {
 			// No radius, nothing to do
@@ -111,7 +112,7 @@ namespace flexui {
 		}
 	}
 
-	void Painter::drawRoundedCornerCarved(const UIVec2& center, const UIVec2& outerRadii, const UIVec2& innerRadii, const Corner corner, const uint32_t color)
+	void Painter::drawRoundedCornerCarved(const UIVec2& center, const UIVec2& outerRadii, const UIVec2& innerRadii, const Corner corner, const UIColor color)
 	{
 		if (innerRadii.x < UI_EPS || innerRadii.y < UI_EPS) {
 			drawRoundedCorner(center, outerRadii, corner, color);
@@ -161,7 +162,7 @@ namespace flexui {
 		}
 	}
 
-	void Painter::drawRoundedRectangle(const UIRect& rect, const uint32_t color, const RoundedRectParams& params)
+	void Painter::drawRoundedRectangle(const UIRect& rect, const UIColor color, const RoundedRectParams& params)
 	{
 		const UIVec2 halfSize = rect.size * 0.5f;
 		const UIVec2& topLeftRadii = UIVec2::Min(params.cornerRadii[0], halfSize);
@@ -280,7 +281,7 @@ namespace flexui {
 		}
 	}
 
-	void Painter::drawRoundedBorders(const UIRect& rect, const uint32_t color, const RoundedBordersParams& params)
+	void Painter::drawRoundedBorders(const UIRect& rect, const UIColor color, const RoundedBordersParams& params)
 	{
 		//    __--------------__   
 		//   *  |            |  *  
@@ -364,7 +365,7 @@ namespace flexui {
 	}
 
 	/*
-	void Painter::drawText(const Graphics::TextLayout& textLayout, const UIVec2& position, const uint32_t color)
+	void Painter::drawText(const Graphics::TextLayout& textLayout, const UIVec2& position, const UIColor color)
 	{
 		using namespace OrbitEngine::Graphics;
 

@@ -87,13 +87,10 @@ namespace flexui {
 		defaults.prop_name.value.number = _value; \
 		defaults.prop_name.value.unit = _unit;
 
-		#define SET_COLOR(prop_name, _r, _g, _b, _a) \
+		#define SET_COLOR(prop_name, _value) \
 		defaults.prop_name.populated = true; \
 		defaults.prop_name.inherited = true; \
-		defaults.prop_name.value.r = _r; \
-		defaults.prop_name.value.g = _g; \
-		defaults.prop_name.value.b = _b; \
-		defaults.prop_name.value.a = _a;
+		defaults.prop_name.value = _value;
 
 		#define SET_ENUM(prop_name, _enum_value) \
 		defaults.prop_name.populated = true; \
@@ -122,7 +119,7 @@ namespace flexui {
 		SET_LENGTH(paddingRight, 0, StyleLengthUnit::PIXELS);
 		SET_LENGTH(paddingBottom, 0, StyleLengthUnit::PIXELS);
 
-		SET_COLOR(borderColor, 0, 0, 0, 0); // transparent
+		SET_COLOR(borderColor, 0x00000000); // transparent
 		SET_LENGTH(borderTopLeftRadius, 0, StyleLengthUnit::PIXELS);
 		SET_LENGTH(borderTopRightRadius, 0, StyleLengthUnit::PIXELS);
 		SET_LENGTH(borderBottomLeftRadius, 0, StyleLengthUnit::PIXELS);
@@ -149,8 +146,8 @@ namespace flexui {
 		SET_LENGTH(right, 0, StyleLengthUnit::PIXELS);
 		SET_LENGTH(bottom, 0, StyleLengthUnit::PIXELS);
 
-		SET_COLOR(color, 1, 1, 1, 1); // white
-		SET_COLOR(backgroundColor, 0, 0, 0, 0); // transparent
+		SET_COLOR(color, 0xFFFFFFFF); // white
+		SET_COLOR(backgroundColor, 0x00000000); // transparent
 		
 		SET_ENUM(overflow, Overflow::VISIBLE);
 		SET_ENUM(display, Display::FLEX);

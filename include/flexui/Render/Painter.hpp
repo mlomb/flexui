@@ -10,7 +10,7 @@ namespace flexui {
 	struct UIVertex {
 		UIVec2 pos;
 		UIVec2 uv;
-		uint32_t color; // AABBGGRR
+		UIColor color; // AABBGGRR
 		float flags;
 	};
 
@@ -35,13 +35,13 @@ namespace flexui {
 		Painter();
 		~Painter();
 
-		void drawRectangle(const UIRect& rect, const uint32_t color);
-		void drawRoundedCorner(const UIVec2& center, const UIVec2& radii, const Corner corner, const uint32_t color);
-		void drawRoundedCornerCarved(const UIVec2& center, const UIVec2& outerRadii, const UIVec2& innerRadii, const Corner corner, const uint32_t color);
-		void drawRoundedRectangle(const UIRect& rect, const uint32_t color, const RoundedRectParams& params);
-		void drawRoundedBorders(const UIRect& rect, const uint32_t color, const RoundedBordersParams& params);
+		void drawRectangle(const UIRect& rect, const UIColor color);
+		void drawRoundedCorner(const UIVec2& center, const UIVec2& radii, const Corner corner, const UIColor color);
+		void drawRoundedCornerCarved(const UIVec2& center, const UIVec2& outerRadii, const UIVec2& innerRadii, const Corner corner, const UIColor color);
+		void drawRoundedRectangle(const UIRect& rect, const UIColor color, const RoundedRectParams& params);
+		void drawRoundedBorders(const UIRect& rect, const UIColor color, const RoundedBordersParams& params);
 
-		// void drawText(const Graphics::TextLayout& textLayout, const UIVec2& position, const uint32_t color);
+		// void drawText(const Graphics::TextLayout& textLayout, const UIVec2& position, const UIColor color);
 
 		// TODO: all of these must be removed
 		void reset();
