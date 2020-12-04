@@ -10,7 +10,6 @@ target_include_directories(yogacore PUBLIC deps/yoga)
 # flexui
 file(GLOB_RECURSE flexui_SRC
 	include/flexui/*.hpp
-	src/flexui/*.hpp
 	src/flexui/*.cpp
 )
 add_library(flexui ${flexui_SRC})

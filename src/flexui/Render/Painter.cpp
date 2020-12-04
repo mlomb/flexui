@@ -4,10 +4,9 @@
 #include <cassert>
 #include <algorithm>
 
-#define FUI_PI 3.14159265358979323846
-
 namespace flexui {
 
+	const float UI_PI = 3.14159265358979323846f;
 	const float UI_EPS = 0.0001f;
 	const int UI_SUBDIVISIONS = 6;
 
@@ -36,8 +35,8 @@ namespace flexui {
 	{
 		if (rect.width < UI_EPS || rect.height < UI_EPS)
 			return; // skip invalid rects
-		//if (color.a < UI_EPS) // TODO
-		//	return; // skip transparent
+		if ((color & 0xFF000000) == 0)
+			return; // skip transparent
 
 		// 0     1
 		// *-----*
@@ -47,13 +46,10 @@ namespace flexui {
 		// *-----*
 		// 2     3
 
-		uint32_t c = color;
-		//c.r = (float)(rand() % 500) / (float)500;
-
-		*m_pVertex = { rect.position,                             UIVec2 { 0, 0 }, c, 0 }; m_pVertex++; // 0
-		*m_pVertex = { rect.position + UIVec2 { rect.width, 0  }, UIVec2 { 0, 0 }, c, 0 }; m_pVertex++; // 1
-		*m_pVertex = { rect.position + UIVec2 { 0, rect.height }, UIVec2 { 0, 0 }, c, 0 }; m_pVertex++; // 2
-		*m_pVertex = { rect.position + rect.size,                 UIVec2 { 0, 0 }, c, 0 }; m_pVertex++; // 3
+		*m_pVertex = { rect.position,                             UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 0
+		*m_pVertex = { rect.position + UIVec2 { rect.width, 0  }, UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 1
+		*m_pVertex = { rect.position + UIVec2 { 0, rect.height }, UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 2
+		*m_pVertex = { rect.position + rect.size,                 UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 3
 
 		*m_pIndex = m_VertexCount + 0; m_pIndex++;
 		*m_pIndex = m_VertexCount + 2; m_pIndex++;
@@ -74,8 +70,8 @@ namespace flexui {
 		}
 
 		const int subdivisions = UI_SUBDIVISIONS;
-		const float stepAngle = 0.5f * (float)FUI_PI / (float)subdivisions; // quarter / subdivisions
-		const float startAngle = 0.5f * (float)FUI_PI * static_cast<int>(corner);
+		const float stepAngle = 0.5f * UI_PI / (float)subdivisions; // quarter / subdivisions
+		const float startAngle = 0.5f * UI_PI * static_cast<int>(corner);
 
 		// Top left reference
 		//          A
@@ -134,8 +130,8 @@ namespace flexui {
 		// outer.y       inner.y
 
 		const int subdivisions = UI_SUBDIVISIONS;
-		const float stepAngle = 0.5f * (float)FUI_PI / (float)subdivisions; // quarter / subdivisions
-		const float startAngle = 0.5f * (float)FUI_PI * static_cast<int>(corner);
+		const float stepAngle = 0.5f * UI_PI / (float)subdivisions; // quarter / subdivisions
+		const float startAngle = 0.5f * UI_PI * static_cast<int>(corner);
 
 		for (int i = 0; i <= subdivisions; i++) {
 			float angle = startAngle + i * stepAngle;

@@ -152,18 +152,64 @@ void create_shader() {
 
 	GL_CHECK(glUseProgram(shader));
 	loc_matrix = glGetUniformLocation(shader, "proj");
+}
 
+static int generated = 0;
+void generate_random_ui(flexui::Element* parent, int depth = 0) {
 	using namespace flexui;
-	// load css
 
+	int num_childs = 0;
+	switch (depth) {
+	case 0: num_childs = 10; break;
+	case 1: num_childs = 3;  break;
+	case 2: num_childs = 5;  break;
+	}
+
+	for (int i = 0; i < num_childs; i++) {
+		Element* child = new Element(); generated++;
+		child->addClass("d" + std::to_string(depth));
+
+		generate_random_ui(child, depth + 1);
+
+		parent->addElement(child, 0);
+	}
+}
+
+void init_ui() {
+	using namespace flexui;
+
+	// load css
 	std::string css_source = R"(
 		* {
-			background-color: red;
+
+		}
+		*:hover {
+			background-color: rgba(255, 165, 0, 0.3);
 		}
 		.test {
 			background-color: orange;
 			width: 50px;
 			height: 50px;
+		}
+
+		.d0, .d1, .d2, .d3 {
+			align-self: center;
+			flex-direction: row;
+			padding: 8px;
+		}
+		.d0, .d2, {
+			flex-direction: row;
+		}
+		.d1, .d3, {
+			flex-direction: column;
+		}
+
+		.d0 { background-color: rgba(255,0,255,0.3); }
+		.d1 { background-color: rgba(255,0,255,0.5); }
+		.d2 { background-color: rgba(255,0,255,0.7); }
+		
+		#root {
+			background-color: transparent;
 		}
 	)";
 	StyleParseResult pr;
@@ -179,7 +225,8 @@ void create_shader() {
 	root->addStyleSheet(ss);
 
 	Element* div = new Element();
-	div->addClass("test");
+	div->addClass("cont");
+	generate_random_ui(div, 0);
 	root->addElement(div);
 }
 
@@ -210,6 +257,8 @@ void init() {
 	glDisable(GL_DEPTH_TEST);
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	//glEnable(GL_SCISSOR_TEST);
+
+	init_ui();
 }
 
 void shutdown() {
@@ -242,6 +291,7 @@ void main_loop() {
 	{
 		using namespace flexui;
 
+		ui_surface->setSize({ (float)width, (float)height });
 		ui_surface->updateTree();
 
 		Painter* p = ui_surface->getPainter();
@@ -285,6 +335,8 @@ int main(int, char**) {
 	const GLubyte* version = glGetString(GL_VERSION);
 	std::cout << "Renderer: " << renderer << std::endl;
 	std::cout << "OpenGL version supported " << version << std::endl;
+
+	void create_shader();
 
 	init();
 
