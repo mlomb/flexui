@@ -18,8 +18,53 @@ using namespace glm;
 #include <flexui/Element.hpp>
 #include <flexui/Surface.hpp>
 #include <flexui/Render/Painter.hpp> // TODO: move structs to another file
+#include <flexui/Providers/TextureProvider.hpp>
+#include <flexui/Providers/ResourceProvider.hpp>
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
+#include <flexui/Elements/Text.hpp>
+
+class TextureProviderImpl : public flexui::TextureProvider {
+public:
+
+	flexui::TextureID create(unsigned int width, unsigned int height) override {
+		GLuint tex;
+		glGenTextures(1, &tex);
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL); // empty texture
+		return (flexui::TextureID)tex;
+	}
+
+	void resize(flexui::TextureID texture, unsigned int width, unsigned int height) override {
+		// TODO: !
+	}
+
+	void store(flexui::TextureID texture, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const void* image) override {
+		GLuint tex = (GLuint)texture;
+
+		glBindTexture(GL_TEXTURE_2D, tex);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	}
+
+	void dispose(flexui::TextureID texture) override {
+		GLuint tex = (GLuint)texture;
+		glDeleteTextures(1, &tex);
+	}
+};
+
+class ResourceProviderImpl : public flexui::ResourceProvider {
+public:
+
+	bool loadFont(const std::string& familyName, void*& data, size_t& size) override {
+		std::cout << "LOAD " << familyName << std::endl;
+		return false;
+	}
+
+};
 
 void CheckOpenGLError(const char* stmt, const char* fname, int line)
 {
@@ -181,7 +226,7 @@ void init_ui() {
 	// load css
 	std::string css_source = R"(
 		* {
-
+			font-family: "Proggy Tiny";
 		}
 		*:hover {
 			background-color: rgba(255, 165, 0, 0.3);
@@ -211,6 +256,12 @@ void init_ui() {
 		#root {
 			background-color: transparent;
 		}
+
+		Text {
+			width: 150px;
+			height: 150px;
+			background-color: rgba(255, 128, 128, 0.3);
+		}
 	)";
 	StyleParseResult pr;
 	StyleSheet* ss = ParseStyleSheet(css_source, pr);
@@ -220,6 +271,9 @@ void init_ui() {
 
 	// init ui
 	ui_surface = new Surface();
+	ui_surface->setResourceProvider(new ResourceProviderImpl());
+	ui_surface->setTextureProvider(new TextureProviderImpl());
+
 	Element* root = ui_surface->getRoot();
 	root->setID("root");
 	root->addStyleSheet(ss);
@@ -227,6 +281,11 @@ void init_ui() {
 	Element* div = new Element();
 	div->addClass("cont");
 	generate_random_ui(div, 0);
+
+	Text* text = new Text();
+	text->setText("Hello World");
+	div->addElement(text);
+
 	root->addElement(div);
 }
 

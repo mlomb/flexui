@@ -6,8 +6,10 @@
 
 namespace flexui {
 
-	Surface::Surface()
-		: m_Size({ 100, 100 })
+	Surface::Surface() :
+		m_Size({ 100, 100 }),
+		m_TextureProvider(nullptr),
+		m_ResourceProvider(nullptr)
 	{
 		m_LayoutUpdater = new LayoutTreeUpdater(this);
 		m_StyleTreeUpdater = new StyleTreeUpdater(this);
@@ -28,16 +30,6 @@ namespace flexui {
 		m_StyleTreeUpdater->process();
 		m_LayoutUpdater->process();
 		m_TreePainter->process();
-	}
-
-	Element* Surface::getRoot() const
-	{
-		return m_Root;
-	}
-
-	void Surface::setSize(const UIVec2& size)
-	{
-		m_Size = size;
 	}
 
 	Element* Surface::findElementsAt(Element* root, const UIVec2& point, std::vector<Element*>* found)
@@ -76,6 +68,36 @@ namespace flexui {
 	Painter* Surface::getPainter() const
 	{
 		return m_TreePainter->getPainter();
+	}
+
+	TextureProvider* Surface::getTextureProvider() const
+	{
+		return m_TextureProvider;
+	}
+
+	ResourceProvider* Surface::getResourceProvider() const
+	{
+		return m_ResourceProvider;
+	}
+
+	Element* Surface::getRoot() const
+	{
+		return m_Root;
+	}
+
+	void Surface::setSize(const UIVec2& size)
+	{
+		m_Size = size;
+	}
+
+	void Surface::setTextureProvider(TextureProvider* provider)
+	{
+		m_TextureProvider = provider;
+	}
+
+	void Surface::setResourceProvider(ResourceProvider* provider)
+	{
+		m_ResourceProvider = provider;
 	}
 
 }

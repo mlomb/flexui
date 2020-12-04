@@ -16,6 +16,12 @@ namespace flexui {
 	class Surface;
 	class Painter;
 
+	enum class MeasureMode {
+		UNDEFINED,
+		EXACTLY,
+		AT_MOST
+	};
+
 	class Element {
 	public:
 		Element();
@@ -42,11 +48,15 @@ namespace flexui {
 		std::string getQualifiedName() const;
 
 		virtual void paintContent(Painter* painter);
+		virtual UIVec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode);
 
 	protected:
 		StyleComputed* m_ComputedStyle;
 
 		void setTag(const std::string& tag);
+
+		void setAsTextType();
+		void enableMeasurement();
 
 	private:
 		friend class Surface;

@@ -99,19 +99,37 @@ namespace flexui {
 		}
 	}
 
-	Element* Element::getParent() const
+	UIVec2 Element::measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode)
 	{
-		return m_Parent;
+		assert(false && "measureContent is not overrided");
+		return { 0, 0 };
 	}
 
-	const std::vector<Element*>& Element::getChildrens() const
-	{
-		return m_Childrens;
+	MeasureMode YogaMeasureModeToMeasureMode(YGMeasureMode mode) {
+		switch (mode)
+		{
+		default:
+		case YGMeasureModeUndefined: return MeasureMode::UNDEFINED;
+		case YGMeasureModeExactly: return MeasureMode::EXACTLY;
+		case YGMeasureModeAtMost: return MeasureMode::AT_MOST;
+		}
 	}
 
-	const std::vector<StyleSheet*>& Element::getStyleSheets() const
+	YGSize YogaMeasureCallback(YGNode* yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
 	{
-		return m_StyleSheets;
+		Element* element_ptr = static_cast<Element*>(yogaNode->getContext());
+		auto size = element_ptr->measureContent(width, YogaMeasureModeToMeasureMode(widthMode), height, YogaMeasureModeToMeasureMode(heightMode));
+		return { size.x, size.y };
+	}
+
+	void Element::setAsTextType()
+	{
+		YGNodeSetMeasureFunc(m_YogaNode, YogaMeasureCallback);
+	}
+
+	void Element::enableMeasurement()
+	{
+		YGNodeSetNodeType(m_YogaNode, YGNodeType::YGNodeTypeText);
 	}
 
 	void Element::setID(const std::string& id)
@@ -144,4 +162,40 @@ namespace flexui {
 		m_StyleSheets.emplace_back(stylesheet);
 	}
 
+	Element* Element::getParent() const
+	{
+		return m_Parent;
+	}
+
+	const std::vector<Element*>& Element::getChildrens() const
+	{
+		return m_Childrens;
+	}
+
+	const std::vector<StyleSheet*>& Element::getStyleSheets() const
+	{
+		return m_StyleSheets;
+	}
+
+	UIRect Element::getBoundingRect() const
+	{
+		return m_BoundingRect;
+	}
+
+	UIRect Element::getContentRect() const
+	{
+		if (!m_ComputedStyle)
+			return m_BoundingRect;
+
+		float l = m_ComputedStyle->paddingLeft.value.number;
+		float t = m_ComputedStyle->paddingTop.value.number;
+		float r = m_ComputedStyle->paddingRight.value.number;
+		float b = m_ComputedStyle->paddingBottom.value.number;
+		return UIRect(
+			m_BoundingRect.x + l,
+			m_BoundingRect.y + t,
+			m_BoundingRect.width - l - r,
+			m_BoundingRect.height - t - b
+		);
+	}
 }
