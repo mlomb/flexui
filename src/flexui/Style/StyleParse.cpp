@@ -10,8 +10,7 @@
 namespace flexui {
 
 	/// Check if the character is a valid start for a CSS identifier
-	inline bool isIdentStart(char c)
-	{
+	inline bool isIdentStart(char c) {
 		return
 			(c >= 'a' && c <= 'z') ||
 			(c >= 'A' && c <= 'Z') ||
@@ -19,20 +18,17 @@ namespace flexui {
 	}
 
 	/// Check if the character is valid for a CSS identifier
-	inline bool isIdent(char c)
-	{
+	inline bool isIdent(char c) {
 		return isIdentStart(c) || (c >= '0' && c <= '9');
 	}
 
 	/// Check if the character is a CSS nesting operator
-	inline bool isNestingOperator(char c)
-	{
+	inline bool isNestingOperator(char c) {
 		return c == '>' || c == '+' || c == '~';
 	}
 
 	/// Check if the character is a CSS selector marker
-	inline bool isSelectorMarker(char c)
-	{
+	inline bool isSelectorMarker(char c) {
 		return c == '*' || c == '#' || c == '.' || c == ':';
 	}
 
@@ -69,15 +65,13 @@ namespace flexui {
 	}
 
 	/// Advances pos until there is no more whitespace
-	void consumeWhiteSpace(const std::string& input, size_t& pos)
-	{
+	void consumeWhiteSpace(const std::string& input, size_t& pos) {
 		while (pos < input.size() && std::isspace(input[pos]))
 			pos++;
 	}
 
 	/// Parses a single CSS identifier from pos
-	std::string parseIdentifier(const std::string& input, size_t& pos)
-	{
+	std::string parseIdentifier(const std::string& input, size_t& pos) {
 		std::string result;
 		while (pos < input.size() && isIdent(input[pos])) {
 			result.push_back(input[pos]);
@@ -280,8 +274,6 @@ namespace flexui {
 	}
 
 	bool parseLength(const std::string& input, StyleLength& output, StyleParseResult& parseResult) {
-
-
 		int pos = 0;
 		if (parseNumber(input, pos, output.number, parseResult)) {
 			// number parsed

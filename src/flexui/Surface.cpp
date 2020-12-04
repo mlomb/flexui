@@ -23,7 +23,7 @@ namespace flexui {
 		delete m_Root;
 	}
 
-	void Surface::updateTree()
+	void Surface::process()
 	{
 		m_StyleTreeUpdater->process();
 		m_LayoutUpdater->process();

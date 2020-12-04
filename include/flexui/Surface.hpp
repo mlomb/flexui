@@ -13,7 +13,7 @@ namespace flexui {
 		Surface();
 		~Surface();
 
-		void updateTree();
+		void process();
 
 		void setSize(const UIVec2& size);
 		Element* findElementsAt(Element* root, const UIVec2& point, std::vector<Element*>* found = nullptr);

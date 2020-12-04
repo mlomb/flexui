@@ -292,7 +292,7 @@ void main_loop() {
 		using namespace flexui;
 
 		ui_surface->setSize({ (float)width, (float)height });
-		ui_surface->updateTree();
+		ui_surface->process();
 
 		Painter* p = ui_surface->getPainter();
 
@@ -335,8 +335,6 @@ int main(int, char**) {
 	const GLubyte* version = glGetString(GL_VERSION);
 	std::cout << "Renderer: " << renderer << std::endl;
 	std::cout << "OpenGL version supported " << version << std::endl;
-
-	void create_shader();
 
 	init();
 
