@@ -431,6 +431,26 @@ namespace flexui {
 		return false;
 	}
 
+	bool parseString(const std::string& input, StyleValue::String& output, StyleParseResult& parseResult)
+	{
+		if (input.size() < 2) // must have at least two quotes
+			return false;
+
+		bool _single = input[0] == '"' || input[input.size() - 1] == '"';
+		bool _double = input[0] == '\'' || input[input.size() - 1] == '\'';
+
+		if (!_single && !_double)
+			return false;
+
+		output.length = input.size() - 2 + 1; // -2 quotes + 1 \0
+		output.data = (char*)malloc(output.length);
+		if (!output.data) return false; // malloc failed
+		memcpy(output.data, input.data() + 1, input.size() - 2);
+		output.data[output.length - 1] = '\0';
+
+		return true;
+	}
+
 	bool ParseStyleProperty(const std::string& name, const std::string& raw_value, StyleRule& rule, StyleParseResult& parseResult)
 	{
 		using ID = StylePropertyID;
@@ -453,6 +473,15 @@ namespace flexui {
 
 		#define LENGTH_PROPERTY(prop_name, prop_id) PARSE_PROP(parseLength, prop_name, prop_id, length);
 		#define COLOR_PROPERTY(prop_name, prop_id) PARSE_PROP(parseColor, prop_name, prop_id, color);
+		
+		#define STRING_PROPERTY(prop_name, prop_id) \
+		case HashStr(prop_name): \
+			if (parseString(raw_value, prop.value.string, parseResult)) { \
+				prop.id = prop_id; \
+				rule.properties.emplace_back(prop); \
+				return true; \
+			} \
+			break;
 
 		#define NUMBER_PROPERTY(prop_name, prop_id) \
 		case HashStr(prop_name): \
@@ -575,6 +604,7 @@ namespace flexui {
 			PARSE_ENUM_ENTRY(display, "none", Display::NONE);
 		PARSE_ENUM_END();
 
+		STRING_PROPERTY("font-family", ID::FONT_FAMILY);
 		LENGTH_PROPERTY("font-size", ID::FONT_SIZE);
 		PARSE_ENUM_START("white-space", ID::WHITE_SPACE);
 			PARSE_ENUM_ENTRY(whiteSpace, "normal", WhiteSpace::NORMAL);
@@ -714,12 +744,18 @@ namespace flexui {
 				}
 
 				// value
+				// TODO: allow for ; and } inside quotes
 				consumeWhiteSpace(source, pos);
 				auto value_end = source.find_first_of(";}", pos);
 				if (value_end == std::string::npos)
 					value_end = source.size() - 1; // to the end
 
-				std::string value = source.substr(pos, value_end - pos);
+				// go back to the first non-space
+				size_t last_non_space = value_end - 1;
+				while (last_non_space > pos && std::isspace(source[last_non_space]))
+					last_non_space--;
+
+				std::string value = source.substr(pos, last_non_space - pos + 1);
 				pos = value_end + 1;
 
 				// OE_LOG_DEBUG("  (property)" << name << ":" << value);

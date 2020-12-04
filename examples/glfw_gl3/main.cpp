@@ -226,7 +226,7 @@ void init_ui() {
 	// load css
 	std::string css_source = R"(
 		* {
-			font-family: "Proggy Tiny";
+			font-family:      "Proggy   Tiny"       ;
 		}
 		*:hover {
 			background-color: rgba(255, 165, 0, 0.3);

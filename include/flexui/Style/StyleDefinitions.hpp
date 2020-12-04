@@ -64,6 +64,7 @@ namespace flexui {
 		OVERFLOW,
 		DISPLAY,
 
+		FONT_FAMILY,
 		FONT_SIZE,
 		WHITE_SPACE,
 
@@ -167,8 +168,12 @@ namespace flexui {
 	typedef UIColor StyleColor;
 
 	struct StyleValue {
+		struct String { // TODO: make sure this doesn't leak! (probably it does)
+			char* data;
+			int8_t length;
+		};
 		union {
-			char* string;
+			String string;
 			StyleNumber number;
 			StyleLength length;
 			StyleColor color;
