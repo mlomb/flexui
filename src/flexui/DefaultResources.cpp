@@ -3,6 +3,7 @@
 namespace flexui {
 
     // TODO: find a smaller font!
+    // .\binary_to_compressed_c.exe -nocompress Monoid-Regular.woff MonoidRegular > out.txt
     // File: 'Monoid-Regular.woff' (35320 bytes)
     // Exported using binary_to_compressed_c.cpp (https://github.com/ocornut/imgui/blob/master/misc/fonts/binary_to_compressed_c.cpp)
     static const unsigned int MonoidRegular_size = 35320;
