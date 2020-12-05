@@ -4,6 +4,9 @@
 #include <cassert>
 #include <algorithm>
 
+#include <flexui/Render/Font.hpp>
+#include <flexui/Render/DynamicAtlas.hpp>
+
 namespace flexui {
 
 	const float UI_PI = 3.14159265358979323846f;
@@ -14,12 +17,13 @@ namespace flexui {
 		return fabs(a - b) < UI_EPS;
 	}
 
-	Painter::Painter() :
+	Painter::Painter(TextureProvider* textureProvider) :
 		m_pVertex(NULL),
 		m_pIndex(NULL),
 		m_VertexCount(0),
 		m_IndexCount(0)
 	{
+		m_Atlas = new DynamicAtlas(textureProvider);
 		m_BaseVertex = (UIVertex*)malloc(5000 * sizeof(UIVertex));
 		m_BaseIndex = (UIIndex*)malloc(5000 * sizeof(UIIndex));
 		reset();
@@ -31,7 +35,7 @@ namespace flexui {
 		delete m_BaseIndex;
 	}
 
-	void Painter::drawRectangle(const UIRect& rect, const UIColor color)
+	void Painter::drawRectangle(const Rect& rect, const Color color)
 	{
 		if (rect.width < UI_EPS || rect.height < UI_EPS)
 			return; // skip invalid rects
@@ -46,10 +50,10 @@ namespace flexui {
 		// *-----*
 		// 2     3
 
-		*m_pVertex = { rect.position,                             UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 0
-		*m_pVertex = { rect.position + UIVec2 { rect.width, 0  }, UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 1
-		*m_pVertex = { rect.position + UIVec2 { 0, rect.height }, UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 2
-		*m_pVertex = { rect.position + rect.size,                 UIVec2 { 0, 0 }, color, 0 }; m_pVertex++; // 3
+		*m_pVertex = { rect.position,                           Vec2 { 0, 0 }, color, 0 }; m_pVertex++; // 0
+		*m_pVertex = { rect.position + Vec2 { rect.width, 0  }, Vec2 { 0, 0 }, color, 0 }; m_pVertex++; // 1
+		*m_pVertex = { rect.position + Vec2 { 0, rect.height }, Vec2 { 0, 0 }, color, 0 }; m_pVertex++; // 2
+		*m_pVertex = { rect.position + rect.size,               Vec2 { 0, 0 }, color, 0 }; m_pVertex++; // 3
 
 		*m_pIndex = m_VertexCount + 0; m_pIndex++;
 		*m_pIndex = m_VertexCount + 2; m_pIndex++;
@@ -62,7 +66,7 @@ namespace flexui {
 		m_VertexCount += 4;
 	}
 
-	void Painter::drawRoundedCorner(const UIVec2& center, const UIVec2& radii, const Corner corner, const UIColor color)
+	void Painter::drawRoundedCorner(const Vec2& center, const Vec2& radii, const Corner corner, const Color color)
 	{
 		if (radii.x < UI_EPS || radii.y < UI_EPS) {
 			// No radius, nothing to do
@@ -87,12 +91,12 @@ namespace flexui {
 		// * = a offset
 
 		int centerIndex = m_VertexCount;
-		*m_pVertex = { center, UIVec2(0, 0), color, 0 }; m_pVertex++; // C
+		*m_pVertex = { center, Vec2(0, 0), color, 0 }; m_pVertex++; // C
 		m_VertexCount += 1;
 
 		for (int i = 0; i <= subdivisions; i++) {
 			float angle = startAngle + i * stepAngle;
-			UIVec2 offset = radii * UIVec2 { cosf(angle), -sinf(angle) };
+			Vec2 offset = radii * Vec2 { cosf(angle), -sinf(angle) };
 
 			*m_pVertex = { center + offset, { 0, 0 }, color, 0 }; m_pVertex++;
 			m_VertexCount++;
@@ -108,7 +112,7 @@ namespace flexui {
 		}
 	}
 
-	void Painter::drawRoundedCornerCarved(const UIVec2& center, const UIVec2& outerRadii, const UIVec2& innerRadii, const Corner corner, const UIColor color)
+	void Painter::drawRoundedCornerCarved(const Vec2& center, const Vec2& outerRadii, const Vec2& innerRadii, const Corner corner, const Color color)
 	{
 		if (innerRadii.x < UI_EPS || innerRadii.y < UI_EPS) {
 			drawRoundedCorner(center, outerRadii, corner, color);
@@ -136,9 +140,9 @@ namespace flexui {
 		for (int i = 0; i <= subdivisions; i++) {
 			float angle = startAngle + i * stepAngle;
 
-			UIVec2 offset = { cosf(angle), -sinf(angle) };
-			UIVec2 out = outerRadii * offset;
-			UIVec2 in = innerRadii * offset;
+			Vec2 offset = { cosf(angle), -sinf(angle) };
+			Vec2 out = outerRadii * offset;
+			Vec2 in = innerRadii * offset;
 
 			*m_pVertex = { center + out, { 0, 0 }, color, 0 }; m_pVertex++;
 			*m_pVertex = { center + in, { 0, 0 }, color, 0 }; m_pVertex++;
@@ -158,13 +162,13 @@ namespace flexui {
 		}
 	}
 
-	void Painter::drawRoundedRectangle(const UIRect& rect, const UIColor color, const RoundedRectParams& params)
+	void Painter::drawRoundedRectangle(const Rect& rect, const Color color, const RoundedRectParams& params)
 	{
-		const UIVec2 halfSize = rect.size * 0.5f;
-		const UIVec2& topLeftRadii = UIVec2::Min(params.cornerRadii[0], halfSize);
-		const UIVec2& topRightRadii = UIVec2::Min(params.cornerRadii[1], halfSize);
-		const UIVec2& bottomRightRadii = UIVec2::Min(params.cornerRadii[2], halfSize);
-		const UIVec2& bottomLeftRadii = UIVec2::Min(params.cornerRadii[3], halfSize);
+		const Vec2 halfSize = rect.size * 0.5f;
+		const Vec2& topLeftRadii = Vec2::Min(params.cornerRadii[0], halfSize);
+		const Vec2& topRightRadii = Vec2::Min(params.cornerRadii[1], halfSize);
+		const Vec2& bottomRightRadii = Vec2::Min(params.cornerRadii[2], halfSize);
+		const Vec2& bottomLeftRadii = Vec2::Min(params.cornerRadii[3], halfSize);
 
 		const float maxLeftRadii = std::max(topLeftRadii.x, bottomLeftRadii.x);
 		const float minLeftRadii = std::min(topLeftRadii.x, bottomLeftRadii.x);
@@ -186,10 +190,10 @@ namespace flexui {
 		//  * BL /  |        |  \BR  *
 		//    * /   |        |   \ *
 		//     *____|________|__ *
-		const UIVec2 topRightCorner = rect.position + UIVec2(rect.size.x - topRightRadii.x, topRightRadii.y); // A
-		const UIVec2 topLeftCorner = rect.position + topLeftRadii; // B
-		const UIVec2 bottomLeftCorner = rect.position + UIVec2(bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y); // C
-		const UIVec2 bottomRightCorner = rect.position + rect.size - bottomRightRadii; // D
+		const Vec2 topRightCorner = rect.position + Vec2(rect.size.x - topRightRadii.x, topRightRadii.y); // A
+		const Vec2 topLeftCorner = rect.position + topLeftRadii; // B
+		const Vec2 bottomLeftCorner = rect.position + Vec2(bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y); // C
+		const Vec2 bottomRightCorner = rect.position + rect.size - bottomRightRadii; // D
 
 		drawRoundedCorner(topRightCorner, topRightRadii, Corner::TOP_RIGHT, color);
 		drawRoundedCorner(topLeftCorner, topLeftRadii, Corner::TOP_LEFT, color);
@@ -244,40 +248,40 @@ namespace flexui {
 		//     *____|________|
 
 		// center
-		drawRectangle(UIRect(rect.x + maxLeftRadii, rect.y, rect.width - maxLeftRadii - maxRightRadii, rect.height), color);
+		drawRectangle(Rect(rect.x + maxLeftRadii, rect.y, rect.width - maxLeftRadii - maxRightRadii, rect.height), color);
 
 		// ---------- left side ----------
 
 		// A (is the same for 1, 2, 3)
-		drawRectangle(UIRect(rect.x, rect.y + topLeftRadii.y, minLeftRadii, rect.height - topLeftRadii.y - bottomLeftRadii.y), color);
+		drawRectangle(Rect(rect.x, rect.y + topLeftRadii.y, minLeftRadii, rect.height - topLeftRadii.y - bottomLeftRadii.y), color);
 
 		if (almostEqual(topLeftRadii.x, bottomLeftRadii.x)) { } // (1)
 		else if(topLeftRadii.x > bottomLeftRadii.x) { // (2)
 			// B
-			drawRectangle(UIRect(rect.x + minLeftRadii, rect.y + topLeftRadii.y, maxLeftRadii - minLeftRadii, rect.height - topLeftRadii.y), color);
+			drawRectangle(Rect(rect.x + minLeftRadii, rect.y + topLeftRadii.y, maxLeftRadii - minLeftRadii, rect.height - topLeftRadii.y), color);
 		}
 		else { // (3)
 			// B
-			drawRectangle(UIRect(rect.x + minLeftRadii, rect.y, maxLeftRadii - minLeftRadii, rect.height - bottomLeftRadii.y), color);
+			drawRectangle(Rect(rect.x + minLeftRadii, rect.y, maxLeftRadii - minLeftRadii, rect.height - bottomLeftRadii.y), color);
 		}
 
 		// ---------- right side ----------
 
 		// A (is the same for 1, 2, 3)
-		drawRectangle(UIRect(rect.x + rect.width - minRightRadii, rect.y + topRightRadii.y, minRightRadii, rect.height - topRightRadii.y - bottomRightRadii.y), color);
+		drawRectangle(Rect(rect.x + rect.width - minRightRadii, rect.y + topRightRadii.y, minRightRadii, rect.height - topRightRadii.y - bottomRightRadii.y), color);
 
 		if (almostEqual(topRightRadii.x, bottomRightRadii.x)) {} // (1)
 		else if (topRightRadii.x > bottomRightRadii.x) { // (2)
 			// B
-			drawRectangle(UIRect(rect.x + rect.width - maxRightRadii, rect.y + topRightRadii.y, maxRightRadii - minRightRadii, rect.height - topRightRadii.y), color);
+			drawRectangle(Rect(rect.x + rect.width - maxRightRadii, rect.y + topRightRadii.y, maxRightRadii - minRightRadii, rect.height - topRightRadii.y), color);
 		}
 		else { // (3)
 			// B
-			drawRectangle(UIRect(rect.x + rect.width - maxRightRadii, rect.y, maxRightRadii - minRightRadii, rect.height - bottomRightRadii.y), color);
+			drawRectangle(Rect(rect.x + rect.width - maxRightRadii, rect.y, maxRightRadii - minRightRadii, rect.height - bottomRightRadii.y), color);
 		}
 	}
 
-	void Painter::drawRoundedBorders(const UIRect& rect, const UIColor color, const RoundedBordersParams& params)
+	void Painter::drawRoundedBorders(const Rect& rect, const Color color, const RoundedBordersParams& params)
 	{
 		//    __--------------__   
 		//   *  |            |  *  
@@ -290,11 +294,11 @@ namespace flexui {
 		//  *   |      C     |   * 
 		//   *__|____________|__* 
 		
-		const UIVec2 halfSize = rect.size * 0.5f;
-		const UIVec2& topLeftRadii     = UIVec2::Min(params.rectParams.cornerRadii[0], halfSize);
-		const UIVec2& topRightRadii    = UIVec2::Min(params.rectParams.cornerRadii[1], halfSize);
-		const UIVec2& bottomRightRadii = UIVec2::Min(params.rectParams.cornerRadii[2], halfSize);
-		const UIVec2& bottomLeftRadii  = UIVec2::Min(params.rectParams.cornerRadii[3], halfSize);
+		const Vec2 halfSize = rect.size * 0.5f;
+		const Vec2& topLeftRadii     = Vec2::Min(params.rectParams.cornerRadii[0], halfSize);
+		const Vec2& topRightRadii    = Vec2::Min(params.rectParams.cornerRadii[1], halfSize);
+		const Vec2& bottomRightRadii = Vec2::Min(params.rectParams.cornerRadii[2], halfSize);
+		const Vec2& bottomLeftRadii  = Vec2::Min(params.rectParams.cornerRadii[3], halfSize);
 
 		const float leftWidth   = params.widths[0];
 		const float topWidth    = params.widths[1];
@@ -302,13 +306,13 @@ namespace flexui {
 		const float bottomWidth = params.widths[3];
 
 		// A
-		drawRectangle(UIRect(rect.x + topLeftRadii.x, rect.y, rect.width - topLeftRadii.x - topRightRadii.x, topWidth), color);
+		drawRectangle(Rect(rect.x + topLeftRadii.x, rect.y, rect.width - topLeftRadii.x - topRightRadii.x, topWidth), color);
 		// C
-		drawRectangle(UIRect(rect.x + bottomLeftRadii.x, rect.y + rect.height - bottomWidth, rect.width - bottomLeftRadii.x - bottomRightRadii.x, bottomWidth), color);
+		drawRectangle(Rect(rect.x + bottomLeftRadii.x, rect.y + rect.height - bottomWidth, rect.width - bottomLeftRadii.x - bottomRightRadii.x, bottomWidth), color);
 		// B
-		drawRectangle(UIRect(rect.x, rect.y + topLeftRadii.y, leftWidth, rect.height - topLeftRadii.y - bottomLeftRadii.y), color);
+		drawRectangle(Rect(rect.x, rect.y + topLeftRadii.y, leftWidth, rect.height - topLeftRadii.y - bottomLeftRadii.y), color);
 		// D
-		drawRectangle(UIRect(rect.x + rect.width - rightWidth, rect.y + topRightRadii.y, rightWidth, rect.height - topRightRadii.y - bottomRightRadii.y), color);
+		drawRectangle(Rect(rect.x + rect.width - rightWidth, rect.y + topRightRadii.y, rightWidth, rect.height - topRightRadii.y - bottomRightRadii.y), color);
 		
 		/*
 			From https://drafts.csswg.org/css-backgrounds-3/#corner-shaping:
@@ -323,15 +327,15 @@ namespace flexui {
 			(handled in drawRoundedCornerCarved, which fall back to drawRoundedCorner)
 		*/
 
-		const UIVec2 topRightCorner = rect.position + UIVec2(rect.size.x - topRightRadii.x, topRightRadii.y); // A
-		const UIVec2 topLeftCorner = rect.position + topLeftRadii; // B
-		const UIVec2 bottomLeftCorner = rect.position + UIVec2(bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y); // C
-		const UIVec2 bottomRightCorner = rect.position + rect.size - bottomRightRadii; // D
+		const Vec2 topRightCorner = rect.position + Vec2(rect.size.x - topRightRadii.x, topRightRadii.y); // A
+		const Vec2 topLeftCorner = rect.position + topLeftRadii; // B
+		const Vec2 bottomLeftCorner = rect.position + Vec2(bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y); // C
+		const Vec2 bottomRightCorner = rect.position + rect.size - bottomRightRadii; // D
 
-		const UIVec2 topLeftInnerRadii = topLeftRadii - UIVec2(leftWidth, topWidth);
-		const UIVec2 topRightInnerRadii = topRightRadii - UIVec2(rightWidth, topWidth);
-		const UIVec2 bottomLeftInnerRadii = bottomLeftRadii - UIVec2(leftWidth, bottomWidth);
-		const UIVec2 bottomRightInnerRadii = bottomRightRadii - UIVec2(rightWidth, bottomWidth);
+		const Vec2 topLeftInnerRadii = topLeftRadii - Vec2(leftWidth, topWidth);
+		const Vec2 topRightInnerRadii = topRightRadii - Vec2(rightWidth, topWidth);
+		const Vec2 bottomLeftInnerRadii = bottomLeftRadii - Vec2(leftWidth, bottomWidth);
+		const Vec2 bottomRightInnerRadii = bottomRightRadii - Vec2(rightWidth, bottomWidth);
 
 		drawRoundedCornerCarved(topLeftCorner, topLeftRadii, topLeftInnerRadii, Corner::TOP_LEFT, color);
 		drawRoundedCornerCarved(topRightCorner, topRightRadii, topRightInnerRadii, Corner::TOP_RIGHT, color);
@@ -360,60 +364,48 @@ namespace flexui {
 		m_IndexCount = 0;
 	}
 
-	/*
-	void Painter::drawText(const Graphics::TextLayout& textLayout, const UIVec2& position, const UIColor color)
+	void Painter::drawText(Font* font, const TextLayout& textLayout, const Vec2& position, const Color color)
 	{
-		using namespace OrbitEngine::Graphics;
-
-		if (textLayout.glyphs.size() == 0 || !textLayout.font)
+		if (textLayout.glyphs.size() == 0)
 			return;
 
 		// the texture is POT
 		const float texelSize = 1.0f / (float)m_Atlas->getSize();
 
-		BitmapRGBA bitmap;
-		const UIVec2 base_pos(position.x, position.y);
-		Math::Recti rect;
+		const Vec2 base_pos(position.x, position.y);
+		Rect rect;
 
 		for (const TextLayout::GlyphInstance& gi : textLayout.glyphs) {
-			DynamicAtlas::Index idx = textLayout.settings.size + gi.codepoint * 1000; // TODO: include font as hash
+			DynamicAtlas::Index idx = gi.codepoint; // TODO: correct hashes
 
 			if (!m_Atlas->tryGet(idx, rect)) {
 				// new glyph
-				GlyphMetrics metrics;
-				if (!textLayout.font->getGlyph(gi.codepoint, textLayout.settings.size, GlyphRenderMode::GRAY, bitmap, metrics)) {
-					OE_LOG_DEBUG("Can't get Glyph!");
-					continue;
-				}
-
-				if (bitmap.valid()) {
-					Texture* glyph_tex = bitmap.toTexture();
-					if (!m_Atlas->add(idx, rect, glyph_tex)) {
-						OE_ASSERT_MSG(false, "Can't add Glyph to atlas!");
+				unsigned char* data;
+				unsigned int w, h;
+				if (font->renderGlyph(gi.codepoint, textLayout.style, data, w, h)) {
+					if (!m_Atlas->add(idx, w, h, data, w * h * 4, rect)) {
+						// std::cerr << "Can't add Glyph to atlas!" << std::endl;
 						continue;
 					}
-					m_DestroyAfterCommitingAtlas.push_back(glyph_tex);
 				}
 				else {
-					OE_ASSERT(false);
+					// std::cerr << "Can't render Glyph!" << std::endl;
+					continue;
 				}
 			}
 
-			const UIVec2 pos = base_pos + UIVec2(gi.rect.x, gi.rect.y);
-			const UIVec2 size = UIVec2(gi.rect.width, gi.rect.height);
+			const Vec2 pos = base_pos + Vec2(gi.x, gi.y);
+			const Vec2 size = Vec2(gi.w, gi.h);
 
-			float u0 = texelSize * rect.x;
-			float v0 = texelSize * rect.y;
-			float u1 = texelSize * (rect.x + rect.width);
-			float v1 = texelSize * (rect.y + rect.height);
+			const float u0 = texelSize * rect.x;
+			const float v0 = texelSize * rect.y;
+			const float u1 = texelSize * (rect.x + rect.width);
+			const float v1 = texelSize * (rect.y + rect.height);
 
-			v0 = 1.0f - v0;
-			v1 = 1.0f - v1;
-
-			*m_pVertex = { pos,                          color, UIVec2(u0, v1), 1 }; m_pVertex++;
-			*m_pVertex = { pos + UIVec2(0, size.y), color, UIVec2(u0, v0), 1 }; m_pVertex++;
-			*m_pVertex = { pos + size,                   color, UIVec2(u1, v0), 1 }; m_pVertex++;
-			*m_pVertex = { pos + UIVec2(size.x, 0), color, UIVec2(u1, v1), 1 }; m_pVertex++;
+			*m_pVertex = { pos,                   Vec2(u0, v0), color, 1 }; m_pVertex++;
+			*m_pVertex = { pos + Vec2(0, size.y), Vec2(u0, v1), color, 1 }; m_pVertex++;
+			*m_pVertex = { pos + size,            Vec2(u1, v1), color, 1 }; m_pVertex++;
+			*m_pVertex = { pos + Vec2(size.x, 0), Vec2(u1, v0), color, 1 }; m_pVertex++;
 
 			*m_pIndex = m_VertexCount + 0; m_pIndex++;
 			*m_pIndex = m_VertexCount + 1; m_pIndex++;
@@ -426,21 +418,4 @@ namespace flexui {
 			m_VertexCount += 4;
 		}
 	}
-	*/
-
-	/*
-	void Painter::end()
-	{
-		m_Atlas->commit();
-
-		// destroy temporal textures
-		for (Graphics::Texture* tex : m_DestroyAfterCommitingAtlas)
-			delete tex;
-		m_DestroyAfterCommitingAtlas.clear();
-
-		// unmap
-		// states
-		// draw m_IndexCount
-	}
-	*/
 }

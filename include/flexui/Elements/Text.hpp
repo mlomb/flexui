@@ -1,8 +1,14 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include <flexui/Element.hpp>
 
 namespace flexui {
+
+	struct UIVertex;
+
 	/// Text UI element
 	class Text : public Element {
 	public:
@@ -14,7 +20,9 @@ namespace flexui {
 	private:
 		std::string m_Text;
 
+		std::vector<UIVertex> m_TextVerts;
+
 		void paintContent(Painter* painter) override;
-		UIVec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) override;
+		Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) override;
 	};
 }

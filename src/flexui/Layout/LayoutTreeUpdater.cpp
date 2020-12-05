@@ -40,7 +40,7 @@ namespace flexui {
 	{
 		YGNodeRef yogaNode = element->m_YogaNode;
 
-		UIRect layoutRect = {
+		Rect layoutRect = {
 			YGNodeLayoutGetLeft(yogaNode), YGNodeLayoutGetTop(yogaNode),
 			YGNodeLayoutGetWidth(yogaNode), YGNodeLayoutGetHeight(yogaNode)
 		};
@@ -56,7 +56,7 @@ namespace flexui {
 
 			// TODO: trigger size change
 		}
-		element->m_BoundingRect.position = element->m_Parent ? element->m_Parent->m_BoundingRect.position : UIVec2{ 0, 0 };
+		element->m_BoundingRect.position = element->m_Parent ? element->m_Parent->m_BoundingRect.position : Vec2{ 0, 0 };
 		element->m_BoundingRect.position += layoutRect.position;
 		element->m_BoundingRect.size = layoutRect.size;
 

@@ -3,14 +3,18 @@
 #include <stdint.h>
 
 #include "flexui/Math.hpp"
+#include "flexui/Render/Font.hpp"
 
 namespace flexui {
 
+	class TextureProvider;
+	class DynamicAtlas;
+
 	typedef uint16_t UIIndex;
 	struct UIVertex {
-		UIVec2 pos;
-		UIVec2 uv;
-		UIColor color; // AABBGGRR
+		Vec2 pos;
+		Vec2 uv;
+		Color color; // AABBGGRR
 		float flags;
 	};
 
@@ -22,7 +26,7 @@ namespace flexui {
 	};
 
 	struct RoundedRectParams {
-		UIVec2 cornerRadii[4];
+		Vec2 cornerRadii[4];
 	};
 	struct RoundedBordersParams {
 		RoundedRectParams rectParams;
@@ -32,16 +36,15 @@ namespace flexui {
 	// TODO: move from immediate to retained eventually
 	class Painter {
 	public:
-		Painter();
+		Painter(TextureProvider* textureProvider);
 		~Painter();
 
-		void drawRectangle(const UIRect& rect, const UIColor color);
-		void drawRoundedCorner(const UIVec2& center, const UIVec2& radii, const Corner corner, const UIColor color);
-		void drawRoundedCornerCarved(const UIVec2& center, const UIVec2& outerRadii, const UIVec2& innerRadii, const Corner corner, const UIColor color);
-		void drawRoundedRectangle(const UIRect& rect, const UIColor color, const RoundedRectParams& params);
-		void drawRoundedBorders(const UIRect& rect, const UIColor color, const RoundedBordersParams& params);
-
-		// void drawText(const Graphics::TextLayout& textLayout, const UIVec2& position, const UIColor color);
+		void drawRectangle(const Rect& rect, const Color color);
+		void drawRoundedCorner(const Vec2& center, const Vec2& radii, const Corner corner, const Color color);
+		void drawRoundedCornerCarved(const Vec2& center, const Vec2& outerRadii, const Vec2& innerRadii, const Corner corner, const Color color);
+		void drawRoundedRectangle(const Rect& rect, const Color color, const RoundedRectParams& params);
+		void drawRoundedBorders(const Rect& rect, const Color color, const RoundedBordersParams& params);
+		void drawText(Font* font, const TextLayout& textLayout, const Vec2& position, const Color color);
 
 		// TODO: all of these must be removed
 		void reset();
@@ -58,6 +61,8 @@ namespace flexui {
 
 		UIVertex* m_BaseVertex;
 		UIIndex* m_BaseIndex;
+
+		DynamicAtlas* m_Atlas;
 
 	private:
 		friend class TreePainter;

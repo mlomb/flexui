@@ -165,7 +165,7 @@ namespace flexui {
 		StyleLengthUnit unit;
 	};
 
-	typedef UIColor StyleColor;
+	typedef Color StyleColor;
 
 	struct StyleValue {
 		struct String { // TODO: make sure this doesn't leak! (probably it does)

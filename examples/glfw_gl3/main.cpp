@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <cassert>
 
 #ifdef __EMSCRIPTEN__
@@ -31,19 +31,42 @@ public:
 		GLuint tex;
 		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL); // empty texture
 		return (flexui::TextureID)tex;
 	}
 
-	void resize(flexui::TextureID texture, unsigned int width, unsigned int height) override {
-		// TODO: !
+	flexui::TextureID resize(flexui::TextureID src_tex, unsigned int oldWidth, unsigned int oldHeight, unsigned int newWidth, unsigned int newHeight) override {
+		flexui::TextureID dst_tex = create(newWidth, newHeight);
+
+		// TODO: find a better/faster way to do this?
+
+		GLuint fboIds[2];
+		glGenFramebuffers(2, fboIds);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, fboIds[0]);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fboIds[1]);
+
+		glFramebufferTexture2D(GL_READ_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, (GLuint)src_tex, 0);
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, (GLuint)dst_tex, 0);
+
+		glBlitFramebuffer(
+			0, 0, oldWidth, oldHeight,
+			0, 0, oldWidth, oldHeight,
+			GL_COLOR_BUFFER_BIT,
+			GL_NEAREST
+		);
+
+		glDeleteFramebuffers(2, fboIds);
+
+		// destroy old texture, no longer needed
+		dispose(src_tex);
+
+		return dst_tex;
 	}
 
-	void store(flexui::TextureID texture, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const void* image) override {
+	void store(flexui::TextureID texture, unsigned int x, unsigned int y, unsigned int width, unsigned int height, const unsigned char* image) override {
 		GLuint tex = (GLuint)texture;
 
 		glBindTexture(GL_TEXTURE_2D, tex);
@@ -59,9 +82,28 @@ public:
 class ResourceProviderImpl : public flexui::ResourceProvider {
 public:
 
-	bool loadFont(const std::string& familyName, void*& data, size_t& size) override {
-		std::cout << "LOAD " << familyName << std::endl;
-		return false;
+	bool loadFont(const std::string& familyName, unsigned char*& data, size_t& size) override {
+		std::cout << "Loading font \"" << familyName << "\"" << std::endl;
+
+		// TODO: change, copied from somewhere during testing
+		FILE* fileptr;
+		char* buffer;
+		long filelen;
+
+		fileptr = fopen(/*"monoid-regular-webfont.woff"*/"monoid-regular-webfont.woff", "rb");
+		if (!fileptr) return false;
+		fseek(fileptr, 0, SEEK_END);
+		filelen = ftell(fileptr);
+		rewind(fileptr);
+
+		buffer = (char*)malloc(filelen * sizeof(char)); // Enough memory for the file
+		fread(buffer, filelen, 1, fileptr); // Read in the entire file
+		fclose(fileptr); // Close the file
+
+		data = (unsigned char*)buffer;
+		size = filelen;
+
+		return true;
 	}
 
 };
@@ -120,14 +162,17 @@ void create_shader() {
 		attribute vec2 in_position;
 		attribute vec2 in_uv;
 		attribute vec4 in_color;
+		attribute float in_flags;
 
 		varying vec2 var_uv;
 		varying vec4 var_color;
+		varying float var_flags;
 
 		void main() {
 		    gl_Position = proj * vec4(in_position.xy, 0, 1);
 		    var_color = in_color;
 		    var_uv = in_uv;
+			var_flags = in_flags;
 		}
 	)";
 
@@ -139,10 +184,17 @@ void create_shader() {
 
 		varying vec2 var_uv;
 		varying vec4 var_color;
+		varying float var_flags;
 
 		void main()
 		{
-			gl_FragColor = var_color;
+			gl_FragColor = var_color; // flags = 0 (only color)
+
+			if(var_flags > 1.5) { // flags = 2 (full texture)
+				gl_FragColor = texture2D(atlas, var_uv);
+			} else if(var_flags > 0.5) { // flags = 1 (text)
+				gl_FragColor = vec4(var_color.rgb, texture2D(atlas, var_uv).r * var_color.a);
+			}
 		}
 	)";
 	#else
@@ -153,14 +205,17 @@ void create_shader() {
 		in vec2 in_position;
 		in vec2 in_uv;
 		in vec4 in_color;
+		in float in_flags;
 
 		out vec2 var_uv;
 		out vec4 var_color;
+		out float var_flags;
 
 		void main() {
 		    gl_Position = proj * vec4(in_position.xy, 0, 1);
 		    var_color = in_color;
 		    var_uv = in_uv;
+			var_flags = in_flags;
 		}
 	)";
 
@@ -170,12 +225,19 @@ void create_shader() {
 
 		in vec2 var_uv;
 		in vec4 var_color;
+		in float var_flags;
 
 		out vec4 out_color;
 
 		void main()
 		{
-			out_color = var_color;
+			out_color = var_color; // flags = 0 (only color)
+
+			if(var_flags > 1.5) { // flags = 2 (full texture)
+				out_color = texture(atlas, var_uv);
+			} else if(var_flags > 0.5) { // flags = 1 (text)
+				out_color = vec4(var_color.rgb, texture(atlas, var_uv).r * var_color.a);
+			}
 		}
 	)";
 	#endif
@@ -226,7 +288,8 @@ void init_ui() {
 	// load css
 	std::string css_source = R"(
 		* {
-			font-family:      "Proggy   Tiny"       ;
+			font-family: "default";
+			font-size: 40px;
 		}
 		*:hover {
 			background-color: rgba(255, 165, 0, 0.3);
@@ -260,6 +323,7 @@ void init_ui() {
 		Text {
 			width: 150px;
 			height: 150px;
+			min-width: 150px;
 			background-color: rgba(255, 128, 128, 0.3);
 		}
 	)";
@@ -270,9 +334,7 @@ void init_ui() {
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
 
 	// init ui
-	ui_surface = new Surface();
-	ui_surface->setResourceProvider(new ResourceProviderImpl());
-	ui_surface->setTextureProvider(new TextureProviderImpl());
+	ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());
 
 	Element* root = ui_surface->getRoot();
 	root->setID("root");
@@ -283,7 +345,7 @@ void init_ui() {
 	generate_random_ui(div, 0);
 
 	Text* text = new Text();
-	text->setText("Hello World");
+	text->setText(u8"El veloz murciélago comía feliz cardillo y quiwi. 1234567890");
 	div->addElement(text);
 
 	root->addElement(div);
@@ -291,6 +353,9 @@ void init_ui() {
 
 void init() {
 	create_shader();
+
+	// glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	// glPixelStorei(GL_PACK_ALIGNMENT, 1);
 
 	GL_CHECK(glGenVertexArrays(1, &vao));
 	GL_CHECK(glGenBuffers(1, &vbo));
@@ -302,12 +367,15 @@ void init() {
 	GLuint vtx_pos = (GLuint)glGetAttribLocation(shader, "in_position");
 	GLuint vtx_uv = (GLuint)glGetAttribLocation(shader, "in_uv");
 	GLuint vtx_col = (GLuint)glGetAttribLocation(shader, "in_color");
+	GLuint vtx_flags = (GLuint)glGetAttribLocation(shader, "in_flags");
 	GL_CHECK(glEnableVertexAttribArray(vtx_pos));
 	GL_CHECK(glEnableVertexAttribArray(vtx_uv));
 	GL_CHECK(glEnableVertexAttribArray(vtx_col));
+	GL_CHECK(glEnableVertexAttribArray(vtx_flags));
 	GL_CHECK(glVertexAttribPointer(vtx_pos, 2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, pos)));
 	GL_CHECK(glVertexAttribPointer(vtx_uv,  2,         GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, uv)));
 	GL_CHECK(glVertexAttribPointer(vtx_col, 4, GL_UNSIGNED_BYTE,  GL_TRUE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, color)));
+	GL_CHECK(glVertexAttribPointer(vtx_flags, 1,       GL_FLOAT, GL_FALSE, sizeof(flexui::UIVertex), (GLvoid*)offsetof(flexui::UIVertex, flags)));
 
 	glEnable(GL_BLEND);
 	glBlendEquation(GL_FUNC_ADD);

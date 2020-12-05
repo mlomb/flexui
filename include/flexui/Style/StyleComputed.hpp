@@ -62,6 +62,7 @@ namespace flexui {
 		StyleValueComputed<Overflow> overflow;
 		StyleValueComputed<Display> display;
 
+		StyleValueComputed<StyleValue::String> fontFamily;
 		StyleValueComputed<StyleLength> fontSize;
 		StyleValueComputed<WhiteSpace> whiteSpace;
 
@@ -151,7 +152,11 @@ namespace flexui {
 		
 		SET_ENUM(overflow, Overflow::VISIBLE);
 		SET_ENUM(display, Display::FLEX);
-		
+
+		defaults.fontFamily.inherited = true;
+		defaults.fontFamily.populated = true;
+		defaults.fontFamily.value.data = nullptr;
+		defaults.fontFamily.value.length = 0;
 		SET_LENGTH(fontSize, 14, StyleLengthUnit::PIXELS);
 		SET_ENUM(whiteSpace, WhiteSpace::NORMAL);
 

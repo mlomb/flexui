@@ -40,15 +40,15 @@ namespace flexui {
 		Element* getParent() const;
 		const std::vector<Element*>& getChildrens() const;
 		const std::vector<StyleSheet*>& getStyleSheets() const;
-		UIRect getBoundingRect() const;
-		UIRect getContentRect() const;
+		Rect getBoundingRect() const;
+		Rect getContentRect() const;
 		bool isVisible() const;
 		int getDepth() const;
 		Surface* getSurface() const;
 		std::string getQualifiedName() const;
 
 		virtual void paintContent(Painter* painter);
-		virtual UIVec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode);
+		virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode);
 
 	protected:
 		StyleComputed* m_ComputedStyle;
@@ -77,8 +77,8 @@ namespace flexui {
 		StyleRule m_InlineRules;
 
 		YGNode* m_YogaNode;
-		UIRect m_LayoutRect;
-		UIRect m_BoundingRect;
+		Rect m_LayoutRect;
+		Rect m_BoundingRect;
 
 		Surface* m_Surface;
 	};

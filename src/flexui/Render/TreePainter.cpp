@@ -9,7 +9,7 @@ namespace flexui {
 	TreePainter::TreePainter(Surface* surface)
 		: TreeProcessor(surface)
 	{
-		m_Painter = new Painter();
+		m_Painter = new Painter(surface->getTextureProvider());
 	}
 
 	TreePainter::~TreePainter()

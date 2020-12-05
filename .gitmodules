@@ -10,3 +10,6 @@
 [submodule "examples/libs/glm"]
 	path = examples/libs/glm
 	url = https://github.com/g-truc/glm.git
+[submodule "deps/freetype2"]
+	path = deps/freetype2
+	url = git://git.sv.nongnu.org/freetype/freetype2.git

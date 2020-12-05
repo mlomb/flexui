@@ -442,7 +442,7 @@ namespace flexui {
 		if (!_single && !_double)
 			return false;
 
-		output.length = input.size() - 2 + 1; // -2 quotes + 1 \0
+		output.length = (int8_t)(input.size() - 2 + 1); // -2 quotes + 1 \0
 		output.data = (char*)malloc(output.length);
 		if (!output.data) return false; // malloc failed
 		memcpy(output.data, input.data() + 1, input.size() - 2);

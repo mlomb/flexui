@@ -99,7 +99,7 @@ namespace flexui {
 		}
 	}
 
-	UIVec2 Element::measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode)
+	Vec2 Element::measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode)
 	{
 		assert(false && "measureContent is not overrided");
 		return { 0, 0 };
@@ -177,12 +177,12 @@ namespace flexui {
 		return m_StyleSheets;
 	}
 
-	UIRect Element::getBoundingRect() const
+	Rect Element::getBoundingRect() const
 	{
 		return m_BoundingRect;
 	}
 
-	UIRect Element::getContentRect() const
+	Rect Element::getContentRect() const
 	{
 		if (!m_ComputedStyle)
 			return m_BoundingRect;
@@ -191,11 +191,16 @@ namespace flexui {
 		float t = m_ComputedStyle->paddingTop.value.number;
 		float r = m_ComputedStyle->paddingRight.value.number;
 		float b = m_ComputedStyle->paddingBottom.value.number;
-		return UIRect(
+		return Rect(
 			m_BoundingRect.x + l,
 			m_BoundingRect.y + t,
 			m_BoundingRect.width - l - r,
 			m_BoundingRect.height - t - b
 		);
+	}
+
+	Surface* Element::getSurface() const
+	{
+		return m_Surface;
 	}
 }
