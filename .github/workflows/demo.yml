@@ -28,7 +28,7 @@ jobs:
         run: |
             mkdir build-emscripten
             cd build-emscripten
-            emcmake cmake ..
+            emcmake cmake .. -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: make glfw_gl3
         working-directory: build-emscripten
