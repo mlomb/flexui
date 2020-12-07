@@ -24,8 +24,8 @@ namespace flexui {
 		m_IndexCount(0)
 	{
 		m_Atlas = new DynamicAtlas(textureProvider);
-		m_BaseVertex = (UIVertex*)malloc(5000 * sizeof(UIVertex));
-		m_BaseIndex = (UIIndex*)malloc(5000 * sizeof(UIIndex));
+		m_BaseVertex = (UIVertex*)malloc(50000 * sizeof(UIVertex));
+		m_BaseIndex = (UIIndex*)malloc(50000 * sizeof(UIIndex));
 		reset();
 	}
 
@@ -371,19 +371,25 @@ namespace flexui {
 
 		// the texture is POT
 		const float texelSize = 1.0f / (float)m_Atlas->getSize();
+		const unsigned int fontId = font->getID();
 
 		const Vec2 base_pos(position.x, position.y);
 		Rect rect;
 
 		for (const TextLayout::GlyphInstance& gi : textLayout.glyphs) {
-			DynamicAtlas::Index idx = gi.codepoint; // TODO: correct hashes
+			DynamicAtlas::Index idx = fontId * 0x10FFFF + gi.codepoint; // TODO: correct hashes
+
+			if (gi.w == 0)
+				continue; // a space, a tab
 
 			if (!m_Atlas->tryGet(idx, rect)) {
 				// new glyph
 				unsigned char* data;
 				unsigned int w, h;
-				if (font->renderGlyph(gi.codepoint, textLayout.style, data, w, h)) {
-					if (!m_Atlas->add(idx, w, h, data, w * h * 4, rect)) {
+				if (font->rasterizeGlyph(gi.codepoint, textLayout.style, data, w, h)) {
+					bool success = m_Atlas->add(idx, w, h, data, w * h * 4, rect);
+					free(data); // TODO: use smart pointers
+					if (!success) {
 						// std::cerr << "Can't add Glyph to atlas!" << std::endl;
 						continue;
 					}
@@ -402,10 +408,12 @@ namespace flexui {
 			const float u1 = texelSize * (rect.x + rect.width);
 			const float v1 = texelSize * (rect.y + rect.height);
 
-			*m_pVertex = { pos,                   Vec2(u0, v0), color, 1 }; m_pVertex++;
-			*m_pVertex = { pos + Vec2(0, size.y), Vec2(u0, v1), color, 1 }; m_pVertex++;
-			*m_pVertex = { pos + size,            Vec2(u1, v1), color, 1 }; m_pVertex++;
-			*m_pVertex = { pos + Vec2(size.x, 0), Vec2(u1, v0), color, 1 }; m_pVertex++;
+			const float flags = gi.has_colors ? 2 : 1;
+
+			*m_pVertex = { pos,                   Vec2(u0, v0), color, flags }; m_pVertex++;
+			*m_pVertex = { pos + Vec2(0, size.y), Vec2(u0, v1), color, flags }; m_pVertex++;
+			*m_pVertex = { pos + size,            Vec2(u1, v1), color, flags }; m_pVertex++;
+			*m_pVertex = { pos + Vec2(size.x, 0), Vec2(u1, v0), color, flags }; m_pVertex++;
 
 			*m_pIndex = m_VertexCount + 0; m_pIndex++;
 			*m_pIndex = m_VertexCount + 1; m_pIndex++;

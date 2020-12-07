@@ -5,6 +5,7 @@
 
 #include <yoga/YGEnums.h>
 #include "flexui/Math.hpp"
+#include "flexui/Render/Font.hpp"
 
 // weird macros
 #undef RELATIVE
@@ -64,6 +65,7 @@ namespace flexui {
 		OVERFLOW,
 		DISPLAY,
 
+		TEXT_ALIGN, // TODO: !
 		FONT_FAMILY,
 		FONT_SIZE,
 		WHITE_SPACE,
@@ -183,6 +185,7 @@ namespace flexui {
 			FlexWrap wrap;
 			Align align;
 			Justify justify;
+			TextAlign textAlign;
 			WhiteSpace whiteSpace;
 			Display display;
 			Overflow overflow;

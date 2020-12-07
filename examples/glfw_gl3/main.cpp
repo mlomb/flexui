@@ -1,4 +1,4 @@
-﻿#include <iostream>
+#include <iostream>
 #include <cassert>
 
 #ifdef __EMSCRIPTEN__
@@ -90,7 +90,7 @@ public:
 		char* buffer;
 		long filelen;
 
-		fileptr = fopen(/*"monoid-regular-webfont.woff"*/"monoid-regular-webfont.woff", "rb");
+		fileptr = fopen(familyName.c_str(), "rb");
 		if (!fileptr) return false;
 		fseek(fileptr, 0, SEEK_END);
 		filelen = ftell(fileptr);
@@ -288,8 +288,8 @@ void init_ui() {
 	// load css
 	std::string css_source = R"(
 		* {
-			font-family: "default";
-			font-size: 40px;
+			/*font-family: "default";*/
+			font-size: 24px;
 		}
 		*:hover {
 			background-color: rgba(255, 165, 0, 0.3);
@@ -321,10 +321,15 @@ void init_ui() {
 		}
 
 		Text {
-			width: 150px;
-			height: 150px;
+			/*width: 150px;
+			height: 150px;*/
 			min-width: 150px;
 			background-color: rgba(255, 128, 128, 0.3);
+		}
+		.emoji-font {
+			/*font-family: "emojis";*/
+			font-size: 24px;
+			background-color: rgba(255, 128, 128, 0.5);
 		}
 	)";
 	StyleParseResult pr;
@@ -345,10 +350,24 @@ void init_ui() {
 	generate_random_ui(div, 0);
 
 	Text* text = new Text();
-	text->setText(u8"El veloz murciélago comía feliz cardillo y quiwi. 1234567890");
+	//text->setText("El veloz murciélago comía feliz cardillo y quiwi. 1234567890");
 	div->addElement(text);
 
+	Text* text2 = new Text();
+	text2->m_FontNameTEST = "TwemojiMozilla.ttf";
+	text2->addClass("emoji-font");
+	div->addElement(text2);
+
+	Text* text3 = new Text();
+	text3->m_FontNameTEST = "seguiemj.ttf";
+	text3->addClass("emoji-font");
+	div->addElement(text3);
+
 	root->addElement(div);
+
+	text->setTextToAllGlyphsTEST();
+	text2->setTextToAllGlyphsTEST();
+	text3->setTextToAllGlyphsTEST();
 }
 
 void init() {

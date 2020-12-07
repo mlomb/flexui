@@ -6,12 +6,17 @@
 #include "flexui/Surface.hpp"
 #include "flexui/Render/Painter.hpp"
 
+#include <locale>
+#include <codecvt>
+#include <cassert>
+
 namespace flexui {
 	Text::Text() : Element()
 	{
 		enableMeasurement();
 		setAsTextType();
 		setTag("Text");
+		m_FontNameTEST = "default";
 	}
 
 	Text::~Text()
@@ -23,6 +28,27 @@ namespace flexui {
 		m_Text = text;
 	}
 
+	void Text::setTextToAllGlyphsTEST()
+	{
+		std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);
+		std::vector<GlyphCodepoint> glyphs;
+		font.get()->getAvailableGlyphs(glyphs);
+		std::string s;
+		int i = 0;
+		for (GlyphCodepoint& c : glyphs) {
+			std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> converter;
+			std::string u8str = converter.to_bytes(c);
+			for (int j = 0; j < u8str.size(); j++) {
+				if (u8str[j] == 0) {
+					break;
+				}
+				s.push_back(u8str[j]);
+			}
+			i++;
+		}
+		m_Text = s;
+	}
+
 	void Text::paintContent(Painter* painter)
 	{
 		// draw background
@@ -31,24 +57,21 @@ namespace flexui {
 		if (m_Text.size() == 0)
 			return;
 
-		// TODO!
-		// m_ComputedStyle->fontFamily.value;
-		std::string fontFamily = "default";
-		std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(fontFamily);
+		std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);
 
 		if (font == nullptr)
 			return;
 
 		auto box = getContentRect();
 
-		TextStyle textStyle;
-		textStyle.size = m_ComputedStyle->fontSize.value.number; // TODO: units
-
 		TextLayoutSettings layoutSettings;
-		layoutSettings.wordWrap = true;
-		layoutSettings.wordWrapWidth = box.width;
+		layoutSettings.style.size = m_ComputedStyle->fontSize.value.number; // TODO: units
+		layoutSettings.wordWrap = false;
+		layoutSettings.maxWidth = box.width;
 
-		painter->drawText(font.get(), font->generateTextLayout(m_Text, textStyle, layoutSettings, false), box.position, m_ComputedStyle->color.value);
+		TextLayout layout;
+		font->generateTextLayout(m_Text, layoutSettings, layout);
+		painter->drawText(font.get(), layout, box.position, m_ComputedStyle->color.value);
 	}
 
 	Vec2 Text::measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode)
@@ -58,23 +81,26 @@ namespace flexui {
 		float measuredWidth = NAN; // NAN from corecrt_math.h
 		float measuredHeight = NAN;
 
-		std::string fontFamily = "Proggy Tiny";
-		std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(fontFamily);
+		std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);
 
 		if (font == nullptr || m_Text.size() == 0)
 			return Vec2(measuredWidth, measuredHeight);
 
-		TextStyle textStyle;
-		textStyle.size = m_ComputedStyle->fontSize.value.number; // TODO: units
+		TextLayout layout;
+
+		TextLayoutSettings layoutSettings;
+		layoutSettings.skip_glyphs = true; // we don't need each glyph
+		layoutSettings.style.size = m_ComputedStyle->fontSize.value.number; // TODO: units
+		layoutSettings.wordWrap = false;
 
 		if (widthMode == MeasureMode::EXACTLY) {
 			measuredWidth = width;
 		}
 		else {
-			TextLayoutSettings layoutSettings;
-			layoutSettings.wordWrap = false;
+			layoutSettings.maxWidth = 0; // no max
 
-			measuredWidth = std::ceil(font->generateTextLayout(m_Text, textStyle, layoutSettings, true).width);
+			font->generateTextLayout(m_Text, layoutSettings, layout);
+			measuredWidth = std::ceil(layout.width);
 
 			if (widthMode == MeasureMode::AT_MOST)
 				measuredWidth = std::min(measuredWidth, width);
@@ -85,10 +111,10 @@ namespace flexui {
 		}
 		else {
 			TextLayoutSettings layoutSettings;
-			layoutSettings.wordWrap = false;
-			layoutSettings.wordWrapWidth = measuredWidth;
+			layoutSettings.maxWidth = measuredWidth;
 
-			measuredWidth = std::ceil(font->generateTextLayout(m_Text, textStyle, layoutSettings, true).height);
+			font->generateTextLayout(m_Text, layoutSettings, layout);
+			measuredWidth = std::ceil(layout.height);
 
 			if (heightMode == MeasureMode::AT_MOST)
 				measuredHeight = std::min(measuredHeight, height);

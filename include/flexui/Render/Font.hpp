@@ -4,7 +4,7 @@
 #include <vector>
 #include <unordered_map>
 
-/* Forward defs */
+/* Forward defs to avoid including FreeType */
 struct FT_LibraryRec_;
 typedef FT_LibraryRec_* FT_Library;
 struct FT_FaceRec_;
@@ -12,75 +12,115 @@ typedef FT_FaceRec_* FT_Face;
 
 namespace flexui {
 	/// Unicode codepoint
-	typedef unsigned int GlyphCodepoint;
-	/// Font sizes specified in pixels
+	typedef uint32_t GlyphCodepoint;
+
+	/// Font size specified in pixels
 	typedef unsigned int FontSize;
 
-	/**
-		@brief Single glyph metrics
-		[Details](https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html)
-		@image html glyph-metrics.png "Glyph metrics"
-	*/
-	struct GlyphMetrics {
-		int width, height;
-		int H_advance, H_bearingX, H_bearingY;
-		int V_advance, V_bearingX, V_bearingY;
-		bool valid;
+	/// Text alignment
+	enum class TextAlign
+	{
+		LEFT,
+		CENTER,
+		RIGHT,
+		JUSTIFY
 	};
 
-	struct TextStyle {
-		FontSize size;
-		bool bold, italic;
+	/// Text style
+	struct TextStyle
+	{
+		FontSize size = 12;
+		bool bold = false, italic = false;
 	};
 
-	struct TextLayoutSettings {
-		bool wordWrap;
-		int wordWrapWidth;
+	struct TextLayoutSettings
+	{
+		TextStyle style = { };
+		TextAlign align = TextAlign::LEFT;
+		bool wordWrap = true;
+		// 0 means no max
+		int maxWidth = 0;
+		/// enable this flag if you don't need to
+		/// generate every glyph position
+		/// (useful if you only need the bounds)
+		bool skip_glyphs = false;
 	};
 
-	struct TextLayout {
-		struct GlyphInstance {
+	struct TextLayout
+	{
+		/// A single glyph positioned in the layout
+		struct GlyphInstance
+		{
 			GlyphCodepoint codepoint;
 			int x, y, w, h;
-			int index; // original index in string
+			// original char index in string
+			// (first byte of the codepoint)
+			int index;
+			bool has_colors;
 		};
 
-		std::vector<GlyphInstance> glyphs;
 		int width, height;
 		TextStyle style;
+		std::vector<GlyphInstance> glyphs;
 	};
 
-	class Font {
+	/**
+		@brief Single glyph description
+		[For metrics details](https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html)
+	*/
+	struct GlyphDescription
+	{
+		bool valid;
+		bool has_colors;
+		int width, height;
+		int advance;
+		int bearingX, bearingY;
+	};
+
+	/// Represents a single typeface
+	class Font
+	{
 	public:
+		/// Load a font file from memory
+		static Font* LoadFromMemory(const void* data, const size_t size);
+
 		~Font();
 
-		/// Load a font file from memory
-		static Font* LoadFromMemory(const unsigned char* data, const size_t size);
+		///  Returns all available codepoint in the font
+		void getAvailableGlyphs(std::vector<GlyphCodepoint>& glyphs) const;
 
 		/// Retrieve the metrics of a Glyph
-		bool getGlyphMetrics(GlyphCodepoint codepoint, const TextStyle& style, GlyphMetrics& metrics);
+		bool getGlyphDescription(GlyphCodepoint codepoint, const TextStyle& style, GlyphDescription& description);
 
 		/// Render a Glyph to RGBA format
-		bool renderGlyph(GlyphCodepoint codepoint, const TextStyle& style, unsigned char*& data, unsigned int& width, unsigned int& height);
+		bool rasterizeGlyph(GlyphCodepoint codepoint, const TextStyle& style, unsigned char*& data, unsigned int& width, unsigned int& height);
 
 		/// Generate the layout of a given text
-		TextLayout generateTextLayout(const std::string& text, const TextStyle& textStyle, const TextLayoutSettings& layoutSettings, bool skip_glyphs = false);
+		void generateTextLayout(const std::string& utf8_text, const TextLayoutSettings& layoutSettings, TextLayout& layout);
+
+		/// Return the instance counter for this font
+		/// Useful for caching
+		unsigned int getID() const;
 
 	private:
 		static FT_Library s_FT_Library;
 
-		Font(FT_Face face);
+		Font(FT_Face face, unsigned int id);
+
+		/// font counter
+		unsigned int m_ID;
 
 		/// handle to the freetype face
 		FT_Face m_Face;
 
-		/// internal function to set the current freetype pixel sizes
-		bool setSize(FontSize size);
-		/// cache the selected size to prevent calling freetype multiple times
-		FontSize m_CurrentSize;
+		/// set the current freetype pixel sizes
+		bool setCurrentSize(FontSize pixel_height) const;
 
-		typedef uint64_t GlyphHash; // codepoint + size
-		std::unordered_map<GlyphHash, GlyphMetrics> m_MetricsCache;
+		/// load a glyph to the face slot
+		bool loadGlyph(GlyphCodepoint codepoint, FontSize pixel_height, int load_flags);
+
+		typedef uint32_t GlyphHash; // codepoint + size + styles
+		std::unordered_map<GlyphHash, GlyphDescription> m_DescriptionCache;
 	};
 
 }
