@@ -3,30 +3,37 @@
 #include "flexui/Layout/LayoutTreeUpdater.hpp"
 #include "flexui/Style/StyleTreeUpdater.hpp"
 #include "flexui/Render/TreePainter.hpp"
+#include "flexui/Events/EventsController.hpp"
 
 namespace flexui {
 
-	Surface::Surface(ResourceProvider* rp, TextureProvider* tp) :
-		m_Size({ 100, 100 }),
-		m_TextureProvider(tp),
-		m_ResourceProvider(rp)
-	{
-		m_LayoutUpdater = new LayoutTreeUpdater(this);
-		m_StyleTreeUpdater = new StyleTreeUpdater(this);
-		m_TreePainter = new TreePainter(this);
+    Surface::Surface(ResourceProvider* rp, TextureProvider* tp)
+        : m_Size({ 100, 100 })
+        , m_TextureProvider(tp)
+        , m_ResourceProvider(rp)
+    {
+        m_LayoutUpdater = new LayoutTreeUpdater(this);
+        m_StyleTreeUpdater = new StyleTreeUpdater(this);
+        m_TreePainter = new TreePainter(this);
+        m_EventsController = new EventsController(this);
 
-		m_Root = new Element();
-		m_Root->m_Depth = 1;
-		m_Root->m_Surface = this;
-	}
+        m_Root = new Element();
+        m_Root->m_Depth = 1;
+        m_Root->m_Surface = this;
+    }
 
 	Surface::~Surface()
-	{
+    {
+		delete m_LayoutUpdater;
+        delete m_StyleTreeUpdater;
+        delete m_TreePainter;
+        delete m_EventsController;
 		delete m_Root;
 	}
 
 	void Surface::process()
 	{
+		m_EventsController->process();
 		m_StyleTreeUpdater->process();
 		m_LayoutUpdater->process();
 		m_TreePainter->process();
@@ -34,7 +41,6 @@ namespace flexui {
 
 	Element* Surface::findElementsAt(Element* root, const Vec2& point, std::vector<Element*>* found)
 	{
-		/*
 		if (!root->isVisible())
 			return nullptr;
 
@@ -55,7 +61,6 @@ namespace flexui {
 			return root;
 		}
 
-		*/
 		// no hit
 		return nullptr;
 	}
@@ -78,7 +83,12 @@ namespace flexui {
 	ResourceProvider* Surface::getResourceProvider() const
 	{
 		return m_ResourceProvider;
-	}
+    }
+
+    EventsController* Surface::getEventsController() const
+    {
+        return m_EventsController;
+    }
 
 	Element* Surface::getRoot() const
 	{

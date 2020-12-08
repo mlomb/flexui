@@ -23,6 +23,7 @@ using namespace glm;
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
 #include <flexui/Elements/Text.hpp>
+#include <flexui/Events/EventsController.hpp>
 
 class TextureProviderImpl : public flexui::TextureProvider {
 public:
@@ -291,9 +292,6 @@ void init_ui() {
 			/*font-family: "default";*/
 			font-size: 24px;
 		}
-		*:hover {
-			background-color: rgba(255, 165, 0, 0.3);
-		}
 		.test {
 			background-color: orange;
 			width: 50px;
@@ -331,6 +329,9 @@ void init_ui() {
 			font-size: 24px;
 			background-color: rgba(255, 128, 128, 0.5);
 		}
+		*:hover {
+			background-color: rgba(255, 0, 255, 0.05);
+		}
 	)";
 	StyleParseResult pr;
 	StyleSheet* ss = ParseStyleSheet(css_source, pr);
@@ -340,6 +341,15 @@ void init_ui() {
 
 	// init ui
 	ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());
+
+    glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
+		ui_surface->getEventsController()->sendMouseMove({ (float)xpos, (float)ypos });
+	});
+	glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        ui_surface->getEventsController()->sendMouseButton(button, action == GLFW_PRESS, { (float)xpos, (float)ypos });
+	});
 
 	Element* root = ui_surface->getRoot();
 	root->setID("root");

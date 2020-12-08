@@ -42,6 +42,10 @@ namespace flexui {
 
 		inline bool operator==(const Rect& b) const { return x == b.x && y == b.y && width == b.width && height == b.height; }
 		inline bool operator!=(const Rect& b) const { return x != b.x || y != b.y || width != b.width || height != b.height; }
+
+		inline bool contains(const Vec2& point) const {
+            return point.x >= x && point.y >= y && point.x <= x + width && point.y <= y + height;
+		}
 	};
 
 	typedef uint32_t Color;

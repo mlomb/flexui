@@ -7,6 +7,7 @@ namespace flexui {
 	class LayoutTreeUpdater;
 	class StyleTreeUpdater;
 	class TreePainter;
+    class EventsController;
 
 	class TextureProvider;
 	class ResourceProvider;
@@ -27,6 +28,7 @@ namespace flexui {
 		Painter* getPainter() const;
 		TextureProvider* getTextureProvider() const;
 		ResourceProvider* getResourceProvider() const;
+		EventsController* getEventsController() const;
 
 	private:
 		Element* m_Root;
@@ -36,7 +38,8 @@ namespace flexui {
 
 		LayoutTreeUpdater* m_LayoutUpdater;
 		StyleTreeUpdater* m_StyleTreeUpdater;
-		TreePainter* m_TreePainter;
+        TreePainter* m_TreePainter;
+        EventsController* m_EventsController;
 
 		Vec2 m_Size;
 	};

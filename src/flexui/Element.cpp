@@ -3,6 +3,7 @@
 #include "flexui/Layout/Yoga.hpp"
 #include "flexui/Render/Painter.hpp"
 #include "flexui/Style/StyleComputed.hpp"
+#include "flexui/Events/Events.hpp"
 
 namespace flexui {
 
@@ -103,7 +104,25 @@ namespace flexui {
 	{
 		assert(false && "measureContent is not overrided");
 		return { 0, 0 };
-	}
+    }
+
+    void Element::executeDefault(EventBase* evt)
+    {
+        switch (evt->type) {
+        case EventTypeID::MOUSE_ENTER:
+            setPseudoStates(StylePseudoStates::HOVER);
+            break;
+        case EventTypeID::MOUSE_LEAVE:
+            removePseudoStates(StylePseudoStates::HOVER);
+            break;
+        case EventTypeID::CAPTURE_IN:
+            setPseudoStates(StylePseudoStates::ACTIVE);
+            break;
+        case EventTypeID::CAPTURE_OUT:
+            removePseudoStates(StylePseudoStates::ACTIVE);
+            break;
+        }
+    }
 
 	MeasureMode YogaMeasureModeToMeasureMode(YGMeasureMode mode) {
 		switch (mode)
@@ -162,6 +181,16 @@ namespace flexui {
 		m_StyleSheets.emplace_back(stylesheet);
 	}
 
+    void Element::setPseudoStates(const StylePseudoStates states)
+    {
+        m_PseudoStates |= states;
+    }
+
+    void Element::removePseudoStates(const StylePseudoStates states)
+    {
+        m_PseudoStates &= ~states;
+    }
+
 	Element* Element::getParent() const
 	{
 		return m_Parent;
@@ -197,10 +226,20 @@ namespace flexui {
 			m_BoundingRect.width - l - r,
 			m_BoundingRect.height - t - b
 		);
-	}
+    }
 
-	Surface* Element::getSurface() const
-	{
-		return m_Surface;
-	}
+    bool Element::isVisible() const
+    {
+        return m_ComputedStyle && m_ComputedStyle->display.value == Display::FLEX;
+    }
+
+	int Element::getDepth() const
+    {
+        return m_Depth;
+    }
+
+    Surface* Element::getSurface() const
+    {
+        return m_Surface;
+    }
 }

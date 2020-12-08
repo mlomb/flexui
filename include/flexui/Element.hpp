@@ -14,7 +14,8 @@ namespace flexui {
 	class StyleSheet;
 	struct StyleComputed;
 	class Surface;
-	class Painter;
+    class Painter;
+    class EventBase;
 
 	enum class MeasureMode {
 		UNDEFINED,
@@ -48,7 +49,8 @@ namespace flexui {
 		std::string getQualifiedName() const;
 
 		virtual void paintContent(Painter* painter);
-		virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode);
+        virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode);
+        virtual void executeDefault(EventBase* evt);
 
 	protected:
 		StyleComputed* m_ComputedStyle;
