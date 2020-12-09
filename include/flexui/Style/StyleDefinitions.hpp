@@ -76,13 +76,6 @@ namespace flexui {
 		LAST_PROPERTY_INVALID
 	};
 
-	typedef uint32_t StyleHash;
-
-	constexpr const StyleHash HashStr(const char* str, const int i = 0) {
-		// TODO: maybe find a better hash
-		return str[i] ? (HashStr(str, i + 1) * 33) ^ str[i] : 5381;
-	}
-
 	enum class Position {
 		RELATIVE = YGPositionType::YGPositionTypeRelative,
 		ABSOLUTE = YGPositionType::YGPositionTypeAbsolute
@@ -228,7 +221,7 @@ namespace flexui {
 	struct StyleIdentifier {
 		StyleIdentifierType type;
 		std::string text;
-		StyleHash text_hash;
+		StrHash text_hash;
 
 		void computeHash() { text_hash = HashStr(text.c_str()); }
 		bool operator==(const StyleIdentifier& oth) const { return type == oth.type && text_hash == oth.text_hash; }

@@ -63,7 +63,7 @@ namespace flexui {
 
     void StyleSelectorMatcher::FindMatches(Element* element, std::vector<StyleSheet*>& sheets, std::vector<SelectorMatch>& matches)
     {
-        const StyleHash empty_id = HashStr("");
+        const StrHash empty_id = HashStr("");
 
         SelectorMatch match;
 

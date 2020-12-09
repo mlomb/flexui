@@ -2,6 +2,8 @@
 
 #include "Element.hpp"
 
+#include "flexui/Style/StyleDefinitions.hpp"
+
 namespace flexui {
 
 	class LayoutTreeUpdater;
@@ -28,7 +30,8 @@ namespace flexui {
 		Painter* getPainter() const;
 		TextureProvider* getTextureProvider() const;
 		ResourceProvider* getResourceProvider() const;
-		EventsController* getEventsController() const;
+        EventsController* getEventsController() const;
+        StyleCursor getCurrentCusor() const;
 
 	private:
 		Element* m_Root;

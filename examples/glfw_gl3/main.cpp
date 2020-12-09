@@ -23,7 +23,9 @@ using namespace glm;
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
 #include <flexui/Elements/Text.hpp>
+#include <flexui/Elements/Button.hpp>
 #include <flexui/Events/EventsController.hpp>
+#include <flexui/Structure/XMLParse.hpp>
 
 class TextureProviderImpl : public flexui::TextureProvider {
 public:
@@ -129,6 +131,7 @@ void CheckOpenGLError(const char* stmt, const char* fname, int line)
 #endif
 
 GLFWwindow* window = nullptr;
+GLFWcursor* cursor_pointer;
 static bool main_loop_running = false;
 
 GLuint vbo, ibo, vao;
@@ -332,12 +335,46 @@ void init_ui() {
 		*:hover {
 			background-color: rgba(255, 0, 255, 0.05);
 		}
+
+		Button {
+			color: #D9D9D9;
+			background-color: #656565;
+			padding-left: 3px;
+			padding-top: 0;
+			padding-right: 3px;
+			padding-bottom: 1px;
+			border-color: #242424;
+			border-width: 1px;
+			border-radius: 3px;
+			cursor: pointer;
+		}
+		Button:hover {
+			background-color: #828282;
+		}
+		Button:active {
+			background-color: orange;
+		}
+
 	)";
 	StyleParseResult pr;
 	StyleSheet* ss = ParseStyleSheet(css_source, pr);
 
 	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
+
+	std::string xml_source = R"(
+		<Element>
+			<Button><Text>Hello world</Text></Button>
+			<Button>Alone</Button>
+			<Button>Outer<Text>Inner</Text></Button>
+			<Text>Hello world1</Text>
+			<Text>Hello world2</Text>
+			<Text>Hello world3</Text>
+		</Element>
+	)";
+
+	XMLParseResult pr2;
+    Element* loaded = ParseXML(xml_source, pr2);
 
 	// init ui
 	ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());
@@ -355,6 +392,7 @@ void init_ui() {
 	root->setID("root");
 	root->addStyleSheet(ss);
 
+
 	Element* div = new Element();
 	div->addClass("cont");
 	generate_random_ui(div, 0);
@@ -362,6 +400,12 @@ void init_ui() {
 	Text* text = new Text();
 	//text->setText("El veloz murciélago comía feliz cardillo y quiwi. 1234567890");
 	div->addElement(text);
+
+    Button* btn1 = new Button();
+    Text* btn1_txt = new Text();
+    btn1_txt->setText("Press me =)");
+    btn1->addElement(btn1_txt);
+    div->addElement(btn1);
 
 	Text* text2 = new Text();
 	text2->m_FontNameTEST = "TwemojiMozilla.ttf";
@@ -373,11 +417,12 @@ void init_ui() {
 	text3->addClass("emoji-font");
 	div->addElement(text3);
 
+    root->addElement(loaded);
 	root->addElement(div);
 
 	text->setTextToAllGlyphsTEST();
-	text2->setTextToAllGlyphsTEST();
-	text3->setTextToAllGlyphsTEST();
+	//text2->setTextToAllGlyphsTEST();
+	//text3->setTextToAllGlyphsTEST();
 }
 
 void init() {
@@ -450,6 +495,18 @@ void main_loop() {
 		ui_surface->setSize({ (float)width, (float)height });
 		ui_surface->process();
 
+		auto cursor = ui_surface->getCurrentCusor();
+        switch (cursor) {
+        default:
+        case StyleCursor::AUTO:
+        case StyleCursor::DEFAULT:
+            glfwSetCursor(window, NULL);
+            break;
+        case StyleCursor::POINTER:
+            glfwSetCursor(window, cursor_pointer);
+            break;
+        }
+
 		Painter* p = ui_surface->getPainter();
 
 		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));
@@ -475,6 +532,8 @@ int main(int, char**) {
 	}
 
 	glfwMakeContextCurrent(window);
+
+    cursor_pointer = glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR);
 
 	#ifndef __EMSCRIPTEN__
 	if (glewInit() != GLEW_OK) {

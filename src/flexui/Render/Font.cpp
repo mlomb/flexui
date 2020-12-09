@@ -241,7 +241,7 @@ namespace flexui {
                 bool is_whitespace = code == ' ' || code == '\t';
                 bool should_wrap = false;
 
-                if (layoutSettings.maxWidth > 0) {
+                if (layoutSettings.maxWidth > 0 && last_whitespace_i != i) {
                     if (is_whitespace) {
                         // keep track of whitespaces
                         last_whitespace_i = i;

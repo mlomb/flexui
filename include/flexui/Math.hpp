@@ -49,4 +49,12 @@ namespace flexui {
 	};
 
 	typedef uint32_t Color;
+
+    typedef uint32_t StrHash;
+
+    constexpr const StrHash HashStr(const char* str, const int i = 0)
+    {
+        // TODO: maybe find a better hash
+        return str[i] ? (HashStr(str, i + 1) * 33) ^ str[i] : 5381;
+    }
 }

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdarg.h>
-
 // TODO: more robust logging, flags, etc
 
 #ifndef NDEBUG
@@ -18,15 +16,7 @@
 	#define FUI_BREAK do { } while (0)
 #endif
 
-void fui_log(const char* severity, const char* format, ...)
-{
-	va_list ap;
-	va_start(ap, format);
-	printf("[%s] ", severity);
-	vfprintf(stdout, format, ap);
-	printf("\n");
-	va_end(ap);
-}
+void fui_log(const char* severity, const char* format, ...);
 
 #ifdef FUI_DEBUG
 	#define FUI_LOG(severity, x, ...) do { fui_log(severity, x, __VA_ARGS__); } while(0)

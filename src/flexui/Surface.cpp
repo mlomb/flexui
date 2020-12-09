@@ -1,6 +1,8 @@
 #include "flexui/Surface.hpp"
 
+#include "flexui/Element.hpp"
 #include "flexui/Layout/LayoutTreeUpdater.hpp"
+#include "flexui/Style/StyleComputed.hpp"
 #include "flexui/Style/StyleTreeUpdater.hpp"
 #include "flexui/Render/TreePainter.hpp"
 #include "flexui/Events/EventsController.hpp"
@@ -64,6 +66,12 @@ namespace flexui {
 		// no hit
 		return nullptr;
 	}
+
+    StyleCursor Surface::getCurrentCusor() const
+	{
+        Element* underCursor = m_EventsController->getElementOverMouse();
+        return underCursor ? underCursor->m_ComputedStyle->cursor.value : StyleCursor::AUTO;
+    }
 
 	Vec2 Surface::getSize() const
 	{

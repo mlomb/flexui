@@ -21,7 +21,7 @@ namespace flexui {
 
 		friend class StyleSelectorMatcher;
 
-		typedef std::unordered_map<StyleHash, std::vector<StyleSelector*>> IdentifierLookupTable;
+		typedef std::unordered_map<StrHash, std::vector<StyleSelector*>> IdentifierLookupTable;
 
 		IdentifierLookupTable m_OrderedIDs, m_OrderedTags, m_OrderedClasses;
 	};
