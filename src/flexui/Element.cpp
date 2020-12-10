@@ -142,13 +142,13 @@ namespace flexui {
 	}
 
 	void Element::setAsTextType()
-	{
-		YGNodeSetMeasureFunc(m_YogaNode, YogaMeasureCallback);
+    {
+        YGNodeSetNodeType(m_YogaNode, YGNodeType::YGNodeTypeText);
 	}
 
 	void Element::enableMeasurement()
-	{
-		YGNodeSetNodeType(m_YogaNode, YGNodeType::YGNodeTypeText);
+    {
+        YGNodeSetMeasureFunc(m_YogaNode, YogaMeasureCallback);
 	}
 
 	void Element::setID(const std::string& id)

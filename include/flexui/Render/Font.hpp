@@ -20,6 +20,9 @@ namespace flexui {
     /// Text alignment
     enum class TextAlign { LEFT, CENTER, RIGHT, JUSTIFY };
 
+    /// Text wrapping
+    enum class TextWrap { NONE, CHAR, WORD };
+
     /// Text style
     struct TextStyle {
         FontSize size = 12;
@@ -29,8 +32,7 @@ namespace flexui {
     struct TextLayoutSettings {
         TextStyle style = {};
         TextAlign align = TextAlign::LEFT;
-        bool wordWrap = true;
-        // 0 means no max
+        TextWrap wrap = TextWrap::NONE;
         int maxWidth = 0;
         /// enable this flag if you don't need to
         /// generate every glyph position

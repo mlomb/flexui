@@ -65,7 +65,7 @@ namespace flexui {
 
         TextLayoutSettings layoutSettings;
         layoutSettings.style.size = m_ComputedStyle->fontSize.value.number; // TODO: units
-        layoutSettings.wordWrap = false;
+        layoutSettings.wrap = TextWrap::WORD;
         layoutSettings.maxWidth = box.width;
 
         TextLayout layout;
@@ -90,12 +90,11 @@ namespace flexui {
         TextLayoutSettings layoutSettings;
         layoutSettings.skip_glyphs = true; // we don't need each glyph
         layoutSettings.style.size = m_ComputedStyle->fontSize.value.number; // TODO: units
-        layoutSettings.wordWrap = false;
 
         if (widthMode == MeasureMode::EXACTLY) {
             measuredWidth = width;
         } else {
-            layoutSettings.maxWidth = 0; // no max
+            layoutSettings.wrap = TextWrap::NONE;
 
             font->generateTextLayout(m_Text, layoutSettings, layout);
             measuredWidth = std::ceil(layout.width);
@@ -107,11 +106,11 @@ namespace flexui {
         if (heightMode == MeasureMode::EXACTLY) {
             measuredHeight = height;
         } else {
-            TextLayoutSettings layoutSettings;
+            layoutSettings.wrap = TextWrap::WORD;
             layoutSettings.maxWidth = measuredWidth;
 
             font->generateTextLayout(m_Text, layoutSettings, layout);
-            measuredWidth = std::ceil(layout.height);
+            measuredHeight = std::ceil(layout.height);
 
             if (heightMode == MeasureMode::AT_MOST)
                 measuredHeight = std::min(measuredHeight, height);

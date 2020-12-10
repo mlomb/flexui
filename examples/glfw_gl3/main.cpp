@@ -319,22 +319,23 @@ void init_ui() {
 		
 		#root {
 			background-color: transparent;
+			align-items: center;
 		}
 
 		Text {
 			/*width: 150px;
 			height: 150px;*/
-			min-width: 150px;
-			background-color: rgba(255, 128, 128, 0.3);
+			/*min-width: 150px;
+			background-color: rgba(255, 128, 128, 0.3);*/
 		}
 		.emoji-font {
 			/*font-family: "emojis";*/
 			font-size: 24px;
 			background-color: rgba(255, 128, 128, 0.5);
 		}
-		*:hover {
+		/**:hover {
 			background-color: rgba(255, 0, 255, 0.05);
-		}
+		}*/
 
 		Button {
 			color: #D9D9D9;

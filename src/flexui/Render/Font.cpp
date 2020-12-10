@@ -228,6 +228,7 @@ namespace flexui {
         TextLayout::GlyphInstance instance;
         int i = 0;
         int last_whitespace_i = 0;
+        int glyphs_since_last_wrap = 0;
         bool last_whitespace_was_wrap = false;
         int penX = 0, penY = layoutSettings.style.size;
 
@@ -241,14 +242,25 @@ namespace flexui {
                 bool is_whitespace = code == ' ' || code == '\t';
                 bool should_wrap = false;
 
-                if (layoutSettings.maxWidth > 0 && last_whitespace_i != i) {
+                float kerning = i ? getKerning(prev_code, code, layoutSettings.style.size) : 0;
+
+                instance = {};
+                instance.codepoint = code;
+                instance.index = i;
+                instance.x = penX + description.bearingX;
+                instance.y = penY - description.bearingY;
+                instance.w = description.width;
+                instance.h = description.height;
+                instance.has_colors = description.has_colors;
+
+                if (layoutSettings.wrap != TextWrap::NONE && layoutSettings.maxWidth > 0 && glyphs_since_last_wrap > 0) {
                     if (is_whitespace) {
                         // keep track of whitespaces
                         last_whitespace_i = i;
                         last_whitespace_was_wrap = false;
                     } else {
-                        if (penX + description.advance > layoutSettings.maxWidth) { // should wrap?
-                            if (layoutSettings.wordWrap) { // wrap the whole last word
+                        if (std::max(layout.width, instance.x + instance.w) > layoutSettings.maxWidth) { // should wrap?
+                            if (layoutSettings.wrap == TextWrap::WORD) { // wrap the whole last word
                                 if (!last_whitespace_was_wrap) { // avoid infinite loop
                                     i = last_whitespace_i;
                                     last_whitespace_was_wrap = true;
@@ -269,31 +281,20 @@ namespace flexui {
                 if (is_jump || should_wrap) {
                     penX = 0;
                     penY += layoutSettings.style.size;
+                    glyphs_since_last_wrap = 0;
                     if (should_wrap) {
                         prev_code = 0;
                         continue; // do not increment i
                     }
                 } else {
-                    instance = {};
-                    instance.codepoint = code;
-                    instance.index = i;
-                    instance.x = penX + description.bearingX;
-                    instance.y = penY - description.bearingY;
-                    instance.w = description.width;
-                    instance.h = description.height;
-                    instance.has_colors = description.has_colors;
-
                     layout.width = std::max(layout.width, instance.x + instance.w);
                     layout.height = std::max(layout.height, instance.y + instance.h);
 
                     if (!layoutSettings.skip_glyphs)
                         layout.glyphs.emplace_back(instance);
 
-                    penX += description.advance;
-
-                    // apply kerning
-                    if (i)
-                        penX -= getKerning(prev_code, code, layoutSettings.style.size);
+                    penX += description.advance - kerning;
+                    glyphs_since_last_wrap++;
                 }
             }
 
