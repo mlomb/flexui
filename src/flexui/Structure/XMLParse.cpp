@@ -59,6 +59,35 @@ namespace flexui {
             return nullptr;
         }
 
+        const char* id = xml_element->Attribute("id");
+        const char* klass = xml_element->Attribute("class");
+
+        if (id)
+            element->setID(std::string(id));
+        if (klass) {
+            // split classes by space
+            size_t len = strlen(klass);
+            int last_space = -1;
+            for (int i = 0; i < len; i++) {
+                if (klass[i] == ' ') {
+                    // token in [last_space+1, i]
+                    int l = last_space + 1;
+                    int r = i;
+                    if (r - l > 0) {
+                        // non empty token
+                        element->addClass(std::string(klass + l, (size_t)(r - l)));
+                    }
+                    last_space = i;
+                }
+            }
+            // last token [last_space+1, len]
+            int l = last_space + 1;
+            int r = len;
+            if (r - l > 0) {
+                element->addClass(std::string(klass + l, (size_t)(r - l)));
+            }
+        }
+
         printf("PARSED: %s\n", node->Value());
 
         if (add_recursive) {

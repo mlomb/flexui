@@ -320,6 +320,10 @@ void init_ui() {
 		#root {
 			background-color: transparent;
 			align-items: center;
+			flex-wrap: wrap;
+		}
+		.aaa {
+			flex-wrap: wrap;
 		}
 
 		Text {
@@ -364,7 +368,7 @@ void init_ui() {
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
 
 	std::string xml_source = R"(
-		<Element>
+		<Element class="aaa">
 			<Button><Text>Hello world</Text></Button>
 			<Button>Alone</Button>
 			<Button>Outer<Text>Inner</Text></Button>
