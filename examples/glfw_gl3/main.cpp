@@ -501,6 +501,7 @@ void main_loop() {
 		ui_surface->process();
 
 		auto cursor = ui_surface->getCurrentCusor();
+		#ifndef __EMSCRIPTEN__
         switch (cursor) {
         default:
         case StyleCursor::AUTO:
@@ -511,6 +512,18 @@ void main_loop() {
             glfwSetCursor(window, cursor_pointer);
             break;
         }
+		#else
+        switch (cursor) {
+        default:
+        case StyleCursor::AUTO:
+        case StyleCursor::DEFAULT:
+            EM_ASM({ document.body.style.cursor = ""; });
+            break;
+        case StyleCursor::POINTER:
+            EM_ASM({ document.body.style.cursor = "pointer"; });
+            break;
+        }
+		#endif
 
 		Painter* p = ui_surface->getPainter();
 
