@@ -1,6 +1,6 @@
 [submodule "deps/yoga"]
 	path = deps/yoga
-	url = https://github.com/facebook/yoga
+	url = https://github.com/facebook/yoga.git
 [submodule "examples/libs/glew"]
 	path = examples/libs/glew
 	url = https://github.com/Perlmint/glew-cmake.git
@@ -12,4 +12,4 @@
 	url = https://github.com/g-truc/glm.git
 [submodule "deps/freetype2"]
 	path = deps/freetype2
-	url = git://git.sv.nongnu.org/freetype/freetype2.git
+	url = https://git.sv.nongnu.org/r/freetype/freetype2.git
