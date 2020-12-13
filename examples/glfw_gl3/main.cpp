@@ -513,15 +513,13 @@ void main_loop() {
             break;
         }
 		#else
-        switch (cursor) {
-        default:
-        case StyleCursor::AUTO:
-        case StyleCursor::DEFAULT:
-            EM_ASM({ document.body.style.cursor = ""; });
-            break;
-        case StyleCursor::POINTER:
-            EM_ASM({ document.body.style.cursor = "pointer"; });
-            break;
+		// can't use switch or else, makes the linker crash
+		// see https://github.com/emscripten-core/emscripten/issues/11539
+		if (cursor == StyleCursor::POINTER) {
+            if (true) // prevent emscripten linker crash
+				EM_ASM({ document['body']['style']['cursor'] = 'pointer'; });
+        } else {
+			EM_ASM({ document['body']['style']['cursor'] = ''; });
         }
 		#endif
 
@@ -561,7 +559,7 @@ int main(int, char**) {
 
 	#ifdef __EMSCRIPTEN__
 	// dirty hack to apply the initial window size
-	EM_ASM({ window.dispatchEvent(new Event('resize')); });
+	EM_ASM(window.dispatchEvent(new Event('resize')));
 	#endif
 
 	const GLubyte* renderer = glGetString(GL_RENDERER);
