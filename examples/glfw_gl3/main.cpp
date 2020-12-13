@@ -538,7 +538,7 @@ int main(int, char**) {
 
 	glfwMakeContextCurrent(window);
 
-    cursor_pointer = glfwCreateStandardCursor(GLFW_POINTING_HAND_CURSOR);
+    cursor_pointer = glfwCreateStandardCursor(GLFW_HAND_CURSOR);
 
 	#ifndef __EMSCRIPTEN__
 	if (glewInit() != GLEW_OK) {
