@@ -12,5 +12,5 @@
 	url = https://github.com/g-truc/glm.git
 [submodule "deps/freetype2"]
 	path = deps/freetype2
-	url = https://git.sv.nongnu.org/r/freetype/freetype2.git
-    branch = master
+	url = git://git.sv.nongnu.org/freetype/freetype2.git
+	branch = master
