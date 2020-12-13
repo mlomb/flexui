@@ -15,7 +15,7 @@ jobs:
         shell: bash
         run: |
             git submodule sync --recursive
-            git submodule update --init --force --recursive --depth=1
+            git submodule update --init --force --recursive
       - name: Setup cache
         id: cache-system-libraries
         uses: actions/cache@v2
