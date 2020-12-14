@@ -8,7 +8,7 @@
 /// moving around instead of copying all the time (substrs)
 
 namespace flexui {
-
+	
 	/// Check if the character is a valid start for a CSS identifier
 	inline bool isIdentStart(char c) {
 		return
@@ -32,12 +32,12 @@ namespace flexui {
 		return c == '*' || c == '#' || c == '.' || c == ':';
 	}
 
-	/// Check if the character is a valid decimal number
+	/// Check if the character is a valid decimal digit
 	bool isNumeric(char c) {
 		return c >= '0' && c <= '9';
 	}
 
-	/// Check if the character is a valid hex number
+	/// Check if the character is a valid hex digit
 	bool isHex(char c) {
 		return
 			(c >= 'a' && c <= 'f') ||
@@ -45,7 +45,7 @@ namespace flexui {
 			isNumeric(c);
 	}
 
-	/// Converts the hex character to its decimal representation
+	/// Converts a hex digit to its decimal representation
 	unsigned char hexToDec(unsigned char c) {
 		if (c >= '0' && c <= '9') return c - '0';
 		if (c >= 'a' && c <= 'f') return c - 'a' + 10;
@@ -53,7 +53,7 @@ namespace flexui {
 		return 0;
 	}
 
-	// Converts a two digit hex to its decimal representation
+	/// Converts a two digit hex to its decimal representation
 	unsigned char hexToDec(unsigned char l, unsigned char r) {
 		return 16 * hexToDec(l) + hexToDec(r);
 	}
@@ -403,7 +403,7 @@ namespace flexui {
 					}
 				}
 				else {
-					parseResult.warnings.emplace_back("Couldn't parse component number " + std::to_string(i) + " of rgb/a color");
+					parseResult.warnings.emplace_back("Could not parse component number " + std::to_string(i) + " of rgb/a color");
 					return false;
 				}
 			}
@@ -415,19 +415,16 @@ namespace flexui {
 			// See https://www.w3.org/TR/css-color-3/#svg-color
 			auto it = NAMED_COLORS.find(input);
 			if (it != NAMED_COLORS.end()) {
-				const auto& color = (*it).second;
-				output = buildColor(
-					(unsigned char)std::get<0>(color),
-					(unsigned char)std::get<1>(color),
-					(unsigned char)std::get<2>(color),
-					(unsigned char)((float)std::get<3>(color) * 255.0f)
-				);
+				output = (*it).second;
 				return true;
+			}
+			else {
+				parseResult.warnings.emplace_back("Named color '" + input + "' not found");
+				return false;
 			}
 		}
 
 		parseResult.warnings.emplace_back("Expected color definition");
-
 		return false;
 	}
 

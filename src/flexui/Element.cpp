@@ -83,11 +83,11 @@ namespace flexui {
 		roundedParams.cornerRadii[2].x = roundedParams.cornerRadii[2].y = m_ComputedStyle->borderBottomLeftRadius.value.number;
 		roundedParams.cornerRadii[3].x = roundedParams.cornerRadii[3].y = m_ComputedStyle->borderBottomRightRadius.value.number;
 
-		auto color = m_ComputedStyle->backgroundColor.value;
+		auto background_color = m_ComputedStyle->backgroundColor.value;
 		auto border_color = m_ComputedStyle->borderColor.value;
 
-		if ((color & 0xFF000000) > 0)
-			painter->drawRoundedRectangle(m_BoundingRect, color, roundedParams);
+		if ((background_color & 0xFF000000) > 0)
+			painter->drawRoundedRectangle(m_BoundingRect, background_color, roundedParams);
 		if ((border_color & 0xFF000000) > 0) {
 			RoundedBordersParams borderParams;
 			borderParams.rectParams = roundedParams;
