@@ -6,6 +6,12 @@ A light UI for C++ with XML and CSS support.
 
 ### Example
 
+```xml
+<Element class="container">
+    <Text id="some">Some text:</Text>
+    <Button><Text>A button</Text></Button>
+</Element>
+```
 ```css
 * {
     font-family: "Roboto-Regular.ttf";
@@ -39,12 +45,6 @@ Button:hover {
     /* ... */
 }
 ```
-```xml
-<Element class="container">
-    <Text id="some">Some text:</Text>
-    <Button><Text>A button</Text></Button>
-</Element>
-```
 
 Render using OpenGL (and GLFW)  
 ![docs/render.png](docs/render.png)
@@ -73,7 +73,7 @@ Note that the demo is a build of the master branch for now, it may contain anyth
 * [Yoga Layout](https://yogalayout.com), an open source layout engine
 * An embedded copy of [tinyxml2](https://github.com/leethomason/tinyxml2), a fast XML parser
 
-More advance text may require harfbuzz-ng.
+More complex text may require harfbuzz-ng.
 
 # License
 
