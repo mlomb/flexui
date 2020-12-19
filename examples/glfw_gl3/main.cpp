@@ -361,13 +361,45 @@ void init_ui() {
 		}
 
 	)";
+
+	css_source = R"(
+		* {
+			font-family: "Roboto-Regular.ttf";
+			font-size: 24px;
+		}
+		.container {
+			background-color: white;
+			color: black;
+
+			height: 90px;
+			padding: 25px;
+			align-items: center;
+		}
+		#some {
+			margin-right: 5px;
+		}
+		Button {
+			background-color: #1266f1;
+			color: white;
+
+			align-items: center;
+			padding: 5px;
+
+			border-color: #0d6efd;
+			border-width: 1px;
+			border-radius: 4px;
+
+			cursor: pointer;
+		}
+	)";
+
 	StyleParseResult pr;
 	StyleSheet* ss = ParseStyleSheet(css_source, pr);
 
 	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
 
-	std::string xml_source = R"(
+    /*std::string xml_source = u8R"(
 		<Element class="aaa">
 			<Button><Text>Hello world</Text></Button>
 			<Button>Alone</Button>
@@ -375,6 +407,12 @@ void init_ui() {
 			<Text>Hello world1</Text>
 			<Text>Hello world2</Text>
 			<Text>Hello world3</Text>
+		</Element>
+	)";*/
+	std::string xml_source = u8R"(
+		<Element class="container">
+			<Text id="some">Some text:</Text>
+			<Button><Text>A button</Text></Button>
 		</Element>
 	)";
 
@@ -423,9 +461,9 @@ void init_ui() {
 	div->addElement(text3);
 
     root->addElement(loaded);
-	root->addElement(div);
+	//root->addElement(div);
 
-	text->setTextToAllGlyphsTEST();
+	//text->setTextToAllGlyphsTEST();
 	//text2->setTextToAllGlyphsTEST();
 	//text3->setTextToAllGlyphsTEST();
 }
@@ -461,7 +499,7 @@ void init() {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	//glEnable(GL_SCISSOR_TEST);
 
 	init_ui();
@@ -516,9 +554,9 @@ void main_loop() {
 		// can't use switch or else, makes the linker crash
 		// see https://github.com/emscripten-core/emscripten/issues/11539
 		if (cursor == StyleCursor::POINTER) {
-            if (true) // prevent emscripten linker crash
-				EM_ASM({ document['body']['style']['cursor'] = 'pointer'; });
-        } else {
+			EM_ASM({ document['body']['style']['cursor'] = 'pointer'; });
+        }
+        if (cursor != StyleCursor::POINTER) {
 			EM_ASM({ document['body']['style']['cursor'] = ''; });
         }
 		#endif
