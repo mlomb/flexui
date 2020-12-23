@@ -2,7 +2,7 @@
 
 namespace flexui {
 
-	typedef void* TextureID;
+	typedef unsigned int TextureID;
 
 	class TextureProvider {
 	public:

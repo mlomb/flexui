@@ -7,8 +7,15 @@
 #include "flexui/Surface.hpp"
 
 #include <cassert>
+#include <cmath>
 #include <codecvt>
 #include <locale>
+
+#ifndef NAN
+#define NAN (nan(NULL))
+#else
+// NAN from corecrt_math.h
+#endif
 
 namespace flexui {
     Text::Text()
@@ -77,7 +84,7 @@ namespace flexui {
     {
         // See https://github.com/facebook/yoga/pull/576/files
 
-        float measuredWidth = NAN; // NAN from corecrt_math.h
+        float measuredWidth = NAN;
         float measuredHeight = NAN;
 
         std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);

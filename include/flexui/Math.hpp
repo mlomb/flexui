@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm> // for min, max
+#include <cstdint>
 
 namespace flexui {
 

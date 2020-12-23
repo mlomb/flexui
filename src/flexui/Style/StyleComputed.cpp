@@ -1,4 +1,5 @@
 #include "flexui/Style/StyleComputed.hpp"
+#include <cstring>  // memcpy
 
 namespace flexui {
 
@@ -20,7 +21,7 @@ namespace flexui {
 		SAVE_PROP(ID::MIN_HEIGHT, minHeight);
 		SAVE_PROP(ID::MAX_WIDTH,  maxWidth);
 		SAVE_PROP(ID::MAX_HEIGHT, maxHeight);
-		
+
 		SAVE_PROP(ID::MARGIN_LEFT,   marginLeft);
 		SAVE_PROP(ID::MARGIN_TOP,    marginTop);
 		SAVE_PROP(ID::MARGIN_RIGHT,  marginRight);
