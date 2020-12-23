@@ -24,7 +24,7 @@ namespace flexui {
         enableMeasurement();
         setAsTextType();
         setTag("Text");
-        m_FontNameTEST = "Roboto-Regular.ttf";
+        m_FontNameTEST = "default";
     }
 
     Text::~Text() { }

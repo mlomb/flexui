@@ -293,7 +293,7 @@ void init_ui() {
 	// load css
 	std::string css_source = R"(
 		* {
-			/*font-family: "default";*/
+			font-family: "default";
 			font-size: 24px;
 		}
 		.test {
@@ -365,7 +365,7 @@ void init_ui() {
 
 	css_source = R"(
 		* {
-			font-family: "Roboto-Regular.ttf";
+			font-family: "default";
 			font-size: 24px;
 		}
 		.container {
