@@ -12,6 +12,7 @@ jobs:
         compiler: [gcc, clang]
     steps:
     - name: Install dependencies
+      shell: bash
       run: |
         sudo apt-get update
         sudo apt-get install -y ${{ matrix.compiler }}
@@ -22,20 +23,19 @@ jobs:
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
         fi
+    - uses: actions/checkout@v2
+    
+    # We have to clone submodules without --depth 1 because "Server does not allow request for unadvertised object actions" (FreeType repo)
+    - name: Checkout submodules
       shell: bash
-      - uses: actions/checkout@v2
-      
-      # We have to clone submodules without --depth 1 because "Server does not allow request for unadvertised object actions" (FreeType repo)
-      - name: Checkout submodules
-        shell: bash
-        run: |
-            git submodule sync --recursive
-            git submodule update --init --force --recursive
-      - name: Run CMake
-        run: |
-            mkdir build
-            cd build
-            cmake .. -DCMAKE_BUILD_TYPE=Release
-      - name: Build
-        run: make glfw_gl3
-        working-directory: build
+      run: |
+          git submodule sync --recursive
+          git submodule update --init --force --recursive
+    - name: Run CMake
+      run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+    - name: Build
+      run: make glfw_gl3
+      working-directory: build
