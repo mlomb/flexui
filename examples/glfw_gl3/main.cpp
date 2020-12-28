@@ -1,12 +1,13 @@
 #include <iostream>
 #include <cassert>
+#include <string>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
 #define GLFW_INCLUDE_ES3
 #else
 #define GLFW_INCLUDE_NONE
-#include <gl/glew.h>
+#include <GL/glew.h>
 #endif
 
 #include <GLFW/glfw3.h>
@@ -150,7 +151,7 @@ bool check_shader(GLuint handle, const char* desc) {
 		std::vector<char> buf;
 		buf.resize((int)(log_length + 1));
 		glGetShaderInfoLog(handle, log_length, NULL, buf.data());
-		fprintf(stderr, "%s\n", buf.begin());
+		fprintf(stderr, "%s\n", std::string(buf.begin(), buf.end()).c_str());
 	}
 	return (GLboolean)status == GL_TRUE;
 }
@@ -292,7 +293,7 @@ void init_ui() {
 	// load css
 	std::string css_source = R"(
 		* {
-			/*font-family: "default";*/
+			font-family: "default";
 			font-size: 24px;
 		}
 		.test {
@@ -316,7 +317,7 @@ void init_ui() {
 		.d0 { background-color: rgba(255,0,255,0.3); }
 		.d1 { background-color: rgba(255,0,255,0.5); }
 		.d2 { background-color: rgba(255,0,255,0.7); }
-		
+
 		#root {
 			background-color: transparent;
 			align-items: center;
@@ -364,7 +365,7 @@ void init_ui() {
 
 	css_source = R"(
 		* {
-			font-family: "Roboto-Regular.ttf";
+			font-family: "default";
 			font-size: 24px;
 		}
 		.container {

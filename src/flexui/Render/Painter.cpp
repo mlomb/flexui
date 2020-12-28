@@ -91,7 +91,7 @@ namespace flexui {
 		// * = a offset
 
 		int centerIndex = m_VertexCount;
-		*m_pVertex = { center, Vec2(0, 0), color, 0 }; m_pVertex++; // C
+		*m_pVertex = { center, { 0, 0 }, color, 0 }; m_pVertex++; // C
 		m_VertexCount += 1;
 
 		for (int i = 0; i <= subdivisions; i++) {
@@ -190,9 +190,9 @@ namespace flexui {
 		//  * BL /  |        |  \BR  *
 		//    * /   |        |   \ *
 		//     *____|________|__ *
-		const Vec2 topRightCorner = rect.position + Vec2(rect.size.x - topRightRadii.x, topRightRadii.y); // A
+		const Vec2 topRightCorner = rect.position + Vec2 { rect.size.x - topRightRadii.x, topRightRadii.y }; // A
 		const Vec2 topLeftCorner = rect.position + topLeftRadii; // B
-		const Vec2 bottomLeftCorner = rect.position + Vec2(bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y); // C
+		const Vec2 bottomLeftCorner = rect.position + Vec2 { bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y }; // C
 		const Vec2 bottomRightCorner = rect.position + rect.size - bottomRightRadii; // D
 
 		drawRoundedCorner(topRightCorner, topRightRadii, Corner::TOP_RIGHT, color);
@@ -327,15 +327,15 @@ namespace flexui {
 			(handled in drawRoundedCornerCarved, which fall back to drawRoundedCorner)
 		*/
 
-		const Vec2 topRightCorner = rect.position + Vec2(rect.size.x - topRightRadii.x, topRightRadii.y); // A
+		const Vec2 topRightCorner = rect.position + Vec2 { rect.size.x - topRightRadii.x, topRightRadii.y }; // A
 		const Vec2 topLeftCorner = rect.position + topLeftRadii; // B
-		const Vec2 bottomLeftCorner = rect.position + Vec2(bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y); // C
+		const Vec2 bottomLeftCorner = rect.position + Vec2 { bottomLeftRadii.x, rect.size.y - bottomLeftRadii.y }; // C
 		const Vec2 bottomRightCorner = rect.position + rect.size - bottomRightRadii; // D
 
-		const Vec2 topLeftInnerRadii = topLeftRadii - Vec2(leftWidth, topWidth);
-		const Vec2 topRightInnerRadii = topRightRadii - Vec2(rightWidth, topWidth);
-		const Vec2 bottomLeftInnerRadii = bottomLeftRadii - Vec2(leftWidth, bottomWidth);
-		const Vec2 bottomRightInnerRadii = bottomRightRadii - Vec2(rightWidth, bottomWidth);
+		const Vec2 topLeftInnerRadii = topLeftRadii - Vec2 { leftWidth, topWidth };
+		const Vec2 topRightInnerRadii = topRightRadii - Vec2 { rightWidth, topWidth };
+		const Vec2 bottomLeftInnerRadii = bottomLeftRadii - Vec2 { leftWidth, bottomWidth };
+		const Vec2 bottomRightInnerRadii = bottomRightRadii - Vec2 { rightWidth, bottomWidth };
 
 		drawRoundedCornerCarved(topLeftCorner, topLeftRadii, topLeftInnerRadii, Corner::TOP_LEFT, color);
 		drawRoundedCornerCarved(topRightCorner, topRightRadii, topRightInnerRadii, Corner::TOP_RIGHT, color);
@@ -373,7 +373,7 @@ namespace flexui {
 		const float texelSize = 1.0f / (float)m_Atlas->getSize();
 		const unsigned int fontId = font->getID();
 
-		const Vec2 base_pos(position.x, position.y);
+		const Vec2 base_pos = { position.x, position.y };
 		Rect rect;
 
 		for (const TextLayout::GlyphInstance& gi : textLayout.glyphs) {
@@ -400,8 +400,8 @@ namespace flexui {
 				}
 			}
 
-			const Vec2 pos = base_pos + Vec2(gi.x, gi.y);
-			const Vec2 size = Vec2(gi.w, gi.h);
+			const Vec2 pos = base_pos + Vec2 { (float)gi.x, (float)gi.y };
+			const Vec2 size = Vec2 { (float)gi.w, (float)gi.h };
 
 			const float u0 = texelSize * rect.x;
 			const float v0 = texelSize * rect.y;
@@ -410,10 +410,10 @@ namespace flexui {
 
 			const float flags = gi.has_colors ? 2 : 1;
 
-			*m_pVertex = { pos,                   Vec2(u0, v0), color, flags }; m_pVertex++;
-			*m_pVertex = { pos + Vec2(0, size.y), Vec2(u0, v1), color, flags }; m_pVertex++;
-			*m_pVertex = { pos + size,            Vec2(u1, v1), color, flags }; m_pVertex++;
-			*m_pVertex = { pos + Vec2(size.x, 0), Vec2(u1, v0), color, flags }; m_pVertex++;
+			*m_pVertex = { pos,                      Vec2 { u0, v0 }, color, flags }; m_pVertex++;
+			*m_pVertex = { pos + Vec2 { 0, size.y }, Vec2 { u0, v1 }, color, flags }; m_pVertex++;
+			*m_pVertex = { pos + size,               Vec2 { u1, v1 }, color, flags }; m_pVertex++;
+			*m_pVertex = { pos + Vec2 { size.x, 0 }, Vec2 { u1, v0 }, color, flags }; m_pVertex++;
 
 			*m_pIndex = m_VertexCount + 0; m_pIndex++;
 			*m_pIndex = m_VertexCount + 1; m_pIndex++;

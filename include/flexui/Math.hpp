@@ -1,13 +1,11 @@
 #pragma once
 
 #include <algorithm> // for min, max
+#include <cstdint>
 
 namespace flexui {
 
 	struct Vec2 {
-		Vec2(float x, float y) : x(x), y(y) { };
-		Vec2() : x(0), y(0) { };
-
 		float x, y;
 
 		inline bool operator==(const Vec2& b) const { return x == b.x && y == b.y; }

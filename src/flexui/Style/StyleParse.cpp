@@ -3,12 +3,15 @@
 #include "flexui/Style/NamedColors.hpp"
 #include "flexui/Style/StyleSheet.hpp"
 
+#include <cmath>
+#include <cstring>  // memcpy
+
 /// Eventually we want to move away from std::string.
 /// We'll have slices of the original buffer
 /// moving around instead of copying all the time (substrs)
 
 namespace flexui {
-	
+
 	/// Check if the character is a valid start for a CSS identifier
 	inline bool isIdentStart(char c) {
 		return
@@ -470,7 +473,7 @@ namespace flexui {
 
 		#define LENGTH_PROPERTY(prop_name, prop_id) PARSE_PROP(parseLength, prop_name, prop_id, length);
 		#define COLOR_PROPERTY(prop_name, prop_id) PARSE_PROP(parseColor, prop_name, prop_id, color);
-		
+
 		#define STRING_PROPERTY(prop_name, prop_id) \
 		case HashStr(prop_name): \
 			if (parseString(raw_value, prop.value.string, parseResult)) { \
@@ -538,7 +541,7 @@ namespace flexui {
 		NUMBER_PROPERTY("flex-grow",   ID::FLEX_GROW);
 		NUMBER_PROPERTY("flex-shrink", ID::FLEX_SHRINK);
 		LENGTH_PROPERTY("flex-basis",  ID::FLEX_BASIS);
-		
+
 		PARSE_ENUM_START("flex-direction", ID::FLEX_DIRECTION);
 			PARSE_ENUM_ENTRY(direction, "row",            FlexDirection::ROW);
 			PARSE_ENUM_ENTRY(direction, "column",         FlexDirection::COLUMN);
@@ -607,7 +610,7 @@ namespace flexui {
 			PARSE_ENUM_ENTRY(whiteSpace, "normal", WhiteSpace::NORMAL);
 			PARSE_ENUM_ENTRY(whiteSpace, "nowrap", WhiteSpace::NOWRAP);
 		PARSE_ENUM_END();
-		
+
 		PARSE_ENUM_START("cursor", ID::CURSOR);
 			PARSE_ENUM_ENTRY(cursor, "auto",        StyleCursor::AUTO);
 			PARSE_ENUM_ENTRY(cursor, "default",     StyleCursor::DEFAULT);
