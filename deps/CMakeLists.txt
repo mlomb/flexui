@@ -28,7 +28,6 @@ endif()
 #############
 if(NOT TARGET freetype)
 	set(SKIP_INSTALL_ALL ON)
-	set(CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz OFF)
 	
 	add_subdirectory(freetype2)
 endif()

@@ -36,7 +36,7 @@ jobs:
       run: |
           mkdir build
           cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_DISABLE_FIND_PACKAGE_HarfBuzz=TRUE
     - name: Build
       run: make glfw_gl3
       working-directory: build
