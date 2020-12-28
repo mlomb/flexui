@@ -28,7 +28,8 @@ endif()
 #############
 if(NOT TARGET freetype)
 	set(SKIP_INSTALL_ALL ON)
-
+	set(FT_WITH_HARFBUZZ OFF)
+	
 	add_subdirectory(freetype2)
 endif()
 

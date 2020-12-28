@@ -1,4 +1,4 @@
-name: Build web demo
+name: Web demo
 
 on: [push]
 
