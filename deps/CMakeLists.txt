@@ -28,7 +28,7 @@ endif()
 #############
 if(NOT TARGET freetype)
 	set(SKIP_INSTALL_ALL ON)
-	set(FT_WITH_HARFBUZZ OFF)
+	set(FT_WITH_HARFBUZZ OFF CACHE BOOL "Improve auto-hinting of OpenType fonts.")
 	
 	add_subdirectory(freetype2)
 endif()
