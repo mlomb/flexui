@@ -90,7 +90,7 @@ namespace flexui {
         std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);
 
         if (font == nullptr || m_Text.size() == 0)
-            return Vec2(measuredWidth, measuredHeight);
+            return { measuredWidth, measuredHeight };
 
         TextLayout layout;
 
@@ -123,6 +123,6 @@ namespace flexui {
                 measuredHeight = std::min(measuredHeight, height);
         }
 
-        return Vec2(measuredWidth, measuredHeight);
+        return { measuredWidth, measuredHeight };
     }
 }
