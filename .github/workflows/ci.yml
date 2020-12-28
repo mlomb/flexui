@@ -22,6 +22,7 @@ jobs:
           echo "CC=clang" >> $GITHUB_ENV
           echo "CXX=clang++" >> $GITHUB_ENV
         fi
+      shell: bash
       - uses: actions/checkout@v2
       
       # We have to clone submodules without --depth 1 because "Server does not allow request for unadvertised object actions" (FreeType repo)
