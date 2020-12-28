@@ -28,7 +28,7 @@ endif()
 #############
 if(NOT TARGET freetype)
 	set(SKIP_INSTALL_ALL ON)
-
+	
 	add_subdirectory(freetype2)
 endif()
 
