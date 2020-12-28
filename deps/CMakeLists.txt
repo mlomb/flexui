@@ -28,7 +28,7 @@ endif()
 #############
 if(NOT TARGET freetype)
 	set(SKIP_INSTALL_ALL ON)
-	set(FT_WITH_HARFBUZZ OFF CACHE BOOL "Improve auto-hinting of OpenType fonts.")
+	set(CMAKE_DISABLE_FIND_PACKAGE_HarfBuzz OFF)
 	
 	add_subdirectory(freetype2)
 endif()
