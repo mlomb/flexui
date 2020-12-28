@@ -511,6 +511,15 @@ void shutdown() {
 	glDeleteBuffers(1, &ibo);
 }
 
+#ifdef __EMSCRIPTEN__
+EM_JS(void, em_set_default, (), {
+    document['body']['style']['cursor'] = '';
+});
+EM_JS(void, em_set_pointer, (), {
+    document['body']['style']['cursor'] = 'pointer';
+});
+#endif
+
 void main_loop() {
 	int width, height;
 	glfwGetFramebufferSize(window, &width, &height);
@@ -551,14 +560,10 @@ void main_loop() {
             break;
         }
 		#else
-		// can't use switch or else, makes the linker crash
+		// can't use switch or else directly, makes the linker crash
 		// see https://github.com/emscripten-core/emscripten/issues/11539
-		if (cursor == StyleCursor::POINTER) {
-			EM_ASM({ document['body']['style']['cursor'] = 'pointer'; });
-        }
-        if (cursor != StyleCursor::POINTER) {
-			EM_ASM({ document['body']['style']['cursor'] = ''; });
-        }
+        if (cursor == StyleCursor::POINTER) em_set_pointer();
+        else em_set_default();
 		#endif
 
 		Painter* p = ui_surface->getPainter();
