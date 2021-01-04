@@ -15,7 +15,43 @@
 namespace flexui {
     using namespace tinyxml2;
 
-    Element* parseElement(XMLNode* node, XMLParseResult& parseResult) {
+    void parseAttributes(XMLElement* xml_element, Element* element)
+    {
+        const char* id = xml_element->Attribute("id");
+        const char* klass = xml_element->Attribute("class");
+
+        if (id)
+            element->setID(std::string(id));
+
+        // parse class attribute
+        if (klass) {
+            // split classes by space
+            size_t len = strlen(klass);
+            int last_space = -1;
+            for (int i = 0; i < len; i++) {
+                if (klass[i] == ' ') {
+                    // token in [last_space+1, i]
+                    int l = last_space + 1;
+                    int r = i;
+                    if (r - l > 0) {
+                        // non empty token
+                        element->addClass(std::string(klass + l, (size_t)(r - l)));
+                    }
+                    last_space = i;
+                }
+            }
+            // last token [last_space+1, len]
+            int l = last_space + 1;
+            int r = len;
+            if (r - l > 0) {
+                element->addClass(std::string(klass + l, (size_t)(r - l)));
+            }
+        }
+
+    }
+
+    Element* parseElement(XMLNode* node, XMLParseResult& parseResult)
+    {
         if (node->ToComment())
             return nullptr; // skip comments
 
@@ -52,40 +88,13 @@ namespace flexui {
                 element = text_element;
                 break;
             }
+
+            parseAttributes(xml_element, element);
         }
 
         if (!element) {
             printf("FIXME: %s\n", node->Value());
             return nullptr;
-        }
-
-        const char* id = xml_element->Attribute("id");
-        const char* klass = xml_element->Attribute("class");
-
-        if (id)
-            element->setID(std::string(id));
-        if (klass) {
-            // split classes by space
-            size_t len = strlen(klass);
-            int last_space = -1;
-            for (int i = 0; i < len; i++) {
-                if (klass[i] == ' ') {
-                    // token in [last_space+1, i]
-                    int l = last_space + 1;
-                    int r = i;
-                    if (r - l > 0) {
-                        // non empty token
-                        element->addClass(std::string(klass + l, (size_t)(r - l)));
-                    }
-                    last_space = i;
-                }
-            }
-            // last token [last_space+1, len]
-            int l = last_space + 1;
-            int r = len;
-            if (r - l > 0) {
-                element->addClass(std::string(klass + l, (size_t)(r - l)));
-            }
         }
 
         printf("PARSED: %s\n", node->Value());
