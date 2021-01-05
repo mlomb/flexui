@@ -163,12 +163,8 @@ namespace flexui {
 	typedef Color StyleColor;
 
 	struct StyleValue {
-		struct String { // TODO: make sure this doesn't leak! (probably it does)
-			char* data;
-			int8_t length;
-		};
+		std::string string;
 		union {
-			String string;
 			StyleNumber number;
 			StyleLength length;
 			StyleColor color;

@@ -17,7 +17,6 @@ namespace flexui {
 
 		void setText(const std::string& text);
 
-		std::string m_FontNameTEST;
 		void setTextToAllGlyphsTEST();
 
 	private:

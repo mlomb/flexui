@@ -363,57 +363,22 @@ void init_ui() {
 
 	)";
 
-	css_source = R"(
-		* {
-			font-family: "default";
-			font-size: 24px;
-		}
-		.container {
-			background-color: white;
-			color: black;
-
-			height: 90px;
-			padding: 25px;
-			align-items: center;
-		}
-		#some {
-			margin-right: 5px;
-		}
-		Button {
-			background-color: #1266f1;
-			color: white;
-
-			align-items: center;
-			padding: 5px;
-
-			border-color: #0d6efd;
-			border-width: 1px;
-			border-radius: 4px;
-
-			cursor: pointer;
-		}
-	)";
-
 	StyleParseResult pr;
 	StyleSheet* ss = ParseStyleSheet(css_source, pr);
 
 	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
 
-    /*std::string xml_source = u8R"(
+    std::string xml_source = u8R"(
 		<Element class="aaa">
+			<!-- comment -->
 			<Button><Text>Hello world</Text></Button>
 			<Button>Alone</Button>
 			<Button>Outer<Text>Inner</Text></Button>
 			<Text>Hello world1</Text>
 			<Text>Hello world2</Text>
 			<Text>Hello world3</Text>
-		</Element>
-	)";*/
-	std::string xml_source = u8R"(
-		<Element class="container">
-			<Text id="some">Some text:</Text>
-			<Button><Text>A button</Text></Button>
+			<A.B>Hello world3</A.B>
 		</Element>
 	)";
 
@@ -452,12 +417,12 @@ void init_ui() {
     div->addElement(btn1);
 
 	Text* text2 = new Text();
-	text2->m_FontNameTEST = "TwemojiMozilla.ttf";
+	// text2->m_FontNameTEST = "TwemojiMozilla.ttf";
 	text2->addClass("emoji-font");
 	div->addElement(text2);
 
 	Text* text3 = new Text();
-	text3->m_FontNameTEST = "seguiemj.ttf";
+	// text3->m_FontNameTEST = "seguiemj.ttf";
 	text3->addClass("emoji-font");
 	div->addElement(text3);
 

@@ -169,7 +169,7 @@ namespace flexui {
 				part.prev_relationship = next_rel;
 				part.pseudo_states = StylePseudoStates::NONE;
 
-				// OE_LOG_DEBUG("(selector type " << std::to_string((int)part.identifier.type) << ")" << part.identifier.text);
+				// FUI_LOG_DEBUG("(selector type " << std::to_string((int)part.identifier.type) << ")" << part.identifier.text);
 
 				selector.parts.emplace_back(part);
 
@@ -187,7 +187,7 @@ namespace flexui {
 				case '~': next_rel = StyleSelectorRelationship::GENERAL_SIBLING; break;
 				}
 
-				// OE_LOG_DEBUG("(nesting op)" << chr);
+				// FUI_LOG_DEBUG("(nesting op)" << chr);
 			}
 			else {
 				parseResult.errors.emplace_back("Unexpected character '" + std::string(1, chr) + "'");
@@ -431,7 +431,7 @@ namespace flexui {
 		return false;
 	}
 
-	bool parseString(const std::string& input, StyleValue::String& output, StyleParseResult& parseResult)
+	bool parseString(const std::string& input, std::string& output, StyleParseResult& parseResult)
 	{
 		if (input.size() < 2) // must have at least two quotes
 			return false;
@@ -442,11 +442,10 @@ namespace flexui {
 		if (!_single && !_double)
 			return false;
 
-		output.length = (int8_t)(input.size() - 2 + 1); // -2 quotes + 1 \0
-		output.data = (char*)malloc(output.length);
-		if (!output.data) return false; // malloc failed
-		memcpy(output.data, input.data() + 1, input.size() - 2);
-		output.data[output.length - 1] = '\0';
+		const size_t off = 1;
+        const size_t count = input.size() - 2;
+
+		output = input.substr(off, count);
 
 		return true;
 	}
@@ -473,15 +472,7 @@ namespace flexui {
 
 		#define LENGTH_PROPERTY(prop_name, prop_id) PARSE_PROP(parseLength, prop_name, prop_id, length);
 		#define COLOR_PROPERTY(prop_name, prop_id) PARSE_PROP(parseColor, prop_name, prop_id, color);
-
-		#define STRING_PROPERTY(prop_name, prop_id) \
-		case HashStr(prop_name): \
-			if (parseString(raw_value, prop.value.string, parseResult)) { \
-				prop.id = prop_id; \
-				rule.properties.emplace_back(prop); \
-				return true; \
-			} \
-			break;
+		#define STRING_PROPERTY(prop_name, prop_id) PARSE_PROP(parseString, prop_name, prop_id, string);
 
 		#define NUMBER_PROPERTY(prop_name, prop_id) \
 		case HashStr(prop_name): \
@@ -758,7 +749,7 @@ namespace flexui {
 				std::string value = source.substr(pos, last_non_space - pos + 1);
 				pos = value_end + 1;
 
-				// OE_LOG_DEBUG("  (property)" << name << ":" << value);
+				// FUI_LOG_DEBUG("  (property)" << name << ":" << value);
 
 				// parse property
 				ParseStyleProperty(name, value, rule, parseResult);
@@ -810,7 +801,7 @@ namespace flexui {
 			if (ParseStyleSelectors(selectors_str, selectors, parseResult)) {
 				StyleRule rule = { };
 				if (parseRule(properties_str, rule, parseResult)) {
-					if (rule.properties.size() > 0) { // only add if not empty
+					if (rule.properties.size() > 0) { // only add if is has at least one property
 						int rule_ref = sheet->addRule(rule);
 
 						// connect selectors

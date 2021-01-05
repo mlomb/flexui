@@ -24,7 +24,6 @@ namespace flexui {
         enableMeasurement();
         setAsTextType();
         setTag("Text");
-        m_FontNameTEST = "default";
     }
 
     Text::~Text() { }
@@ -36,7 +35,7 @@ namespace flexui {
 
     void Text::setTextToAllGlyphsTEST()
     {
-        std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);
+        std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_ComputedStyle->fontFamily.value);
         std::vector<GlyphCodepoint> glyphs;
         font.get()->getAvailableGlyphs(glyphs);
         std::string s;
@@ -63,7 +62,7 @@ namespace flexui {
         if (m_Text.size() == 0)
             return;
 
-        std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);
+        std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_ComputedStyle->fontFamily.value);
 
         if (font == nullptr)
             return;
@@ -87,7 +86,7 @@ namespace flexui {
         float measuredWidth = NAN;
         float measuredHeight = NAN;
 
-        std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_FontNameTEST);
+        std::shared_ptr<Font> font = getSurface()->getResourceProvider()->getFont(m_ComputedStyle->fontFamily.value);
 
         if (font == nullptr || m_Text.size() == 0)
             return { measuredWidth, measuredHeight };

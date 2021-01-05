@@ -8,67 +8,68 @@ namespace flexui {
 		using ID = StylePropertyID;
 
 		switch (property.id) {
-		#define SAVE_PROP(id, name) \
+		#define SAVE_PROP(id, name, key) \
 		case id: \
 			name.populated = true; \
 			name.inherited = false; \
-			memcpy(&name.value, (void*)&property.value, sizeof(name.value)); \
+			name.value = property.value.key; \
 			break;
 
-		SAVE_PROP(ID::WIDTH,      width);
-		SAVE_PROP(ID::HEIGHT,     height);
-		SAVE_PROP(ID::MIN_WIDTH,  minWidth);
-		SAVE_PROP(ID::MIN_HEIGHT, minHeight);
-		SAVE_PROP(ID::MAX_WIDTH,  maxWidth);
-		SAVE_PROP(ID::MAX_HEIGHT, maxHeight);
+		SAVE_PROP(ID::WIDTH,      width, length);
+		SAVE_PROP(ID::HEIGHT,     height, length);
+		SAVE_PROP(ID::MIN_WIDTH,  minWidth, length);
+		SAVE_PROP(ID::MIN_HEIGHT, minHeight, length);
+		SAVE_PROP(ID::MAX_WIDTH,  maxWidth, length);
+		SAVE_PROP(ID::MAX_HEIGHT, maxHeight, length);
 
-		SAVE_PROP(ID::MARGIN_LEFT,   marginLeft);
-		SAVE_PROP(ID::MARGIN_TOP,    marginTop);
-		SAVE_PROP(ID::MARGIN_RIGHT,  marginRight);
-		SAVE_PROP(ID::MARGIN_BOTTOM, marginBottom);
+		SAVE_PROP(ID::MARGIN_LEFT,   marginLeft, length);
+		SAVE_PROP(ID::MARGIN_TOP,    marginTop, length);
+		SAVE_PROP(ID::MARGIN_RIGHT,  marginRight, length);
+		SAVE_PROP(ID::MARGIN_BOTTOM, marginBottom, length);
 
-		SAVE_PROP(ID::PADDING_LEFT,   paddingLeft);
-		SAVE_PROP(ID::PADDING_TOP,    paddingTop);
-		SAVE_PROP(ID::PADDING_RIGHT,  paddingRight);
-		SAVE_PROP(ID::PADDING_BOTTOM, paddingBottom);
+		SAVE_PROP(ID::PADDING_LEFT,   paddingLeft, length);
+		SAVE_PROP(ID::PADDING_TOP,    paddingTop, length);
+		SAVE_PROP(ID::PADDING_RIGHT,  paddingRight, length);
+		SAVE_PROP(ID::PADDING_BOTTOM, paddingBottom, length);
 
-		SAVE_PROP(ID::BORDER_COLOR, borderColor);
-		SAVE_PROP(ID::BORDER_TOP_LEFT_RADIUS,     borderTopLeftRadius);
-		SAVE_PROP(ID::BORDER_TOP_RIGHT_RADIUS,    borderTopRightRadius);
-		SAVE_PROP(ID::BORDER_BOTTOM_LEFT_RADIUS,  borderBottomLeftRadius);
-		SAVE_PROP(ID::BORDER_BOTTOM_RIGHT_RADIUS, borderBottomRightRadius);
-		SAVE_PROP(ID::BORDER_LEFT_WIDTH,   borderLeftWidth);
-		SAVE_PROP(ID::BORDER_TOP_WIDTH,    borderTopWidth);
-		SAVE_PROP(ID::BORDER_RIGHT_WIDTH,  borderRightWidth);
-		SAVE_PROP(ID::BORDER_BOTTOM_WIDTH, borderBottomWidth);
+		SAVE_PROP(ID::BORDER_COLOR, borderColor, color);
+		SAVE_PROP(ID::BORDER_TOP_LEFT_RADIUS,     borderTopLeftRadius, length);
+		SAVE_PROP(ID::BORDER_TOP_RIGHT_RADIUS,    borderTopRightRadius, length);
+		SAVE_PROP(ID::BORDER_BOTTOM_LEFT_RADIUS,  borderBottomLeftRadius, length);
+		SAVE_PROP(ID::BORDER_BOTTOM_RIGHT_RADIUS, borderBottomRightRadius, length);
+		SAVE_PROP(ID::BORDER_LEFT_WIDTH,   borderLeftWidth, length);
+		SAVE_PROP(ID::BORDER_TOP_WIDTH,    borderTopWidth, length);
+		SAVE_PROP(ID::BORDER_RIGHT_WIDTH,  borderRightWidth, length);
+		SAVE_PROP(ID::BORDER_BOTTOM_WIDTH, borderBottomWidth, length);
 
-		SAVE_PROP(ID::FLEX_GROW,      flexGrow);
-		SAVE_PROP(ID::FLEX_SHRINK,    flexShrink);
-		SAVE_PROP(ID::FLEX_BASIS,     flexBasis);
-		SAVE_PROP(ID::FLEX_DIRECTION, flexDirection);
-		SAVE_PROP(ID::FLEX_WRAP,      flexWrap);
+		SAVE_PROP(ID::FLEX_GROW,      flexGrow, number);
+		SAVE_PROP(ID::FLEX_SHRINK,    flexShrink, number);
+		SAVE_PROP(ID::FLEX_BASIS,     flexBasis, length);
+		SAVE_PROP(ID::FLEX_DIRECTION, flexDirection, direction);
+		SAVE_PROP(ID::FLEX_WRAP,      flexWrap, wrap);
 
-		SAVE_PROP(ID::ALIGN_SELF,      alignSelf);
-		SAVE_PROP(ID::ALIGN_ITEMS,     alignItems);
-		SAVE_PROP(ID::ALIGN_CONTENT,   alignContent);
-		SAVE_PROP(ID::JUSTIFY_CONTENT, justifyContent);
+		SAVE_PROP(ID::ALIGN_SELF,      alignSelf, align);
+		SAVE_PROP(ID::ALIGN_ITEMS,     alignItems, align);
+		SAVE_PROP(ID::ALIGN_CONTENT,   alignContent, align);
+		SAVE_PROP(ID::JUSTIFY_CONTENT, justifyContent, justify);
 
-		SAVE_PROP(ID::POSITION, position);
-		SAVE_PROP(ID::LEFT,   left);
-		SAVE_PROP(ID::TOP,    top);
-		SAVE_PROP(ID::RIGHT,  right);
-		SAVE_PROP(ID::BOTTOM, bottom);
+		SAVE_PROP(ID::POSITION, position, position);
+		SAVE_PROP(ID::LEFT,   left, length);
+		SAVE_PROP(ID::TOP,    top, length);
+		SAVE_PROP(ID::RIGHT,  right, length);
+		SAVE_PROP(ID::BOTTOM, bottom, length);
 
-		SAVE_PROP(ID::COLOR, color);
-		SAVE_PROP(ID::BACKGROUND_COLOR, backgroundColor);
+		SAVE_PROP(ID::COLOR, color, color);
+		SAVE_PROP(ID::BACKGROUND_COLOR, backgroundColor, color);
 
-		SAVE_PROP(ID::OVERFLOW, overflow);
-		SAVE_PROP(ID::DISPLAY, display);
+		SAVE_PROP(ID::OVERFLOW, overflow, overflow);
+		SAVE_PROP(ID::DISPLAY, display, display);
 
-		SAVE_PROP(ID::FONT_SIZE, fontSize);
-		SAVE_PROP(ID::WHITE_SPACE, whiteSpace);
+		SAVE_PROP(ID::FONT_FAMILY, fontFamily, string);
+		SAVE_PROP(ID::FONT_SIZE, fontSize, length);
+		SAVE_PROP(ID::WHITE_SPACE, whiteSpace, whiteSpace);
 
-		SAVE_PROP(ID::CURSOR, cursor);
+		SAVE_PROP(ID::CURSOR, cursor, cursor);
 		}
 	}
 
@@ -95,4 +96,101 @@ namespace flexui {
 		INHERIT(cursor);
 	}
 
+	StyleComputed GetDefaultStyleValues()
+	{
+		StyleComputed defaults = { };
+		
+		#define SET_NUMBER(prop_name, _value) \
+		defaults.prop_name.populated = true; \
+		defaults.prop_name.inherited = true; \
+		defaults.prop_name.value = _value;
+
+		#define SET_LENGTH(prop_name, _value, _unit) \
+		defaults.prop_name.populated = true; \
+		defaults.prop_name.inherited = true; \
+		defaults.prop_name.value.number = _value; \
+		defaults.prop_name.value.unit = _unit;
+
+		#define SET_COLOR(prop_name, _value) \
+		defaults.prop_name.populated = true; \
+		defaults.prop_name.inherited = true; \
+		defaults.prop_name.value = _value;
+
+		#define SET_ENUM(prop_name, _enum_value) \
+		defaults.prop_name.populated = true; \
+		defaults.prop_name.inherited = true; \
+		defaults.prop_name.value = _enum_value;
+
+		#define SET_AUTO(prop_name) \
+		defaults.prop_name.populated = true; \
+		defaults.prop_name.inherited = true; \
+		defaults.prop_name.value.set_auto = true;
+
+		SET_AUTO(width);
+		SET_AUTO(height);
+		SET_AUTO(minWidth);
+		SET_AUTO(minHeight);
+		SET_AUTO(maxWidth);
+		SET_AUTO(maxHeight);
+
+		SET_LENGTH(marginLeft, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(marginTop, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(marginRight, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(marginBottom, 0, StyleLengthUnit::PIXELS);
+
+		SET_LENGTH(paddingLeft, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(paddingTop, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(paddingRight, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(paddingBottom, 0, StyleLengthUnit::PIXELS);
+
+		SET_COLOR(borderColor, 0x00000000); // transparent
+		SET_LENGTH(borderTopLeftRadius, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderTopRightRadius, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderBottomLeftRadius, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderBottomRightRadius, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderLeftWidth, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderTopWidth, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderRightWidth, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderBottomWidth, 0, StyleLengthUnit::PIXELS);
+
+		SET_NUMBER(flexGrow, 0);
+		SET_NUMBER(flexShrink, 1);
+		SET_AUTO(flexBasis);
+
+		SET_ENUM(flexDirection, FlexDirection::ROW);
+		SET_ENUM(flexWrap, FlexWrap::NOWRAP);
+		SET_ENUM(alignSelf, Align::AUTO);
+		SET_ENUM(alignItems, Align::STRETCH);
+		SET_ENUM(alignContent, Align::FLEX_START);
+		SET_ENUM(justifyContent, Justify::FLEX_START);
+
+		SET_ENUM(position, (Position)0); // Position::RELATIVE
+		SET_LENGTH(left, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(top, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(right, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(bottom, 0, StyleLengthUnit::PIXELS);
+
+		SET_COLOR(color, 0xFFFFFFFF); // white
+		SET_COLOR(backgroundColor, 0x00000000); // transparent
+		
+		SET_ENUM(overflow, Overflow::VISIBLE);
+		SET_ENUM(display, Display::FLEX);
+
+		defaults.fontFamily.inherited = true;
+		defaults.fontFamily.populated = true;
+        defaults.fontFamily.value = "default";
+		SET_LENGTH(fontSize, 14, StyleLengthUnit::PIXELS);
+		SET_ENUM(whiteSpace, WhiteSpace::NORMAL);
+
+		SET_ENUM(cursor, StyleCursor::AUTO);
+
+		#undef SET_NUMBER
+		#undef SET_LENGTH
+		#undef SET_COLOR
+		#undef SET_ENUM
+		#undef SET_AUTO
+
+		return defaults;
+	}
+	
 }
