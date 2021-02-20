@@ -416,6 +416,11 @@ namespace flexui {
 		else {
 			// try to match predefined colors
 			// See https://www.w3.org/TR/css-color-3/#svg-color
+			
+			// BUG: for some unknown reason, in Emscripten 2.0.10
+			//      the map NAMED_COLORS is empty
+			// printf("size: %lu\n", NAMED_COLORS.size());
+
 			auto it = NAMED_COLORS.find(input);
 			if (it != NAMED_COLORS.end()) {
 				output = (*it).second;
