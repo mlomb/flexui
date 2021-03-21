@@ -282,14 +282,26 @@ namespace flexui {
 			// number parsed
 			if (pos < input.size()) {
 				// more to read, must be a unit
+				
+				// set as AUTO, if continues to be AUTO after parsing, the unit was invalid
+				output.unit = StyleLengthUnit::AUTO;
 
-				if (input[pos] == '%') {
-					output.unit = StyleLengthUnit::PERCENT;
+				if (input[pos] == '%') output.unit = StyleLengthUnit::PERCENT;
+				else if (pos + 1 < input.size()) { // enough for two char unit
+					if(false) { }
+					// absolute lengths
+					else if (input[pos] == 'p' && input[pos + 1] == 'x') output.unit = StyleLengthUnit::PX;
+					else if (input[pos] == 'i' && input[pos + 1] == 'n') output.unit = StyleLengthUnit::IN;
+					else if (input[pos] == 'c' && input[pos + 1] == 'm') output.unit = StyleLengthUnit::CM;
+					else if (input[pos] == 'm' && input[pos + 1] == 'm') output.unit = StyleLengthUnit::MM;
+					// font-relative lengths
+					else if (input[pos] == 'e' && input[pos + 1] == 'm') output.unit = StyleLengthUnit::EM;
+					// viewport lengths
+					else if (input[pos] == 'v' && input[pos + 1] == 'w') output.unit = StyleLengthUnit::VW;
+					else if (input[pos] == 'v' && input[pos + 1] == 'h') output.unit = StyleLengthUnit::VH;
 				}
-				else if (pos + 1 < input.size() && input[pos] == 'p' && input[pos + 1] == 'x') {
-					output.unit = StyleLengthUnit::PIXELS;
-				}
-				else {
+				
+				if(output.unit == StyleLengthUnit::AUTO){
 					// invalid unit
 					parseResult.warnings.emplace_back("Unexpected character '" + std::string(1, input[pos]) + "' parsing length");
 					return false; // unexpected character
@@ -297,16 +309,16 @@ namespace flexui {
 			}
 			else {
 				// by default pixels
-				output.unit = StyleLengthUnit::PIXELS;
+				output.unit = StyleLengthUnit::PX;
+				parseResult.warnings.emplace_back("Defaulting to pixels due absence of length unit");
 			}
 
-			output.set_auto = false;
 			return true;
 		}
 		else if (input.size() >= 4) {
 			// check if auto
 			if (input[0] == 'a' && input[1] == 'u' && input[2] == 't' && input[3] == 'o') {
-				output.set_auto = true;
+				output.unit = StyleLengthUnit::AUTO;
 				return true;
 			}
 		}
@@ -686,7 +698,7 @@ namespace flexui {
 		bool before_whitespace = false;
 		bool inside_comment = false;
 		for (int i = 0; i < input.size(); i++) {
-			char chr = input[i];
+			unsigned char chr = input[i];
 			// check if next is closing comment
 			if (chr == '*' && i + 1 < input.size() && input[i + 1] == '/') {
 				i += 2;

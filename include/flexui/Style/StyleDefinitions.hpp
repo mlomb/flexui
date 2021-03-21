@@ -148,16 +148,22 @@ namespace flexui {
 	};
 
 	enum class StyleLengthUnit {
-		PIXELS,
-		PERCENT
+		AUTO,
+		PERCENT,
+		PX, // not actually screen pixels http://inamidst.com/stuff/notes/csspx
+		IN,
+		CM,
+		MM,
+		EM,
+		VW,
+		VH
 	};
 
 	typedef float StyleNumber;
 
 	struct StyleLength {
-		bool set_auto = false;
-		StyleNumber number;
 		StyleLengthUnit unit;
+		StyleNumber number;
 	};
 
 	typedef Color StyleColor;

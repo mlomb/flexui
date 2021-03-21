@@ -92,7 +92,7 @@ namespace flexui {
 		#define VA_ARGS(...) , ##__VA_ARGS__
 		#define CAT(a, b) a##b
 		#define SET_LENGTH(_base_fn, _value, ...) \
-			if(_value.set_auto) { \
+			if(_value.unit == StyleLengthUnit::AUTO) { \
 				_base_fn(yogaNode VA_ARGS(__VA_ARGS__), YGUndefined); \
 			} else if(_value.unit == StyleLengthUnit::PERCENT) { \
 				CAT(_base_fn, Percent)(yogaNode VA_ARGS(__VA_ARGS__), _value.number); \
@@ -100,7 +100,7 @@ namespace flexui {
 				_base_fn(yogaNode VA_ARGS(__VA_ARGS__), _value.number); \
 			}
 		#define SET_AUTO_LENGTH(_base_fn, _value, ...) \
-			if(_value.set_auto) { \
+			if(_value.unit == StyleLengthUnit::AUTO) { \
 				CAT(_base_fn, Auto)(yogaNode VA_ARGS(__VA_ARGS__)); \
 			} else SET_LENGTH(_base_fn, _value, __VA_ARGS__);
 

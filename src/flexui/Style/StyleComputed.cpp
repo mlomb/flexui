@@ -124,7 +124,7 @@ namespace flexui {
 		#define SET_AUTO(prop_name) \
 		defaults.prop_name.populated = true; \
 		defaults.prop_name.inherited = true; \
-		defaults.prop_name.value.set_auto = true;
+		defaults.prop_name.value.unit = StyleLengthUnit::AUTO;
 
 		SET_AUTO(width);
 		SET_AUTO(height);
@@ -133,25 +133,25 @@ namespace flexui {
 		SET_AUTO(maxWidth);
 		SET_AUTO(maxHeight);
 
-		SET_LENGTH(marginLeft, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(marginTop, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(marginRight, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(marginBottom, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(marginLeft, 0, StyleLengthUnit::PX);
+		SET_LENGTH(marginTop, 0, StyleLengthUnit::PX);
+		SET_LENGTH(marginRight, 0, StyleLengthUnit::PX);
+		SET_LENGTH(marginBottom, 0, StyleLengthUnit::PX);
 
-		SET_LENGTH(paddingLeft, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(paddingTop, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(paddingRight, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(paddingBottom, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(paddingLeft, 0, StyleLengthUnit::PX);
+		SET_LENGTH(paddingTop, 0, StyleLengthUnit::PX);
+		SET_LENGTH(paddingRight, 0, StyleLengthUnit::PX);
+		SET_LENGTH(paddingBottom, 0, StyleLengthUnit::PX);
 
 		SET_COLOR(borderColor, 0x00000000); // transparent
-		SET_LENGTH(borderTopLeftRadius, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(borderTopRightRadius, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(borderBottomLeftRadius, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(borderBottomRightRadius, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(borderLeftWidth, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(borderTopWidth, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(borderRightWidth, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(borderBottomWidth, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(borderTopLeftRadius, 0, StyleLengthUnit::PX);
+		SET_LENGTH(borderTopRightRadius, 0, StyleLengthUnit::PX);
+		SET_LENGTH(borderBottomLeftRadius, 0, StyleLengthUnit::PX);
+		SET_LENGTH(borderBottomRightRadius, 0, StyleLengthUnit::PX);
+		SET_LENGTH(borderLeftWidth, 0, StyleLengthUnit::PX);
+		SET_LENGTH(borderTopWidth, 0, StyleLengthUnit::PX);
+		SET_LENGTH(borderRightWidth, 0, StyleLengthUnit::PX);
+		SET_LENGTH(borderBottomWidth, 0, StyleLengthUnit::PX);
 
 		SET_NUMBER(flexGrow, 0);
 		SET_NUMBER(flexShrink, 1);
@@ -165,10 +165,10 @@ namespace flexui {
 		SET_ENUM(justifyContent, Justify::FLEX_START);
 
 		SET_ENUM(position, (Position)0); // Position::RELATIVE
-		SET_LENGTH(left, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(top, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(right, 0, StyleLengthUnit::PIXELS);
-		SET_LENGTH(bottom, 0, StyleLengthUnit::PIXELS);
+		SET_LENGTH(left, 0, StyleLengthUnit::PX);
+		SET_LENGTH(top, 0, StyleLengthUnit::PX);
+		SET_LENGTH(right, 0, StyleLengthUnit::PX);
+		SET_LENGTH(bottom, 0, StyleLengthUnit::PX);
 
 		SET_COLOR(color, 0xFFFFFFFF); // white
 		SET_COLOR(backgroundColor, 0x00000000); // transparent
@@ -179,7 +179,7 @@ namespace flexui {
 		defaults.fontFamily.inherited = true;
 		defaults.fontFamily.populated = true;
         defaults.fontFamily.value = "default";
-		SET_LENGTH(fontSize, 14, StyleLengthUnit::PIXELS);
+		SET_LENGTH(fontSize, 14, StyleLengthUnit::PX);
 		SET_ENUM(whiteSpace, WhiteSpace::NORMAL);
 
 		SET_ENUM(cursor, StyleCursor::AUTO);
