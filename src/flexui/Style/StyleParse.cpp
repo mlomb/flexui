@@ -195,6 +195,10 @@ namespace flexui {
 
 				// FUI_LOG_DEBUG("(nesting op)" << chr);
 			}
+			else if (chr == '[') {
+				parseResult.warnings.emplace_back("Attribute selectors are not supported");
+				return false;
+			}
 			else {
 				parseResult.errors.emplace_back("Unexpected character '" + std::string(1, chr) + "'");
 				return false;
