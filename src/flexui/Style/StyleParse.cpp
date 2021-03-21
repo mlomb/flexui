@@ -123,6 +123,12 @@ namespace flexui {
 				case '.': type = StyleIdentifierType::CLASS; break;
 				case '*': type = StyleIdentifierType::TAG; is_wildcard = true; break;
 				case ':':
+					// check for unsupported pseudo-elements
+					if (pos < input.size() && input[pos] == ':') {
+						parseResult.warnings.emplace_back("Pseudo-elements are not supported");
+						return false;
+					}
+
 					std::string pseudo = parseIdentifier(input, pos);
 
 					StylePseudoStates state;
@@ -310,7 +316,8 @@ namespace flexui {
 			else {
 				// by default pixels
 				output.unit = StyleLengthUnit::PX;
-				parseResult.warnings.emplace_back("Defaulting to pixels due absence of length unit");
+				// annoying if using something like: margin: 0;
+				// parseResult.warnings.emplace_back("Defaulting to pixels due absence of length unit");
 			}
 
 			return true;
