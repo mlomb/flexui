@@ -59,6 +59,7 @@ Note that the demo is a build of the master branch for now, it may contain anyth
 * Support a subset of CSS
 * Support XML for building elements
 * Fully based on a Flex layout engine (the same engine used by [React Native](https://reactnative.dev), [Yoga Layout](https://yogalayout.com))
+* All lists to be virtualized out of the box
 * Be render agnostic, the library should only generate vertices and indices
 * Be system agnostic, the library should not handle window creation or events
 
@@ -73,7 +74,7 @@ Note that the demo is a build of the master branch for now, it may contain anyth
 * [Yoga Layout](https://yogalayout.com), an open source layout engine
 * An embedded copy of [tinyxml2](https://github.com/leethomason/tinyxml2), a fast XML parser
 
-More complex text may require harfbuzz-ng.
+We may require harfbuzz-ng for complex text later on.
 
 # License
 
