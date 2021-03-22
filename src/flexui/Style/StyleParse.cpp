@@ -299,16 +299,21 @@ namespace flexui {
 				if (input[pos] == '%') output.unit = StyleLengthUnit::PERCENT;
 				else if (pos + 1 < input.size()) { // enough for two char unit
 					if(false) { }
+					#define CHECK_LENGTH_UNIT(a, b, _unit) \
+					else if (input[pos] == a && input[pos + 1] == b) output.unit = _unit;
+
 					// absolute lengths
-					else if (input[pos] == 'p' && input[pos + 1] == 'x') output.unit = StyleLengthUnit::PX;
-					else if (input[pos] == 'i' && input[pos + 1] == 'n') output.unit = StyleLengthUnit::IN;
-					else if (input[pos] == 'c' && input[pos + 1] == 'm') output.unit = StyleLengthUnit::CM;
-					else if (input[pos] == 'm' && input[pos + 1] == 'm') output.unit = StyleLengthUnit::MM;
+					CHECK_LENGTH_UNIT('p', 'x', StyleLengthUnit::PX)
+					CHECK_LENGTH_UNIT('i', 'n', StyleLengthUnit::IN)
+					CHECK_LENGTH_UNIT('c', 'm', StyleLengthUnit::CM)
+					CHECK_LENGTH_UNIT('m', 'm', StyleLengthUnit::MM)
 					// font-relative lengths
-					else if (input[pos] == 'e' && input[pos + 1] == 'm') output.unit = StyleLengthUnit::EM;
+					CHECK_LENGTH_UNIT('e', 'm', StyleLengthUnit::EM)
 					// viewport lengths
-					else if (input[pos] == 'v' && input[pos + 1] == 'w') output.unit = StyleLengthUnit::VW;
-					else if (input[pos] == 'v' && input[pos + 1] == 'h') output.unit = StyleLengthUnit::VH;
+					CHECK_LENGTH_UNIT('v', 'w', StyleLengthUnit::VW)
+					CHECK_LENGTH_UNIT('v', 'h', StyleLengthUnit::VH)
+
+					#undef CHECK_LENGTH_UNIT
 				}
 				
 				if(output.unit == StyleLengthUnit::AUTO){
