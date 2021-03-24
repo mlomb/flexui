@@ -23,6 +23,7 @@ namespace flexui {
 		AT_MOST
 	};
 
+	// A Element is the base class for all elements in the UI tree
 	class Element {
 	public:
 		Element();
@@ -46,11 +47,12 @@ namespace flexui {
 		bool isVisible() const;
 		int getDepth() const;
 		Surface* getSurface() const;
-		std::string getQualifiedName() const;
+		std::string getDebugLine() const;
 
 		virtual void paintContent(Painter* painter);
         virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode);
         virtual void executeDefault(EventBase* evt);
+		virtual std::string getName() const { return "Element"; };
 
 	protected:
 		StyleComputed* m_ComputedStyle;

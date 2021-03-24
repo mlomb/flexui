@@ -11,5 +11,6 @@ namespace flexui {
 
 		void executeDefault(EventBase* evt) override;
 
+		virtual std::string getName() const override { return "Button"; };
 	};
 }

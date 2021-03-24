@@ -19,6 +19,8 @@ namespace flexui {
 
 		void setTextToAllGlyphsTEST();
 
+		virtual std::string getName() const override { return "Text"; };
+
 	private:
 		std::string m_Text;
 

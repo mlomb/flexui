@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <string>
+#include <fstream>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/emscripten.h>
@@ -27,6 +28,10 @@ using namespace glm;
 #include <flexui/Elements/Button.hpp>
 #include <flexui/Events/EventsController.hpp>
 #include <flexui/Structure/XMLParse.hpp>
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif
 
 class TextureProviderImpl : public flexui::TextureProvider {
 public:
@@ -287,6 +292,20 @@ void generate_random_ui(flexui::Element* parent, int depth = 0) {
 	}
 }
 
+// debugging
+void PrintTree(const flexui::Element* element, const int depth = 0, const std::string& tab = "") {
+	using namespace flexui;
+
+	std::cout << element->getDebugLine() << std::endl;
+
+	const int len = element->getChildrens().size();
+	for (int i = 0; i < len; i++) {
+		bool last = i == len - 1;
+		std::cout << tab << (last ? "└──" : "├──");
+		PrintTree(element->getChildrens()[i], depth + 1, tab + (last ? "   " :  "│  "));
+	}
+}
+
 void init_ui() {
 	using namespace flexui;
 
@@ -362,14 +381,7 @@ void init_ui() {
 		}
 
 	)";
-
-	StyleParseResult pr;
-	StyleSheet* ss = ParseStyleSheet(css_source, pr);
-
-	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
-	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
-
-    std::string xml_source = u8R"(
+	std::string xml_source = u8R"(
 		<Element class="aaa">
 			<!-- comment -->
 			<Button><Text>Hello world</Text></Button>
@@ -382,8 +394,26 @@ void init_ui() {
 		</Element>
 	)";
 
+	#ifdef _WIN32
+	xml_source = std::string(std::istreambuf_iterator<char>(std::ifstream("input.xml").rdbuf()), std::istreambuf_iterator<char>());
+	css_source = std::string(std::istreambuf_iterator<char>(std::ifstream("input.css").rdbuf()), std::istreambuf_iterator<char>());
+	#endif
+
+	StyleParseResult pr;
+	StyleSheet* ss = ParseStyleSheet(css_source, pr);
+
+	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
+	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
+
 	XMLParseResult pr2;
     Element* loaded = ParseXML(xml_source, pr2);
+
+	for (auto s : pr2.warnings) std::cout << "[XML WARN] " << s << std::endl;
+	for (auto s : pr2.errors) std::cout << "[XML ERR] " << s << std::endl;
+
+	assert(loaded);
+
+	PrintTree(loaded);
 
 	// init ui
 	ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());
@@ -547,6 +577,10 @@ void main_loop() {
 }
 
 int main(int, char**) {
+	#ifdef _WIN32
+	system(("chcp " + std::to_string(CP_UTF8)).c_str());
+	#endif
+
 	if (glfwInit() != GLFW_TRUE) {
 		throw new std::runtime_error("GLFW failed to initialize");
 	}

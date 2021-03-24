@@ -242,4 +242,17 @@ namespace flexui {
     {
         return m_Surface;
     }
+
+	std::string Element::getDebugLine() const
+	{
+		std::string dbg = getName();
+		
+		if (m_ID.text.size() > 0)
+			dbg += "#" + m_ID.text;
+
+		for(auto klass : m_Classes)
+			dbg += " ." + klass.text;
+
+		return dbg;
+	}
 }
