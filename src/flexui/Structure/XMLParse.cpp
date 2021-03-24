@@ -67,29 +67,19 @@ namespace flexui {
             case HashStr("Button"): element = new Button(); break;
             case HashStr("Element"): element = new Element(); break;
             case HashStr("Text"):
-                Text* text_element = new Text();
-                std::string text;
-
-                // get all childs as text
-                XMLNode* child_node = node->FirstChild();
-                while (child_node) {
-                    XMLText* text_node = child_node->ToText();
-                    if (text_node) {
-                        text += text_node->Value();
-                    } else {
-                        parseResult.warnings.push_back("Unexpected non text node");
-                    }
-
-                    child_node = child_node->NextSibling();
-                }
-
-                add_recursive = false;
-                text_element->setText(text);
-                element = text_element;
+                parseResult.warnings.push_back("Text elements should not be created explicitly");
                 break;
             }
 
-            parseAttributes(xml_element, element);
+            if(element)
+                parseAttributes(xml_element, element);
+        }
+
+        XMLText* text_node = node->ToText();
+        if (text_node) {
+            Text* text_element = new Text();
+            text_element->setText(text_node->Value());
+            element = text_element;
         }
 
         if (!element) {
@@ -115,7 +105,7 @@ namespace flexui {
 
     Element* ParseXML(const std::string& source, XMLParseResult& parseResult)
     {
-        XMLDocument doc;
+        XMLDocument doc(true, tinyxml2::COLLAPSE_WHITESPACE);
         doc.Parse(source.c_str(), source.size());
 
         if (doc.ErrorID() != XMLError::XML_SUCCESS) {
