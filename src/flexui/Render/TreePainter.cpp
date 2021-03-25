@@ -1,7 +1,7 @@
 #include "flexui/Render/TreePainter.hpp"
 
 #include "flexui/Render/Painter.hpp"
-#include "flexui/Element.hpp"
+#include "flexui/Nodes/Element.hpp"
 #include "flexui/Surface.hpp"
 
 namespace flexui {
@@ -33,8 +33,8 @@ namespace flexui {
 	{
 		el->paintContent(m_Painter);
 
-		for (Element* e : el->getChildrens())
-			rec(e);
+		//for (Element* e : el->getChildrens())
+		//	rec(e);
 	}
 
 }

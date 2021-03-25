@@ -56,7 +56,8 @@ namespace flexui {
 
             //if (--backIndex < 0)
             //    return true;
-            current = current->getParent();
+            
+            //current = current->getParent();
         }
         return false;
     }

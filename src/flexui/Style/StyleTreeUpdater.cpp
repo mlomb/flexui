@@ -1,6 +1,6 @@
 #include "flexui/Style/StyleTreeUpdater.hpp"
 
-#include "flexui/Element.hpp"
+#include "flexui/Nodes/Element.hpp"
 #include "flexui/Surface.hpp"
 
 #include "flexui/Style/StyleSheet.hpp"
@@ -41,15 +41,15 @@ namespace flexui {
 		processMatchedSelectors(element);
 
 		// apply inherited (important: before traversing the subtree)
-		if(element->m_Parent)
-			element->m_ComputedStyle->inherit(*element->m_Parent->m_ComputedStyle);
+		//if(element->m_Parent)
+		//	element->m_ComputedStyle->inherit(*element->m_Parent->m_ComputedStyle);
 
 		// sync with yoga
 		syncWithLayout(element);
 
 		// recurse
-		for (Element* child : element->getChildrens())
-			applyStyles(child);
+		//for (Element* child : element->getChildrens())
+		//	applyStyles(child);
 
 		// remove sheets from stack, sheets only affect their subtree
 		for (StyleSheet* ss : element->getStyleSheets())

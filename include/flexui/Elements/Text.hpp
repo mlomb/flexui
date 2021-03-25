@@ -3,13 +3,14 @@
 #include <string>
 #include <vector>
 
-#include <flexui/Element.hpp>
+#include <flexui/Nodes/Element.hpp>
 
 namespace flexui {
 
 	struct UIVertex;
 
 	/// Text UI element
+	/*
 	class Text : public Element {
 	public:
 		Text();
@@ -29,4 +30,5 @@ namespace flexui {
 		void paintContent(Painter* painter) override;
 		Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) override;
 	};
+	*/
 }

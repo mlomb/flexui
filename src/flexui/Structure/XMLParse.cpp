@@ -8,9 +8,11 @@
 #include "flexui/Log.hpp"
 
 // Elements
-#include "flexui/Element.hpp"
+#include "flexui/Nodes/Node.hpp"
+#include "flexui/Nodes/Text.hpp"
+#include "flexui/Nodes/Comment.hpp"
 #include "flexui/Elements/Button.hpp"
-#include "flexui/Elements/Text.hpp"
+#include "flexui/Elements/Slider.hpp"
 
 namespace flexui {
     using namespace tinyxml2;
@@ -50,60 +52,55 @@ namespace flexui {
 
     }
 
-    Element* parseElement(XMLNode* node, XMLParseResult& parseResult)
+    Node* parseNode(XMLNode* xml_node, XMLParseResult& parseResult)
     {
-        if (node->ToComment())
-            return nullptr; // skip comments
+        if (xml_node->ToComment())
+            return new Comment(xml_node->Value());
 
-        Element* element = nullptr;
-        bool add_recursive = true;
+        Node* node = nullptr;
 
-        XMLElement* xml_element = node->ToElement();
+        XMLElement* xml_element = xml_node->ToElement();
         if (xml_element) {
             const char* name = xml_element->Value();
             FUI_DEBUG_ASSERT(name != nullptr);
 
             switch (HashStr(name)) {
-            case HashStr("Button"): element = new Button(); break;
-            case HashStr("Element"): element = new Element(); break;
+            case HashStr("Button"): node = new Button(); break;
+            case HashStr("Element"): node = new Element(); break;
+            case HashStr("Slider"): node = new Slider(); break;
             case HashStr("Text"):
                 parseResult.warnings.push_back("Text elements should not be created explicitly");
-                break;
+                return nullptr;
             }
 
-            if(element)
-                parseAttributes(xml_element, element);
+            // if(node)
+            //     parseAttributes(xml_element, node);
         }
 
-        XMLText* text_node = node->ToText();
+        XMLText* text_node = xml_node->ToText();
         if (text_node) {
-            Text* text_element = new Text();
-            text_element->setText(text_node->Value());
-            element = text_element;
+            Text* text_element = new Text(text_node->Value());
+            node = text_element;
         }
 
-        if (!element) {
-            printf("FIXME: %s\n", node->Value());
+        if (!node) {
+            parseResult.warnings.push_back("Can't parse node " + std::string(xml_node->Value()));
             return nullptr;
         }
 
-        printf("PARSED: %s\n", node->Value());
+        XMLNode* child_xml_node = xml_node->FirstChild();
+        while (child_xml_node) {
+            Node* child_node = parseNode(child_xml_node, parseResult);
+            if (child_node)
+                node->appendChild(child_node);
 
-        if (add_recursive) {
-            XMLNode* child_node = node->FirstChild();
-            while (child_node) {
-                Element* child_element = parseElement(child_node, parseResult);
-                if (child_element)
-                    element->addElement(child_element);
-
-                child_node = child_node->NextSibling();
-            }
+            child_xml_node = child_xml_node->NextSibling();
         }
 
-        return element;
+        return node;
     }
 
-    Element* ParseXML(const std::string& source, XMLParseResult& parseResult)
+    Node* ParseXML(const std::string& source, XMLParseResult& parseResult)
     {
         XMLDocument doc(true, tinyxml2::COLLAPSE_WHITESPACE);
         doc.Parse(source.c_str(), source.size());
@@ -113,7 +110,7 @@ namespace flexui {
             return nullptr;
         }
 
-        // convert XML to Elements
-        return parseElement(doc.RootElement(), parseResult);
+        // convert XML to Nodes
+        return parseNode(doc.RootElement(), parseResult);
     }
 }

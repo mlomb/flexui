@@ -18,6 +18,7 @@
 #endif
 
 namespace flexui {
+    /*
     Text::Text()
         : Element()
     {
@@ -124,4 +125,5 @@ namespace flexui {
 
         return { measuredWidth, measuredHeight };
     }
+    */
 }

@@ -5,13 +5,13 @@
 
 namespace flexui {
 
-	class Element;
+	class Node;
 
 	struct XMLParseResult {
 		std::vector<std::string> errors;
 		std::vector<std::string> warnings;
 	};
 
-	/// Parse XML source into a Element object
-    Element* ParseXML(const std::string& source, XMLParseResult& parseResult);
+	/// Parse XML source into a Node object
+    Node* ParseXML(const std::string& source, XMLParseResult& parseResult);
 }

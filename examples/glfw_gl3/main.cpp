@@ -17,17 +17,21 @@
 #include <glm/gtc/matrix_transform.hpp>
 using namespace glm;
 
-#include <flexui/Element.hpp>
+#include <flexui/Nodes/Element.hpp>
 #include <flexui/Surface.hpp>
 #include <flexui/Render/Painter.hpp> // TODO: move structs to another file
 #include <flexui/Providers/TextureProvider.hpp>
 #include <flexui/Providers/ResourceProvider.hpp>
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
+#include <flexui/Nodes/Text.hpp>
 #include <flexui/Elements/Text.hpp>
 #include <flexui/Elements/Button.hpp>
+#include <flexui/Elements/Slider.hpp>
 #include <flexui/Events/EventsController.hpp>
 #include <flexui/Structure/XMLParse.hpp>
+
+#include <flexui/Nodes/Document.hpp>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -288,22 +292,24 @@ void generate_random_ui(flexui::Element* parent, int depth = 0) {
 
 		generate_random_ui(child, depth + 1);
 
-		parent->addElement(child, 0);
+		parent->appendChild(child);
 	}
 }
 
 // debugging
-void PrintTree(const flexui::Element* element, const int depth = 0, const std::string& tab = "") {
+void PrintTree(const flexui::Node* node, const int depth = 0, const std::string& tab = "") {
 	using namespace flexui;
 
-	std::cout << element->getDebugLine() << std::endl;
+	/*
+	std::cout << node->getDebugLine() << std::endl;
 
-	const int len = element->getChildrens().size();
+	const int len = node->getChildrens().size();
 	for (int i = 0; i < len; i++) {
 		bool last = i == len - 1;
 		std::cout << tab << (last ? "└──" : "├──");
-		PrintTree(element->getChildrens()[i], depth + 1, tab + (last ? "   " :  "│  "));
+		PrintTree(node->getChildrens()[i], depth + 1, tab + (last ? "   " :  "│  "));
 	}
+	*/
 }
 
 void init_ui() {
@@ -373,11 +379,20 @@ void init_ui() {
 			border-radius: 3px;
 			cursor: pointer;
 		}
-		Button:hover {
+		Button:hover, Slider:hover {
 			background-color: #828282;
 		}
 		Button:active {
 			background-color: orange;
+		}
+
+		Slider {
+			width: 130px;
+			height: 8px;
+			background-color: #656565;
+			border-color: #242424;
+			border-width: 1px;
+			border-radius: 4px;
 		}
 
 	)";
@@ -396,7 +411,7 @@ void init_ui() {
 
 	#ifdef _WIN32
 	xml_source = std::string(std::istreambuf_iterator<char>(std::ifstream("input.xml").rdbuf()), std::istreambuf_iterator<char>());
-	css_source = std::string(std::istreambuf_iterator<char>(std::ifstream("input.css").rdbuf()), std::istreambuf_iterator<char>());
+	css_source += std::string(std::istreambuf_iterator<char>(std::ifstream("input.css").rdbuf()), std::istreambuf_iterator<char>());
 	#endif
 
 	StyleParseResult pr;
@@ -406,7 +421,7 @@ void init_ui() {
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
 
 	XMLParseResult pr2;
-    Element* loaded = ParseXML(xml_source, pr2);
+    Node* loaded = ParseXML(xml_source, pr2);
 
 	for (auto s : pr2.warnings) std::cout << "[XML WARN] " << s << std::endl;
 	for (auto s : pr2.errors) std::cout << "[XML ERR] " << s << std::endl;
@@ -436,6 +451,7 @@ void init_ui() {
 	div->addClass("cont");
 	generate_random_ui(div, 0);
 
+	/*
 	Text* text = new Text();
 	//text->setText("El veloz murciélago comía feliz cardillo y quiwi. 1234567890");
 	div->addElement(text);
@@ -455,13 +471,18 @@ void init_ui() {
 	// text3->m_FontNameTEST = "seguiemj.ttf";
 	text3->addClass("emoji-font");
 	div->addElement(text3);
+	*/
 
-    root->addElement(loaded);
+    //root->addElement(loaded);
 	//root->addElement(div);
 
 	//text->setTextToAllGlyphsTEST();
 	//text2->setTextToAllGlyphsTEST();
 	//text3->setTextToAllGlyphsTEST();
+
+	Document* doc = new Document();
+	auto t = doc->getNodeType();
+	
 }
 
 void init() {

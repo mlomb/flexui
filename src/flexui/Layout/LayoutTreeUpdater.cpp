@@ -56,6 +56,7 @@ namespace flexui {
 
 			// TODO: trigger size change
 		}
+		/*
 		element->m_BoundingRect.position = element->m_Parent ? element->m_Parent->m_BoundingRect.position : Vec2{ 0, 0 };
 		element->m_BoundingRect.position += layoutRect.position;
 		element->m_BoundingRect.size = layoutRect.size;
@@ -69,6 +70,7 @@ namespace flexui {
 
 			// TODO: trigger repaint
 		}
+		*/
 
 	}
 }

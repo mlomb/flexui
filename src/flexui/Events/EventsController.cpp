@@ -1,6 +1,6 @@
 #include "flexui/Events/EventsController.hpp"
 
-#include "flexui/Element.hpp"
+#include "flexui/Nodes/Element.hpp"
 #include "flexui/Surface.hpp"
 
 namespace flexui {
@@ -92,7 +92,7 @@ namespace flexui {
 				Element* el = evt->target;
 				while (el) {
 					evt->path.emplace_back(el);
-					el = el->getParent();
+					//el = el->getParent();
 				}
 				std::reverse(evt->path.begin(), evt->path.end());
 			}
@@ -150,12 +150,12 @@ namespace flexui {
 		while (lastDepth > currDepth) {
 			leave.emplace_back(last);
 			lastDepth--;
-			last = last->getParent();
+			//last = last->getParent();
 		}
 		while (currDepth > lastDepth) {
 			enter.emplace_back(curr);
 			currDepth--;
-			curr = curr->getParent();
+			//curr = curr->getParent();
 		}
 
 		// now last and curr have the same depth
@@ -163,8 +163,8 @@ namespace flexui {
 			leave.emplace_back(last);
 			enter.emplace_back(curr);
 
-			last = last->getParent();
-			curr = curr->getParent();
+			//last = last->getParent();
+			//curr = curr->getParent();
 		}
 
 		// queue events

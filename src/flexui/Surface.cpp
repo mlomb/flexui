@@ -1,6 +1,6 @@
 #include "flexui/Surface.hpp"
 
-#include "flexui/Element.hpp"
+#include "flexui/Nodes/Element.hpp"
 #include "flexui/Layout/LayoutTreeUpdater.hpp"
 #include "flexui/Style/StyleComputed.hpp"
 #include "flexui/Style/StyleTreeUpdater.hpp"
@@ -20,7 +20,7 @@ namespace flexui {
         m_EventsController = new EventsController(this);
 
         m_Root = new Element();
-        m_Root->m_Depth = 1;
+        //m_Root->m_Depth = 1;
         m_Root->m_Surface = this;
     }
 
@@ -52,14 +52,14 @@ namespace flexui {
 			if (found)
 				found->push_back(root);
 
-			const auto& childs = root->getChildrens();
+			/*const auto& childs = root->getChildrens();
 
 			// iterate in reverse order (z-index)
 			for (auto it = childs.rbegin(); it != childs.rend(); it++) {
 				Element* result = findElementsAt(*it, point, found);
 				if (result)
 					return result;
-			}
+			}*/
 			return root;
 		}
 
