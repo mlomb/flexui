@@ -7,6 +7,7 @@ namespace flexui {
     {
     }
 
-    Comment::~Comment() { }
+    Comment::~Comment() {
+    }
 
 }

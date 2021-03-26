@@ -11,7 +11,7 @@ namespace flexui {
 		~TreeScope();
 
 	private:
-		Document* m_Document;
+		//Document* m_Document;
 	};
 
 }

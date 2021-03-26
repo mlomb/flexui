@@ -1,96 +1,24 @@
-#include "flexui/Style/StyleTreeUpdater.hpp"
+#include "flexui/Layout/ElementLayoutObject.hpp"
 
 #include "flexui/Nodes/Element.hpp"
-#include "flexui/Surface.hpp"
-
-#include "flexui/Style/StyleSheet.hpp"
 #include "flexui/Style/StyleComputed.hpp"
-
 #include "flexui/Layout/Yoga.hpp"
 
 namespace flexui {
 
-	StyleTreeUpdater::StyleTreeUpdater(Surface* surface)
-		: TreeProcessor(surface)
+	ElementLayoutObject::ElementLayoutObject(Element* element)
+		: m_Element(element)
 	{
 	}
 
-	StyleTreeUpdater::~StyleTreeUpdater()
+	ElementLayoutObject::~ElementLayoutObject()
 	{
 	}
 
-	void StyleTreeUpdater::process()
+	void ElementLayoutObject::syncStyles() const
 	{
-		assert(m_SheetsStack.size() == 0);
-		applyStyles(m_Surface->getRoot());
-	}
-
-	void StyleTreeUpdater::applyStyles(Element* element)
-	{
-		// TODO: check if we can skip this element
-
-		// add this element's sheets to the sheets stack
-		/*
-		for (StyleSheet* ss : element->getStyleSheets())
-			m_SheetsStack.push_back(ss);
-		*/
-
-		// find all selector matches
-		m_MatchedSelectors.clear();
-		StyleSelectorMatcher::FindMatches(element, m_SheetsStack, m_MatchedSelectors);
-
-		// process matches
-		processMatchedSelectors(element);
-
-		// apply inherited (important: before traversing the subtree)
-		//if(element->m_Parent)
-		//	element->m_ComputedStyle->inherit(*element->m_Parent->m_ComputedStyle);
-
-		// sync with yoga
-		syncWithLayout(element);
-
-		// recurse
-		//for (Element* child : element->getChildrens())
-		//	applyStyles(child);
-
-		// remove sheets from stack, sheets only affect their subtree
-		/*
-		for (StyleSheet* ss : element->getStyleSheets())
-			m_SheetsStack.pop_back();
-		*/
-	}
-
-	void StyleTreeUpdater::processMatchedSelectors(Element* element)
-	{
-		std::sort(m_MatchedSelectors.begin(), m_MatchedSelectors.end()); // sorted by precedence
-
-		// TODO: calculate the hash of the matched selectors
-		//       and reuse the StyleComputed*
-		//       (apply inline later, use same pointer if no inline rules)
-		/*StyleHash selectorsHash = 0;
-		for (const SelectorMatch& match : m_MatchedSelectors) {
-			match.
-		}*/
-
-		StyleComputed* computedStyle = new StyleComputed();
-		*computedStyle = GetDefaultStyleValues(); // copy defaults
-		for (const SelectorMatch& match : m_MatchedSelectors) {
-			assert(match.selector->rule);
-			computedStyle->applyRule(*match.selector->rule);
-		}
-
-		computedStyle->applyRule(element->m_InlineRules);
-
-		if (element->m_ComputedStyle)
-			delete element->m_ComputedStyle;
-		element->m_ComputedStyle = computedStyle;
-	}
-
-	void StyleTreeUpdater::syncWithLayout(Element* element)
-	{
-		/*
-		const StyleComputed* computedStyle = element->m_ComputedStyle;
-		const YGNodeRef yogaNode = element->m_YogaNode;
+		const StyleComputed* computedStyle = m_Element->getComputedStyle();
+		const YGNodeRef yogaNode = m_YogaNode;
 
 		// all values *should* be populated by now
 
@@ -101,7 +29,7 @@ namespace flexui {
 				_base_fn(yogaNode VA_ARGS(__VA_ARGS__), YGUndefined); \
 			} else if(_value.unit == StyleLengthUnit::PERCENT) { \
 				CAT(_base_fn, Percent)(yogaNode VA_ARGS(__VA_ARGS__), _value.number); \
-			} else { /* PIXELS * / \
+			} else { /* PIXELS */ \
 				_base_fn(yogaNode VA_ARGS(__VA_ARGS__), _value.number); \
 			}
 		#define SET_AUTO_LENGTH(_base_fn, _value, ...) \
@@ -153,7 +81,6 @@ namespace flexui {
 		
 		YGNodeStyleSetOverflow(yogaNode, (YGOverflow)computedStyle->overflow.value);
 		YGNodeStyleSetDisplay(yogaNode, (YGDisplay)computedStyle->display.value);
-		*/
 	}
 
 }

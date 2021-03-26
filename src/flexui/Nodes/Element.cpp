@@ -1,42 +1,35 @@
 #include "flexui/Nodes/Element.hpp"
 
-#include "flexui/Layout/Yoga.hpp"
 #include "flexui/Render/Painter.hpp"
 #include "flexui/Style/StyleComputed.hpp"
 #include "flexui/Events/Events.hpp"
+#include "flexui/Layout/ElementLayoutObject.hpp"
 
 namespace flexui {
 
 	Element::Element() :
-		m_Surface(nullptr),
 		m_ComputedStyle(nullptr),
 		m_PseudoStates(StylePseudoStates::NONE)
 	{
 		setID("");
 		setTag("Element");
 
-		m_YogaNode = YGNodeNew();
-		YGNodeSetContext(m_YogaNode, this);
+		m_Layout = new ElementLayoutObject(this);
 	}
 
 	Element::~Element()
 	{
-		// assert(m_Parent == nullptr && "Element is still attached to the tree");
-		
-		YGNodeFreeRecursive(m_YogaNode);
+
 	}
 
-	/*
-	// this function sets the correct owner in yoga land
-	YGNodeInsertChild(m_YogaNode, child->m_YogaNode, index);
-	*/
-
-	void Element::paintContent(Painter* painter)
+	void Element::drawContent(Painter* painter)
 	{
 		if (!m_ComputedStyle)
 			return;
 
-		//painter->drawRectangle(m_BoundingBox, color);
+		const Rect& boundingRect = m_Layout->getLayoutRect();
+
+		// painter->drawRectangle(boundingRect, 0xFFFF00FF);
 
 		// TODO: % unit
 		RoundedRectParams roundedParams;
@@ -49,7 +42,7 @@ namespace flexui {
 		auto border_color = m_ComputedStyle->borderColor.value;
 
 		if ((background_color & 0xFF000000) > 0)
-			painter->drawRoundedRectangle(m_BoundingRect, background_color, roundedParams);
+			painter->drawRoundedRectangle(boundingRect, background_color, roundedParams);
 		if ((border_color & 0xFF000000) > 0) {
 			RoundedBordersParams borderParams;
 			borderParams.rectParams = roundedParams;
@@ -58,17 +51,11 @@ namespace flexui {
 			borderParams.widths[1] = m_ComputedStyle->borderTopWidth.value.number;
 			borderParams.widths[2] = m_ComputedStyle->borderRightWidth.value.number;
 			borderParams.widths[3] = m_ComputedStyle->borderBottomWidth.value.number;
-			painter->drawRoundedBorders(m_BoundingRect, border_color, borderParams);
+			painter->drawRoundedBorders(boundingRect, border_color, borderParams);
 		}
 	}
 
-	Vec2 Element::measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode)
-	{
-		assert(false && "measureContent is not overrided");
-		return { 0, 0 };
-    }
-
-    void Element::executeDefault(EventBase* evt)
+	void Element::executeDefault(EventBase* evt)
     {
         switch (evt->type) {
         case EventTypeID::MOUSE_ENTER:
@@ -85,33 +72,6 @@ namespace flexui {
             break;
         }
     }
-
-	MeasureMode YogaMeasureModeToMeasureMode(YGMeasureMode mode) {
-		switch (mode)
-		{
-		default:
-		case YGMeasureModeUndefined: return MeasureMode::UNDEFINED;
-		case YGMeasureModeExactly: return MeasureMode::EXACTLY;
-		case YGMeasureModeAtMost: return MeasureMode::AT_MOST;
-		}
-	}
-
-	YGSize YogaMeasureCallback(YGNode* yogaNode, float width, YGMeasureMode widthMode, float height, YGMeasureMode heightMode)
-	{
-		Element* element_ptr = static_cast<Element*>(yogaNode->getContext());
-		auto size = element_ptr->measureContent(width, YogaMeasureModeToMeasureMode(widthMode), height, YogaMeasureModeToMeasureMode(heightMode));
-		return { size.x, size.y };
-	}
-
-	void Element::setAsTextType()
-    {
-        YGNodeSetNodeType(m_YogaNode, YGNodeType::YGNodeTypeText);
-	}
-
-	void Element::enableMeasurement()
-    {
-        YGNodeSetMeasureFunc(m_YogaNode, YogaMeasureCallback);
-	}
 
 	void Element::setID(const std::string& id)
 	{
@@ -138,11 +98,6 @@ namespace flexui {
 		m_Classes.emplace_back(si);
 	}
 
-	void Element::addStyleSheet(StyleSheet* stylesheet)
-	{
-		m_StyleSheets.emplace_back(stylesheet);
-	}
-
     void Element::setPseudoStates(const StylePseudoStates states)
     {
         m_PseudoStates |= states;
@@ -153,41 +108,28 @@ namespace flexui {
         m_PseudoStates &= ~states;
     }
 
-	const std::vector<StyleSheet*>& Element::getStyleSheets() const
-	{
-		return m_StyleSheets;
-	}
-
-	Rect Element::getBoundingRect() const
-	{
-		return m_BoundingRect;
-	}
-
 	Rect Element::getContentRect() const
 	{
+		auto layoutRect = m_Layout->getLayoutRect();
+
 		if (!m_ComputedStyle)
-			return m_BoundingRect;
+			return layoutRect;
 
 		float l = m_ComputedStyle->paddingLeft.value.number;
 		float t = m_ComputedStyle->paddingTop.value.number;
 		float r = m_ComputedStyle->paddingRight.value.number;
 		float b = m_ComputedStyle->paddingBottom.value.number;
 		return Rect(
-			m_BoundingRect.x + l,
-			m_BoundingRect.y + t,
-			m_BoundingRect.width - l - r,
-			m_BoundingRect.height - t - b
+			layoutRect.x + l,
+			layoutRect.y + t,
+			layoutRect.width - l - r,
+			layoutRect.height - t - b
 		);
     }
 
     bool Element::isVisible() const
     {
         return m_ComputedStyle && m_ComputedStyle->display.value == Display::FLEX;
-    }
-
-    Surface* Element::getSurface() const
-    {
-        return m_Surface;
     }
 
 	std::string Element::getDebugLine() const

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "flexui/Elements/Text.hpp"
+#include "flexui/Nodes/Element.hpp"
 
 namespace flexui {
 	/// Button UI element

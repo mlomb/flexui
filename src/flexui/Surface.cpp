@@ -1,7 +1,6 @@
 #include "flexui/Surface.hpp"
 
 #include "flexui/Nodes/Element.hpp"
-#include "flexui/Layout/LayoutTreeUpdater.hpp"
 #include "flexui/Style/StyleComputed.hpp"
 #include "flexui/Style/StyleTreeUpdater.hpp"
 #include "flexui/Render/TreePainter.hpp"
@@ -14,14 +13,13 @@ namespace flexui {
         , m_TextureProvider(tp)
         , m_ResourceProvider(rp)
     {
-        m_LayoutUpdater = new LayoutTreeUpdater(this);
         m_StyleTreeUpdater = new StyleTreeUpdater(this);
         m_TreePainter = new TreePainter(this);
         m_EventsController = new EventsController(this);
 
         m_Root = new Element();
         //m_Root->m_Depth = 1;
-        m_Root->m_Surface = this;
+        //m_Root->m_Surface = this;
     }
 
 	Surface::~Surface()
@@ -37,7 +35,6 @@ namespace flexui {
 	{
 		m_EventsController->process();
 		m_StyleTreeUpdater->process();
-		m_LayoutUpdater->process();
 		m_TreePainter->process();
 	}
 

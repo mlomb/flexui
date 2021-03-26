@@ -21,10 +21,10 @@ namespace flexui {
 
 		switch (evt->type) {
 		case EventTypeID::MOUSE_DOWN:
-			getSurface()->getEventsController()->captureElement(this);
+			//getSurface()->getEventsController()->captureElement(this);
 			break;
 		case EventTypeID::MOUSE_UP:
-            getSurface()->getEventsController()->captureElement(nullptr);
+            //getSurface()->getEventsController()->captureElement(nullptr);
 			break;
 		}
 	}

@@ -6,20 +6,17 @@
 namespace flexui {
 
 	Node::Node() :
+		m_Document(nullptr),
 		m_Parent(nullptr),
-		m_Previous(nullptr),
-		m_Next(nullptr),
-		m_YogaNode(nullptr)
+		m_PreviousSibling(nullptr),
+		m_NextSibling(nullptr),
+		m_Layout(nullptr)
 	{
 	}
 
 	Node::~Node()
 	{
-		// TODO
-	}
-
-	void Node::appendChild(Node* child_node)
-	{
-		FUI_ASSERT_MSG(false, "This node type does not support appendChild");
+		FUI_ASSERT_MSG(m_Parent == nullptr, "Node is still attached to the tree");
+		delete m_Layout;
 	}
 }

@@ -10,7 +10,7 @@ namespace flexui {
 	class Comment : public Node {
 	public:
 		Comment(const std::string& text = "");
-		~Comment();
+		~Comment() override;
 
 		NodeType getNodeType() const override { return NodeType::COMMENT; };
 

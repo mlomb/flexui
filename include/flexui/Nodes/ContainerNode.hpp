@@ -6,23 +6,25 @@
 
 namespace flexui {
 
-	// Responsible for hierarchy
+	// A ContainerNode allows nodes to hold other nodes
 	class ContainerNode : public Node {
 	public:
 
-		void appendChild(Node* child_node) override;
+		void appendChild(Node* child_node);
+		void removeChild(Node* child_node);
 
-		// Internal calls
-		void _setFirstChild(Node* node) { m_FirstChild = node; }
-		void _setLastChild(Node* node) { m_LastChild = node; }
+		Node* getFirstChild() const { return m_FirstChild; }
+		Node* getLastChild() const { return m_LastChild; }
 
 	protected:
 		ContainerNode();
-
+		~ContainerNode() override;
 
 	private:
 		Node* m_FirstChild;
 		Node* m_LastChild;
+
+		void propagateDocument();
 	};
 
 }

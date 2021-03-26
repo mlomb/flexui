@@ -74,7 +74,7 @@ namespace flexui {
 
         ~Font();
 
-        ///  Returns all available codepoint in the font
+        ///  Returns all available codepoints in the font
         void getAvailableGlyphs(std::vector<GlyphCodepoint>& glyphs) const;
 
         /// Retrieve the metrics of a Glyph

@@ -64,17 +64,31 @@ namespace flexui {
             const char* name = xml_element->Value();
             FUI_DEBUG_ASSERT(name != nullptr);
 
+            Element* element = nullptr;
+
             switch (HashStr(name)) {
-            case HashStr("Button"): node = new Button(); break;
-            case HashStr("Element"): node = new Element(); break;
-            case HashStr("Slider"): node = new Slider(); break;
+            case HashStr("Button"): element = new Button(); break;
+            case HashStr("Element"): element = new Element(); break;
+            case HashStr("Slider"): element = new Slider(); break;
             case HashStr("Text"):
                 parseResult.warnings.push_back("Text elements should not be created explicitly");
                 return nullptr;
             }
 
-            // if(node)
-            //     parseAttributes(xml_element, node);
+            if (element) {
+                node = element;
+                parseAttributes(xml_element, element);
+
+                XMLNode* child_xml_node = xml_node->FirstChild();
+                while (child_xml_node) {
+                    Node* child_node = parseNode(child_xml_node, parseResult);
+                    if (child_node)
+                        element->appendChild(child_node);
+
+                    child_xml_node = child_xml_node->NextSibling();
+                }
+            }
+
         }
 
         XMLText* text_node = xml_node->ToText();
@@ -86,15 +100,6 @@ namespace flexui {
         if (!node) {
             parseResult.warnings.push_back("Can't parse node " + std::string(xml_node->Value()));
             return nullptr;
-        }
-
-        XMLNode* child_xml_node = xml_node->FirstChild();
-        while (child_xml_node) {
-            Node* child_node = parseNode(child_xml_node, parseResult);
-            if (child_node)
-                node->appendChild(child_node);
-
-            child_xml_node = child_xml_node->NextSibling();
         }
 
         return node;

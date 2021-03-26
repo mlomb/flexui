@@ -31,7 +31,7 @@ namespace flexui {
 	// this will be removed
 	void TreePainter::rec(Element* el)
 	{
-		el->paintContent(m_Painter);
+		el->drawContent(m_Painter);
 
 		//for (Element* e : el->getChildrens())
 		//	rec(e);

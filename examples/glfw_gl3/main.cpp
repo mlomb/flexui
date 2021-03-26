@@ -25,13 +25,13 @@ using namespace glm;
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
 #include <flexui/Nodes/Text.hpp>
-#include <flexui/Elements/Text.hpp>
 #include <flexui/Elements/Button.hpp>
 #include <flexui/Elements/Slider.hpp>
 #include <flexui/Events/EventsController.hpp>
 #include <flexui/Structure/XMLParse.hpp>
 
 #include <flexui/Nodes/Document.hpp>
+#include <flexui/Layout/LayoutObject.hpp>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -312,6 +312,9 @@ void PrintTree(const flexui::Node* node, const int depth = 0, const std::string&
 	*/
 }
 
+flexui::Document* doc;
+flexui::Painter* painter;
+
 void init_ui() {
 	using namespace flexui;
 
@@ -428,6 +431,12 @@ void init_ui() {
 
 	assert(loaded);
 
+	doc = new Document(new ResourceProviderImpl());
+	doc->getStyleEngine().addStyleSheet(ss);
+	doc->appendChild(loaded);
+
+	painter = new Painter(new TextureProviderImpl());
+
 	PrintTree(loaded);
 
 	// init ui
@@ -444,7 +453,7 @@ void init_ui() {
 
 	Element* root = ui_surface->getRoot();
 	root->setID("root");
-	root->addStyleSheet(ss);
+	//root->addStyleSheet(ss);
 
 
 	Element* div = new Element();
@@ -480,9 +489,6 @@ void init_ui() {
 	//text2->setTextToAllGlyphsTEST();
 	//text3->setTextToAllGlyphsTEST();
 
-	Document* doc = new Document();
-	auto t = doc->getNodeType();
-	
 }
 
 void init() {
@@ -583,7 +589,12 @@ void main_loop() {
         else em_set_default();
 		#endif
 
-		Painter* p = ui_surface->getPainter();
+		doc->getStyleEngine().performStyles();
+		doc->getLayoutEngine().performLayout(width, height);
+		doc->getRenderEngine().performRender(painter);
+
+		//Painter* p = ui_surface->getPainter();
+		Painter* p = painter;
 
 		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));

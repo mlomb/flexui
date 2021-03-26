@@ -22,5 +22,8 @@ Node
 │     ├──Slider
 │     └──...
 ├──Text
-└──Shadow
+└──Comment
 ```
+
+The Element and Text nodes own a LayoutObject.  
+Only `ContainerNode`s can have childrens.

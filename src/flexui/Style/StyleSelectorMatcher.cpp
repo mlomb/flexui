@@ -1,6 +1,6 @@
 #include "flexui/Style/StyleSelectorMatcher.hpp"
 
-#include "flexui/Element.hpp"
+#include "flexui/Nodes/Element.hpp"
 #include "flexui/Style/StyleDefinitions.hpp"
 #include "flexui/Style/StyleSheet.hpp"
 

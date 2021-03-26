@@ -5,7 +5,7 @@
 namespace flexui {
 
 	TreeScope::TreeScope(Document* document)
-		: m_Document(document)
+		//: m_Document(document)
 	{
 	}
 

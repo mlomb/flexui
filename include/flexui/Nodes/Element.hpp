@@ -16,12 +16,6 @@ namespace flexui {
     class Painter;
     class EventBase;
 
-	enum class MeasureMode {
-		UNDEFINED,
-		EXACTLY,
-		AT_MOST
-	};
-
 	// A Element is the base class for all elements in the UI tree
 	//
 	// An Elements object can be attached to a tree
@@ -32,34 +26,29 @@ namespace flexui {
 
 		void setID(const std::string& id);
 		void addClass(const std::string& klass);
-		void addStyleSheet(StyleSheet* stylesheet);
 		void setStyleProperty(const StyleProperty& property);
 		void setPseudoStates(const StylePseudoStates states);
 		void removePseudoStates(const StylePseudoStates states);
 
-		const std::vector<StyleSheet*>& getStyleSheets() const;
-		Rect getBoundingRect() const;
+		Rect getBoundingRect() const { return Rect(); };
 		Rect getContentRect() const;
 		bool isVisible() const;
-		Surface* getSurface() const;
 		std::string getDebugLine() const;
+		const StyleComputed* getComputedStyle() const { return m_ComputedStyle; };
 
 		NodeType getNodeType() const override { return NodeType::ELEMENT; }
 
-		virtual void paintContent(Painter* painter);
-        virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode);
+		//virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) { return Vec2(); };
+
+		virtual void drawContent(Painter* painter) override;
         virtual void executeDefault(EventBase* evt);
 		virtual std::string getName() const { return "Element"; };
 
 		int getDepth() const { return 5; } // TODO
 
 	protected:
-		StyleComputed* m_ComputedStyle;
 
 		void setTag(const std::string& tag);
-
-		void setAsTextType();
-		void enableMeasurement();
 
 	private:
 		friend class Surface;
@@ -70,13 +59,11 @@ namespace flexui {
 		StyleIdentifier m_ID, m_Tag;
 		std::vector<StyleIdentifier> m_Classes;
 		StylePseudoStates m_PseudoStates;
-		std::vector<StyleSheet*> m_StyleSheets;
 		StyleRule m_InlineRules;
 
-		Rect m_LayoutRect;
-		Rect m_BoundingRect;
+		friend class StyleEngine;
 
-		Surface* m_Surface;
+		StyleComputed* m_ComputedStyle;
 	};
 
 }
