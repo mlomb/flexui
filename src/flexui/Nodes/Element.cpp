@@ -22,14 +22,14 @@ namespace flexui {
 
 	}
 
-	void Element::drawContent(Painter* painter)
+	void Element::drawContent(Painter& painter)
 	{
 		if (!m_ComputedStyle)
 			return;
 
 		const Rect& boundingRect = m_Layout->getLayoutRect();
 
-		// painter->drawRectangle(boundingRect, 0xFFFF00FF);
+		// painter.drawRectangle(boundingRect, 0xFFFF00FF);
 
 		// TODO: % unit
 		RoundedRectParams roundedParams;
@@ -42,7 +42,7 @@ namespace flexui {
 		auto border_color = m_ComputedStyle->borderColor.value;
 
 		if ((background_color & 0xFF000000) > 0)
-			painter->drawRoundedRectangle(boundingRect, background_color, roundedParams);
+			painter.drawRoundedRectangle(boundingRect, background_color, roundedParams);
 		if ((border_color & 0xFF000000) > 0) {
 			RoundedBordersParams borderParams;
 			borderParams.rectParams = roundedParams;
@@ -51,7 +51,7 @@ namespace flexui {
 			borderParams.widths[1] = m_ComputedStyle->borderTopWidth.value.number;
 			borderParams.widths[2] = m_ComputedStyle->borderRightWidth.value.number;
 			borderParams.widths[3] = m_ComputedStyle->borderBottomWidth.value.number;
-			painter->drawRoundedBorders(boundingRect, border_color, borderParams);
+			painter.drawRoundedBorders(boundingRect, border_color, borderParams);
 		}
 	}
 

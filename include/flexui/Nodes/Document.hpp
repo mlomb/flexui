@@ -8,11 +8,12 @@
 namespace flexui {
 
 	class ResourceProvider;
+	class TextureProvider;
 
 	// A Document is the root for all other nodes
 	class Document : public ContainerNode {
 	public:
-		Document(ResourceProvider* resource_provider);
+		Document(ResourceProvider* resource_provider, TextureProvider* texture_provider);
 		~Document() override;
 
 		NodeType getNodeType() const override { return NodeType::DOCUMENT; };
@@ -20,6 +21,7 @@ namespace flexui {
 		LayoutEngine& getLayoutEngine() { return m_LayoutEngine; }
 		RenderEngine& getRenderEngine() { return m_RenderEngine; }
 		ResourceProvider* getResourceProvider() const { return m_ResourceProvider; }
+		TextureProvider* getTextureProvider() const { return m_TextureProvider; }
 
 	private:
 		StyleEngine m_StyleEngine;
@@ -27,6 +29,7 @@ namespace flexui {
 		RenderEngine m_RenderEngine;
 
 		ResourceProvider* m_ResourceProvider;
+		TextureProvider* m_TextureProvider;
 	};
 
 }

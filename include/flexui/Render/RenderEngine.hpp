@@ -11,12 +11,15 @@ namespace flexui {
 		explicit RenderEngine(Document* document);
 		~RenderEngine();
 
-		void performRender(Painter* painter);
+		const Painter* getPainter() const { return m_Painter; }
+
+		void performRender();
 
 	private:
 		Document* m_Document;
+		Painter* m_Painter;
 
-		void renderRecursive(Painter* painter, ContainerNode* node);
+		void renderRecursive(ContainerNode* node);
 	};
 
 }

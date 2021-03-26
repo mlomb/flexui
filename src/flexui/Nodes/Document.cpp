@@ -5,11 +5,12 @@
 
 namespace flexui {
 
-	Document::Document(ResourceProvider* resource_provider) :
+	Document::Document(ResourceProvider* resource_provider, TextureProvider* texture_provider) :
+		m_ResourceProvider(resource_provider),
+		m_TextureProvider(texture_provider),
 		m_StyleEngine(this),
 		m_LayoutEngine(this),
-		m_RenderEngine(this),
-		m_ResourceProvider(resource_provider)
+		m_RenderEngine(this)
 	{
 		m_Document = this;
 		m_Layout = new LayoutObject();

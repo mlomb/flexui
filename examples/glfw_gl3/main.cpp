@@ -19,6 +19,7 @@ using namespace glm;
 
 #include <flexui/Nodes/Element.hpp>
 #include <flexui/Render/Painter.hpp> // TODO: move structs to another file
+#include <flexui/Render/RenderEngine.hpp>
 #include <flexui/Providers/TextureProvider.hpp>
 #include <flexui/Providers/ResourceProvider.hpp>
 #include <flexui/Style/StyleSheet.hpp>
@@ -428,11 +429,9 @@ void init_ui() {
 
 	assert(loaded);
 
-	doc = new Document(new ResourceProviderImpl());
+	doc = new Document(new ResourceProviderImpl(), new TextureProviderImpl());
 	doc->getStyleEngine().addStyleSheet(ss);
 	doc->appendChild(loaded);
-
-	painter = new Painter(new TextureProviderImpl());
 
 	PrintTree(loaded);
 
@@ -549,9 +548,9 @@ void main_loop() {
 
 		doc->getStyleEngine().performStyles();
 		doc->getLayoutEngine().performLayout(width, height);
-		doc->getRenderEngine().performRender(painter);
+		doc->getRenderEngine().performRender();
 
-		Painter* p = painter;
+		const Painter* p = doc->getRenderEngine().getPainter();
 
 		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));
 		GL_CHECK(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));

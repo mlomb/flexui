@@ -24,7 +24,7 @@ namespace flexui {
 
 		virtual ~Node();
 		virtual NodeType getNodeType() const = 0;
-		virtual void drawContent(Painter* painter) { };
+		virtual void drawContent(Painter& painter) { };
 
 		Node* getParentNode() const { return m_Parent; }
 		Node* getPreviousSibling() const { return m_PreviousSibling; }

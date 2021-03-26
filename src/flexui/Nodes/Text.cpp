@@ -30,12 +30,15 @@ namespace flexui {
         return parent_element->getComputedStyle();
     }
 
-    void Text::drawContent(Painter* painter)
+    void Text::drawContent(Painter& painter)
     {
         if (m_Text.size() == 0)
             return;
 
         auto computed_style = getParentComputedStyle();
+
+        if (!getDocument()->getResourceProvider())
+            return;
 
         std::shared_ptr<Font> font = getDocument()->getResourceProvider()->getFont(computed_style->fontFamily.value);
 
@@ -51,7 +54,7 @@ namespace flexui {
 
         TextLayout layout;
         font->generateTextLayout(m_Text, layoutSettings, layout);
-        painter->drawText(font.get(), layout, box.position, computed_style->color.value);
+        painter.drawText(font.get(), layout, box.position, computed_style->color.value);
     }
 
 }

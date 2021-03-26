@@ -40,7 +40,7 @@ namespace flexui {
 
 		//virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) { return Vec2(); };
 
-		virtual void drawContent(Painter* painter) override;
+		virtual void drawContent(Painter& painter) override;
         virtual void executeDefault(EventBase* evt);
 		virtual std::string getName() const { return "Element"; };
 

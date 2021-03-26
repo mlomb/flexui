@@ -18,7 +18,7 @@ namespace flexui {
 		const StyleComputed* getParentComputedStyle() const;
 		NodeType getNodeType() const override { return NodeType::TEXT; };
 
-		void drawContent(Painter* painter) override;
+		void drawContent(Painter& painter) override;
 
 	private:
 		std::string m_Text;

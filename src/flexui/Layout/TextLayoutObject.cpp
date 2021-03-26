@@ -37,6 +37,9 @@ namespace flexui {
 
         FUI_ASSERT(text_node->getDocument());
 
+        if (!text_node->getDocument()->getResourceProvider())
+            return { measuredWidth, measuredHeight };
+
         std::shared_ptr<Font> font = text_node->getDocument()->getResourceProvider()->getFont(computed_style->fontFamily.value);
 
         if (font == nullptr)

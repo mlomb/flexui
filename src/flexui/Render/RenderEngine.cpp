@@ -5,8 +5,9 @@
 
 namespace flexui {
 
-	RenderEngine::RenderEngine(Document* document)
-		: m_Document(document)
+	RenderEngine::RenderEngine(Document* document) :
+		m_Document(document),
+		m_Painter(nullptr)
 	{
 	}
 
@@ -14,19 +15,22 @@ namespace flexui {
 	{
 	}
 
-	void RenderEngine::performRender(Painter* painter)
+	void RenderEngine::performRender()
 	{
-		painter->reset();
-		renderRecursive(painter, m_Document);
+		if (!m_Painter) {
+			m_Painter = new Painter(m_Document->getTextureProvider());
+		}
+		m_Painter->reset();
+		renderRecursive(m_Document);
 	}
 
-	void RenderEngine::renderRecursive(Painter* painter, ContainerNode* node)
+	void RenderEngine::renderRecursive(ContainerNode* node)
 	{
 		for (Node* child = node->getFirstChild(); child; child = child->getNextSibling()) {
-			child->drawContent(painter);
+			child->drawContent(*m_Painter);
 
 			if (child->getNodeType() == NodeType::ELEMENT)
-				renderRecursive(painter, static_cast<ContainerNode*>(child));
+				renderRecursive(static_cast<ContainerNode*>(child));
 		}
 	}
 
