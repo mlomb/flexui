@@ -12,6 +12,8 @@ namespace flexui {
 		Comment(const std::string& text = "");
 		~Comment() override;
 
+		std::string getNodeName() const override { return "#comment"; }
+		std::string getDebugInfo() const override;
 		NodeType getNodeType() const override { return NodeType::COMMENT; };
 
 	private:

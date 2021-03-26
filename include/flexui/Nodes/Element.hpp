@@ -33,16 +33,16 @@ namespace flexui {
 		Rect getBoundingRect() const { return Rect(); };
 		Rect getContentRect() const;
 		bool isVisible() const;
-		std::string getDebugLine() const;
 		const StyleComputed* getComputedStyle() const { return m_ComputedStyle; };
 
+		std::string getNodeName() const override { return m_Tag.text; }
+		std::string getDebugInfo() const override;
 		NodeType getNodeType() const override { return NodeType::ELEMENT; }
 
 		//virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) { return Vec2(); };
 
 		virtual void drawContent(Painter& painter) override;
         virtual void executeDefault(EventBase* evt);
-		virtual std::string getName() const { return "Element"; };
 
 		int getDepth() const { return 5; } // TODO
 

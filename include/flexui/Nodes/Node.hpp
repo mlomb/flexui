@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <string>
 #include <memory>
 
 #include "flexui/Math.hpp"
@@ -24,6 +25,8 @@ namespace flexui {
 
 		virtual ~Node();
 		virtual NodeType getNodeType() const = 0;
+		virtual std::string getNodeName() const = 0;
+		virtual std::string getDebugInfo() const { return getNodeName(); };
 		virtual void drawContent(Painter& painter) { };
 
 		Node* getParentNode() const { return m_Parent; }

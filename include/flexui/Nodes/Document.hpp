@@ -16,6 +16,7 @@ namespace flexui {
 		Document(ResourceProvider* resource_provider, TextureProvider* texture_provider);
 		~Document() override;
 
+		std::string getNodeName() const override { return "#document"; }
 		NodeType getNodeType() const override { return NodeType::DOCUMENT; };
 		StyleEngine& getStyleEngine() { return m_StyleEngine; }
 		LayoutEngine& getLayoutEngine() { return m_LayoutEngine; }

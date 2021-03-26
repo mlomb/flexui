@@ -132,14 +132,14 @@ namespace flexui {
         return m_ComputedStyle && m_ComputedStyle->display.value == Display::FLEX;
     }
 
-	std::string Element::getDebugLine() const
+	std::string Element::getDebugInfo() const
 	{
-		std::string dbg = getName();
-		
+		std::string dbg = ContainerNode::getDebugInfo();
+
 		if (m_ID.text.size() > 0)
 			dbg += "#" + m_ID.text;
 
-		for(auto klass : m_Classes)
+		for (auto klass : m_Classes)
 			dbg += " ." + klass.text;
 
 		return dbg;

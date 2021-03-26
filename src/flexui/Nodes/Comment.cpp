@@ -10,4 +10,9 @@ namespace flexui {
     Comment::~Comment() {
     }
 
+    std::string Comment::getDebugInfo() const
+    {
+        return Node::getDebugInfo() + " \"" + m_Text + "\"";
+    }
+
 }

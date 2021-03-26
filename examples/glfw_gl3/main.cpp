@@ -298,16 +298,17 @@ void generate_random_ui(flexui::Element* parent, int depth = 0) {
 void PrintTree(const flexui::Node* node, const int depth = 0, const std::string& tab = "") {
 	using namespace flexui;
 
-	/*
-	std::cout << node->getDebugLine() << std::endl;
+	std::cout << node->getDebugInfo() << std::endl;
 
-	const int len = node->getChildrens().size();
-	for (int i = 0; i < len; i++) {
-		bool last = i == len - 1;
-		std::cout << tab << (last ? "└──" : "├──");
-		PrintTree(node->getChildrens()[i], depth + 1, tab + (last ? "   " :  "│  "));
+	if (node->isContainerNode()) {
+		const ContainerNode* container_node = static_cast<const ContainerNode*>(node);
+		for (const Node* child = container_node->getFirstChild(); child; child = child->getNextSibling()) {
+			bool last = child == container_node->getLastChild();
+			std::cout << tab << (last ? "└──" : "├──");
+
+			PrintTree(child, depth + 1, tab + (last ? "   " : "│  "));
+		}
 	}
-	*/
 }
 
 flexui::Document* doc;
@@ -427,7 +428,7 @@ void init_ui() {
 	doc->getStyleEngine().addStyleSheet(ss);
 	doc->appendChild(loaded);
 
-	PrintTree(loaded);
+	PrintTree(doc);
 
 	// init ui
 	//ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());

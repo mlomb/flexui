@@ -30,6 +30,11 @@ namespace flexui {
         return parent_element->getComputedStyle();
     }
 
+    std::string Text::getDebugInfo() const
+    {
+        return Node::getDebugInfo() + " \"" + m_Text + "\"";
+    }
+
     void Text::drawContent(Painter& painter)
     {
         if (m_Text.size() == 0)
