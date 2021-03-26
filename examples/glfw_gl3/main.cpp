@@ -18,17 +18,16 @@
 using namespace glm;
 
 #include <flexui/Nodes/Element.hpp>
-#include <flexui/Surface.hpp>
 #include <flexui/Render/Painter.hpp> // TODO: move structs to another file
 #include <flexui/Providers/TextureProvider.hpp>
 #include <flexui/Providers/ResourceProvider.hpp>
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
 #include <flexui/Nodes/Text.hpp>
-#include <flexui/Elements/Button.hpp>
-#include <flexui/Elements/Slider.hpp>
+#include <flexui/Nodes/Elements/Button.hpp>
+#include <flexui/Nodes/Elements/Slider.hpp>
 #include <flexui/Events/EventsController.hpp>
-#include <flexui/Structure/XMLParse.hpp>
+#include <flexui/Nodes/XMLParse.hpp>
 
 #include <flexui/Nodes/Document.hpp>
 #include <flexui/Layout/LayoutObject.hpp>
@@ -147,8 +146,6 @@ static bool main_loop_running = false;
 GLuint vbo, ibo, vao;
 GLuint shader;
 GLuint loc_matrix;
-
-flexui::Surface* ui_surface = nullptr;
 
 bool check_shader(GLuint handle, const char* desc) {
 	GLint status = 0, log_length = 0;
@@ -440,54 +437,17 @@ void init_ui() {
 	PrintTree(loaded);
 
 	// init ui
-	ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());
+	//ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());
 
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
-		ui_surface->getEventsController()->sendMouseMove({ (float)xpos, (float)ypos });
+		//ui_surface->getEventsController()->sendMouseMove({ (float)xpos, (float)ypos });
 	});
 	glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        ui_surface->getEventsController()->sendMouseButton(button, action == GLFW_PRESS, { (float)xpos, (float)ypos });
+        //ui_surface->getEventsController()->sendMouseButton(button, action == GLFW_PRESS, { (float)xpos, (float)ypos });
 	});
 
-	Element* root = ui_surface->getRoot();
-	root->setID("root");
-	//root->addStyleSheet(ss);
-
-
-	Element* div = new Element();
-	div->addClass("cont");
-	generate_random_ui(div, 0);
-
-	/*
-	Text* text = new Text();
-	//text->setText("El veloz murciélago comía feliz cardillo y quiwi. 1234567890");
-	div->addElement(text);
-
-    Button* btn1 = new Button();
-    Text* btn1_txt = new Text();
-    btn1_txt->setText("Press me =)");
-    btn1->addElement(btn1_txt);
-    div->addElement(btn1);
-
-	Text* text2 = new Text();
-	// text2->m_FontNameTEST = "TwemojiMozilla.ttf";
-	text2->addClass("emoji-font");
-	div->addElement(text2);
-
-	Text* text3 = new Text();
-	// text3->m_FontNameTEST = "seguiemj.ttf";
-	text3->addClass("emoji-font");
-	div->addElement(text3);
-	*/
-
-    //root->addElement(loaded);
-	//root->addElement(div);
-
-	//text->setTextToAllGlyphsTEST();
-	//text2->setTextToAllGlyphsTEST();
-	//text3->setTextToAllGlyphsTEST();
 
 }
 
@@ -567,10 +527,8 @@ void main_loop() {
 	{
 		using namespace flexui;
 
-		ui_surface->setSize({ (float)width, (float)height });
-		ui_surface->process();
-
-		auto cursor = ui_surface->getCurrentCusor();
+		// auto cursor = ui_surface->getCurrentCusor();
+		auto cursor = StyleCursor::DEFAULT;
 		#ifndef __EMSCRIPTEN__
         switch (cursor) {
         default:
@@ -593,7 +551,6 @@ void main_loop() {
 		doc->getLayoutEngine().performLayout(width, height);
 		doc->getRenderEngine().performRender(painter);
 
-		//Painter* p = ui_surface->getPainter();
 		Painter* p = painter;
 
 		GL_CHECK(glBindBuffer(GL_ARRAY_BUFFER, vbo));

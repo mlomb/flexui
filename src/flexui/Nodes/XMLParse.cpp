@@ -1,4 +1,4 @@
-#include "flexui/Structure/XMLParse.hpp"
+#include "flexui/Nodes/XMLParse.hpp"
 
 // TinyXML2
 // https://github.com/leethomason/tinyxml2
@@ -11,8 +11,8 @@
 #include "flexui/Nodes/Node.hpp"
 #include "flexui/Nodes/Text.hpp"
 #include "flexui/Nodes/Comment.hpp"
-#include "flexui/Elements/Button.hpp"
-#include "flexui/Elements/Slider.hpp"
+#include "flexui/Nodes/Elements/Button.hpp"
+#include "flexui/Nodes/Elements/Slider.hpp"
 
 namespace flexui {
     using namespace tinyxml2;

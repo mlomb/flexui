@@ -5,8 +5,7 @@
 
 namespace flexui {
 
-	Document::Document(ResourceProvider* resource_provider)
-		: TreeScope(this),
+	Document::Document(ResourceProvider* resource_provider) :
 		m_StyleEngine(this),
 		m_LayoutEngine(this),
 		m_RenderEngine(this),

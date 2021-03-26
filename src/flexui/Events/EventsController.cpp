@@ -1,12 +1,11 @@
 #include "flexui/Events/EventsController.hpp"
 
 #include "flexui/Nodes/Element.hpp"
-#include "flexui/Surface.hpp"
 
 namespace flexui {
 
-	EventsController::EventsController(Surface* surface)
-		: TreeProcessor(surface),
+	EventsController::EventsController(Document* document)
+		: m_Document(document),
 		m_LastElementUnderMouse(nullptr),
 		m_CapturedElement(nullptr)
 	{
@@ -83,7 +82,7 @@ namespace flexui {
 		case EventTypeID::MOUSE_DOWN:
 			if (!evt->target) {
 				// compute target and path using the mouse position
-				evt->target = m_Surface->findElementsAt(m_Surface->getRoot(), mevt->mousePosition, &evt->path);
+				evt->target = nullptr;// m_Surface->findElementsAt(m_Surface->getRoot(), mevt->mousePosition, &evt->path);
 			}
 			// FALL
 		default:
@@ -131,7 +130,7 @@ namespace flexui {
 
 	void EventsController::updateElementUnderMouse(const Vec2& mousePosition)
 	{
-		Element* elementUnderMouse = m_Surface->findElementsAt(m_Surface->getRoot(), mousePosition);
+		Element* elementUnderMouse = nullptr;// m_Surface->findElementsAt(m_Surface->getRoot(), mousePosition);
 		if (m_LastElementUnderMouse == elementUnderMouse)
 			return;
 

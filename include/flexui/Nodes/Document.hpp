@@ -5,17 +5,15 @@
 #include "flexui/Layout/LayoutEngine.hpp"
 #include "flexui/Render/RenderEngine.hpp"
 
-#include "flexui/TreeScope.hpp"
-
 namespace flexui {
 
 	class ResourceProvider;
 
 	// A Document is the root for all other nodes
-	class Document : public ContainerNode, public TreeScope {
+	class Document : public ContainerNode {
 	public:
 		Document(ResourceProvider* resource_provider);
-		~Document();
+		~Document() override;
 
 		NodeType getNodeType() const override { return NodeType::DOCUMENT; };
 		StyleEngine& getStyleEngine() { return m_StyleEngine; }

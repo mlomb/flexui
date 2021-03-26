@@ -2,18 +2,18 @@
 
 #include <queue>
 
-#include "flexui/TreeProcessor.hpp"
-
 #include "flexui/Events/Events.hpp"
 
 namespace flexui {
 
-	class EventsController : public TreeProcessor {
+	class Document;
+
+	class EventsController {
 	public:
-		EventsController(Surface* surface);
+		EventsController(Document* document);
 		virtual ~EventsController();
 
-		void process() override;
+		void process();
 		void captureElement(Element* element);
 		void releaseCapture();
 		Element* getElementOverMouse() const;
@@ -22,6 +22,8 @@ namespace flexui {
 		void sendMouseButton(int button, bool down, const Vec2& position);
 
 	private:
+		Document* m_Document;
+
 		std::queue<EventBase*> m_EventQueue;
 
 		Element* m_LastElementUnderMouse;
