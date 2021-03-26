@@ -5,9 +5,8 @@
 
 namespace flexui {
 
-	Button::Button()
+	Button::Button() : Element("button")
 	{
-		setTag("Button");
 	}
 
 	Button::~Button()

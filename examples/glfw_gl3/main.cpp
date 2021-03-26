@@ -285,7 +285,7 @@ void generate_random_ui(flexui::Element* parent, int depth = 0) {
 	}
 
 	for (int i = 0; i < num_childs; i++) {
-		Element* child = new Element(); generated++;
+		Element* child = new Element("div"); generated++;
 		child->addClass("d" + std::to_string(depth));
 
 		generate_random_ui(child, depth + 1);
@@ -353,12 +353,6 @@ void init_ui() {
 			flex-wrap: wrap;
 		}
 
-		Text {
-			/*width: 150px;
-			height: 150px;*/
-			/*min-width: 150px;
-			background-color: rgba(255, 128, 128, 0.3);*/
-		}
 		.emoji-font {
 			/*font-family: "emojis";*/
 			font-size: 24px;
@@ -368,7 +362,7 @@ void init_ui() {
 			background-color: rgba(255, 0, 255, 0.05);
 		}*/
 
-		Button {
+		button {
 			color: #D9D9D9;
 			background-color: #656565;
 			padding-left: 3px;
@@ -380,14 +374,14 @@ void init_ui() {
 			border-radius: 3px;
 			cursor: pointer;
 		}
-		Button:hover, Slider:hover {
+		button:hover, slider:hover {
 			background-color: #828282;
 		}
-		Button:active {
+		button:active {
 			background-color: orange;
 		}
 
-		Slider {
+		slider {
 			width: 130px;
 			height: 8px;
 			background-color: #656565;

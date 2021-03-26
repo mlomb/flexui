@@ -21,7 +21,7 @@ namespace flexui {
 	// An Elements object can be attached to a tree
 	class Element : public ContainerNode {
 	public:
-		Element();
+		Element(const std::string& tag);
 		virtual ~Element();
 
 		void setID(const std::string& id);
@@ -46,10 +46,6 @@ namespace flexui {
 
 		int getDepth() const { return 5; } // TODO
 
-	protected:
-
-		void setTag(const std::string& tag);
-
 	private:
 		friend class Surface;
 		friend class LayoutTreeUpdater;
@@ -64,6 +60,8 @@ namespace flexui {
 		friend class StyleEngine;
 
 		StyleComputed* m_ComputedStyle;
+
+		void setTag(const std::string& tag);
 	};
 
 }

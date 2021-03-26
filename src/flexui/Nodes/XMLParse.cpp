@@ -67,12 +67,11 @@ namespace flexui {
             Element* element = nullptr;
 
             switch (HashStr(name)) {
-            case HashStr("Button"): element = new Button(); break;
-            case HashStr("Element"): element = new Element(); break;
-            case HashStr("Slider"): element = new Slider(); break;
-            case HashStr("Text"):
-                parseResult.warnings.push_back("Text elements should not be created explicitly");
-                return nullptr;
+            case HashStr("button"): element = new Button(); break;
+            case HashStr("slider"): element = new Slider(); break;
+            default:
+                element = new Element(name);
+                break;
             }
 
             if (element) {

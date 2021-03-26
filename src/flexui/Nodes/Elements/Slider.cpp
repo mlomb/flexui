@@ -5,9 +5,8 @@
 
 namespace flexui {
 
-	Slider::Slider()
+	Slider::Slider() : Element("slider")
 	{
-		setTag("Slider");
 	}
 
 	Slider::~Slider()

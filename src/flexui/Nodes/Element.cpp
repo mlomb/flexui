@@ -7,12 +7,12 @@
 
 namespace flexui {
 
-	Element::Element() :
+	Element::Element(const std::string& tag) :
 		m_ComputedStyle(nullptr),
 		m_PseudoStates(StylePseudoStates::NONE)
 	{
 		setID("");
-		setTag("Element");
+		setTag(tag);
 
 		m_Layout = new ElementLayoutObject(this);
 	}
