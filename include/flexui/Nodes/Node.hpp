@@ -5,9 +5,11 @@
 #include <memory>
 
 #include "flexui/Math.hpp"
+#include "flexui/Events/EventTarget.hpp"
 
 namespace flexui {
 
+	class Element;
 	class Document;
 	class LayoutObject;
 	class Painter;
@@ -20,7 +22,7 @@ namespace flexui {
 	};
 
 	// A Node is the base class for all nodes in the UI tree
-	class Node {
+	class Node : public EventTarget {
 	public:
 
 		virtual ~Node();
@@ -35,10 +37,13 @@ namespace flexui {
 		Document* getDocument() const { return m_Document; }
 		LayoutObject* getLayoutObject() const { return m_Layout; }
 		bool isContainerNode() const { return getNodeType() == NodeType::DOCUMENT || getNodeType() == NodeType::ELEMENT; }
+		int getDepth() const { return m_Depth; }
+		Element* getParentElement() const;
 
 	protected:
 		Node();
 
+		int m_Depth;
 		Document* m_Document;
 		LayoutObject* m_Layout;
 

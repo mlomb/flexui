@@ -2,6 +2,7 @@
 
 #include "flexui/Events/Events.hpp"
 #include "flexui/Events/EventsController.hpp"
+#include "flexui/Nodes/Document.hpp"
 
 namespace flexui {
 
@@ -19,10 +20,10 @@ namespace flexui {
 
 		switch (evt->type) {
 		case EventTypeID::MOUSE_DOWN:
-			//getSurface()->getEventsController()->captureElement(this);
+			getDocument()->getEventsController().captureElement(this);
 			break;
 		case EventTypeID::MOUSE_UP:
-            //getSurface()->getEventsController()->captureElement(nullptr);
+			getDocument()->getEventsController().captureElement(nullptr);
 			break;
 		}
 	}

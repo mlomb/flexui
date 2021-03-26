@@ -24,7 +24,7 @@ namespace flexui {
 		Node* m_FirstChild;
 		Node* m_LastChild;
 
-		void propagateDocument();
+		void propagateHierarchyData();
 	};
 
 }

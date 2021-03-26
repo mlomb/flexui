@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "flexui/Style/StyleDefinitions.hpp"
 #include "flexui/Style/StyleSelectorMatcher.hpp"
 
 namespace flexui {
@@ -19,7 +20,8 @@ namespace flexui {
 
 		void addStyleSheet(StyleSheet* stylesheet);
 
-		const std::vector<StyleSheet*>& getStyleSheets() const;
+		const std::vector<StyleSheet*>& getStyleSheets() const;		
+		StyleCursor getCurrentCusor() const;
 
 	private:
 		Document* m_Document;

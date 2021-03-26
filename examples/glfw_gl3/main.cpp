@@ -430,16 +430,13 @@ void init_ui() {
 
 	PrintTree(doc);
 
-	// init ui
-	//ui_surface = new Surface(new ResourceProviderImpl(), new TextureProviderImpl());
-
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
-		//ui_surface->getEventsController()->sendMouseMove({ (float)xpos, (float)ypos });
+		doc->getEventsController().sendMouseMove({ (float)xpos, (float)ypos });
 	});
 	glfwSetMouseButtonCallback(window, [](GLFWwindow* window, int button, int action, int mods) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        //ui_surface->getEventsController()->sendMouseButton(button, action == GLFW_PRESS, { (float)xpos, (float)ypos });
+        doc->getEventsController().sendMouseButton(button, action == GLFW_PRESS, { (float)xpos, (float)ypos });
 	});
 
 
@@ -521,8 +518,7 @@ void main_loop() {
 	{
 		using namespace flexui;
 
-		// auto cursor = ui_surface->getCurrentCusor();
-		auto cursor = StyleCursor::DEFAULT;
+		auto cursor = doc->getStyleEngine().getCurrentCusor();
 		#ifndef __EMSCRIPTEN__
         switch (cursor) {
         default:
@@ -541,6 +537,7 @@ void main_loop() {
         else em_set_default();
 		#endif
 
+		doc->getEventsController().process();
 		doc->getStyleEngine().performStyles();
 		doc->getLayoutEngine().performLayout(width, height);
 		doc->getRenderEngine().performRender();

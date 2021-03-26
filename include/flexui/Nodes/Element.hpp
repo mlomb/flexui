@@ -44,8 +44,6 @@ namespace flexui {
 		virtual void drawContent(Painter& painter) override;
         virtual void executeDefault(EventBase* evt);
 
-		int getDepth() const { return 5; } // TODO
-
 	private:
 		friend class Surface;
 		friend class LayoutTreeUpdater;

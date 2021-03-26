@@ -1,6 +1,9 @@
 #include "flexui/Events/EventsController.hpp"
 
+#include <iostream>
+
 #include "flexui/Nodes/Element.hpp"
+#include "flexui/Nodes/Document.hpp"
 
 namespace flexui {
 
@@ -82,7 +85,7 @@ namespace flexui {
 		case EventTypeID::MOUSE_DOWN:
 			if (!evt->target) {
 				// compute target and path using the mouse position
-				evt->target = nullptr;// m_Surface->findElementsAt(m_Surface->getRoot(), mevt->mousePosition, &evt->path);
+				evt->target = m_Document->findElementsAt(m_Document, mevt->mousePosition, &evt->path);
 			}
 			// FALL
 		default:
@@ -91,13 +94,13 @@ namespace flexui {
 				Element* el = evt->target;
 				while (el) {
 					evt->path.emplace_back(el);
-					//el = el->getParent();
+					el = el->getParentElement();
 				}
 				std::reverse(evt->path.begin(), evt->path.end());
 			}
 		}
-		//if (evt->target)
-		//	std::cout << evt->target->getQualifiedName() << std::endl;
+		if (evt->target)
+			std::cout << evt->target->getDebugInfo() << std::endl;
 		m_EventQueue.push(evt);
 	}
 
@@ -130,7 +133,7 @@ namespace flexui {
 
 	void EventsController::updateElementUnderMouse(const Vec2& mousePosition)
 	{
-		Element* elementUnderMouse = nullptr;// m_Surface->findElementsAt(m_Surface->getRoot(), mousePosition);
+		Element* elementUnderMouse = m_Document->findElementsAt(m_Document, mousePosition);
 		if (m_LastElementUnderMouse == elementUnderMouse)
 			return;
 
@@ -143,18 +146,21 @@ namespace flexui {
 		int lastDepth = m_LastElementUnderMouse ? m_LastElementUnderMouse->getDepth() : 0;
 		int currDepth = elementUnderMouse ? elementUnderMouse->getDepth() : 0;
 
+		Node* tmp;
 		Element* last = m_LastElementUnderMouse;
 		Element* curr = elementUnderMouse;
 
 		while (lastDepth > currDepth) {
 			leave.emplace_back(last);
 			lastDepth--;
-			//last = last->getParent();
+
+			last = last->getParentElement();
 		}
 		while (currDepth > lastDepth) {
 			enter.emplace_back(curr);
 			currDepth--;
-			//curr = curr->getParent();
+
+			curr = curr->getParentElement();
 		}
 
 		// now last and curr have the same depth
@@ -162,8 +168,8 @@ namespace flexui {
 			leave.emplace_back(last);
 			enter.emplace_back(curr);
 
-			//last = last->getParent();
-			//curr = curr->getParent();
+			last = last->getParentElement();
+			curr = curr->getParentElement();
 		}
 
 		// queue events

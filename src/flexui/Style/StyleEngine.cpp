@@ -77,4 +77,9 @@ namespace flexui {
 		static_cast<ElementLayoutObject*>(element->getLayoutObject())->syncStyles();
 	}
 
+	StyleCursor StyleEngine::getCurrentCusor() const
+	{
+		Element* underCursor = m_Document->getEventsController().getElementOverMouse();
+		return underCursor ? underCursor->m_ComputedStyle->cursor.value : StyleCursor::AUTO;
+	}
 }

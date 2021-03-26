@@ -43,8 +43,9 @@ namespace flexui {
 		}
 
 		child_node->m_Document = m_Document;
+		child_node->m_Depth = m_Depth + 1;
 		if(child_node->isContainerNode())
-			static_cast<ContainerNode*>(child_node)->propagateDocument();
+			static_cast<ContainerNode*>(child_node)->propagateHierarchyData();
 	}
 
 	void ContainerNode::removeChild(Node* child_node)
@@ -52,13 +53,16 @@ namespace flexui {
 		// TODO: !
 	}
 
-	void ContainerNode::propagateDocument()
+	void ContainerNode::propagateHierarchyData()
 	{
 		for (Node* child = getFirstChild(); child; child = child->getNextSibling()) {
-			if (child->m_Document != m_Document) {
+			if (child->m_Document != m_Document && child->m_Depth != m_Depth + 1) {
+
 				child->m_Document = m_Document;
+				child->m_Depth = m_Depth + 1;
+
 				if (child->isContainerNode())
-					static_cast<ContainerNode*>(child)->propagateDocument();
+					static_cast<ContainerNode*>(child)->propagateHierarchyData();
 			}
 		}
 	}
