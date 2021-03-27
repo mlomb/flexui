@@ -9,7 +9,7 @@ namespace flexui {
 
 	Element::Element(const std::string& tag) :
 		m_ComputedStyle(nullptr),
-		m_PseudoStates(StylePseudoStates::NONE)
+		m_PseudoStates(SelectorPseudoState::NONE)
 	{
 		setID("");
 		setTag(tag);
@@ -59,35 +59,35 @@ namespace flexui {
     {
         switch (evt->type) {
         case EventTypeID::MOUSE_ENTER:
-            setPseudoStates(StylePseudoStates::HOVER);
+            setPseudoStates(SelectorPseudoState::HOVER);
             break;
         case EventTypeID::MOUSE_LEAVE:
-            removePseudoStates(StylePseudoStates::HOVER);
+            removePseudoStates(SelectorPseudoState::HOVER);
             break;
         case EventTypeID::CAPTURE_IN:
-            setPseudoStates(StylePseudoStates::ACTIVE);
+            setPseudoStates(SelectorPseudoState::ACTIVE);
             break;
         case EventTypeID::CAPTURE_OUT:
-            removePseudoStates(StylePseudoStates::ACTIVE);
+            removePseudoStates(SelectorPseudoState::ACTIVE);
             break;
         }
     }
 
 	void Element::setID(const std::string& id)
 	{
-		m_ID = { StyleIdentifierType::ID, id };
+		m_ID = { SelectorIdentifierType::ID, id };
 		m_ID.computeHash();
 	}
 
 	void Element::setTag(const std::string& tag)
 	{
-		m_Tag = { StyleIdentifierType::TAG, tag };
+		m_Tag = { SelectorIdentifierType::TAG, tag };
 		m_Tag.computeHash();
 	}
 
 	void Element::addClass(const std::string& klass)
 	{
-		StyleIdentifier si = { StyleIdentifierType::CLASS, klass };
+		SelectorIdentifier si = { SelectorIdentifierType::CLASS, klass };
 		si.computeHash();
 
 		for (auto it = m_Classes.begin(); it != m_Classes.end(); it++) {
@@ -98,12 +98,12 @@ namespace flexui {
 		m_Classes.emplace_back(si);
 	}
 
-    void Element::setPseudoStates(const StylePseudoStates states)
+    void Element::setPseudoStates(const SelectorPseudoState states)
     {
         m_PseudoStates |= states;
     }
 
-    void Element::removePseudoStates(const StylePseudoStates states)
+    void Element::removePseudoStates(const SelectorPseudoState states)
     {
         m_PseudoStates &= ~states;
     }

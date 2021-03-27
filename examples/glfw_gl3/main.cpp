@@ -32,6 +32,9 @@ using namespace glm;
 
 #include <flexui/Nodes/Document.hpp>
 #include <flexui/Layout/LayoutObject.hpp>
+#include <flexui/Selectors/Selector.hpp>
+#include <flexui/Selectors/SelectorParser.hpp>
+#include <flexui/Misc/String.hpp>
 
 #ifdef _WIN32
 #include <Windows.h>
@@ -410,7 +413,7 @@ void init_ui() {
 	css_source += std::string(std::istreambuf_iterator<char>(std::ifstream("input.css").rdbuf()), std::istreambuf_iterator<char>());
 	#endif
 
-	StyleParseResult pr;
+	ParseResult pr;
 	StyleSheet* ss = ParseStyleSheet(css_source, pr);
 
 	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
@@ -589,6 +592,13 @@ int main(int, char**) {
 	const GLubyte* version = glGetString(GL_VERSION);
 	std::cout << "Renderer: " << renderer << std::endl;
 	std::cout << "OpenGL version supported " << version << std::endl;
+
+	flexui::Selector ss;
+	flexui::ParseResult sr;
+	flexui::ParseSingleSelector("#container .buttons > button.fancy + test:hover", ss, sr);
+
+	flexui::HashedString hs1 = "pepe";
+	flexui::HashedString hs2 = "asd";
 
 	init();
 

@@ -17,51 +17,6 @@ namespace flexui {
         return false; // tie
     }
 
-    bool StyleSelectorMatcher::MatchesSelector(Element* element, StyleSelector* selector)
-    {
-        Element* current = element;
-        Element* backElem = nullptr;
-        int backIndex = -1;
-        int partIndex = (int)selector->parts.size() - 1;
-
-        while (partIndex >= 0)
-        {
-            if (!current)
-                break;
-
-            bool matchesPart = false;
-
-            // match part
-            {
-                const StyleSelectorPart& part = selector->parts[partIndex];
-
-                matchesPart =
-                    // match pseudos
-                    ((part.pseudo_states & current->m_PseudoStates) == part.pseudo_states)
-                    &&
-                    (
-                        (
-                            // wildcard always matches
-                            part.identifier.type == StyleIdentifierType::TAG &&
-                            part.identifier.text_hash == HashStr("*")
-                            ) ||
-                        current->m_ID == part.identifier ||
-                        current->m_Tag == part.identifier ||
-                        std::find(current->m_Classes.begin(), current->m_Classes.end(), part.identifier) != current->m_Classes.end()
-                        );
-
-            }
-
-            return matchesPart; // for now only match the last part
-
-            //if (--backIndex < 0)
-            //    return true;
-            
-            //current = current->getParent();
-        }
-        return false;
-    }
-
     void StyleSelectorMatcher::FindMatches(Element* element, std::vector<StyleSheet*>& sheets, std::vector<SelectorMatch>& matches)
     {
         const StrHash empty_id = HashStr("");

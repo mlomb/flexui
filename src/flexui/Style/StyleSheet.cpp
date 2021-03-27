@@ -34,12 +34,12 @@ namespace flexui {
 		new_selector->order = (int)m_Rules.size();
 		m_Selectors.emplace_back(new_selector);
 
-		const StyleIdentifier& lastIdentifier = new_selector->parts.back().identifier;
+		const SelectorIdentifier& lastIdentifier = new_selector->parts.back().identifier;
 
 		switch (lastIdentifier.type) {
-		case StyleIdentifierType::ID:    m_OrderedIDs[lastIdentifier.text_hash].emplace_back(new_selector); break;
-		case StyleIdentifierType::TAG:   m_OrderedTags[lastIdentifier.text_hash].emplace_back(new_selector); break;
-		case StyleIdentifierType::CLASS: m_OrderedClasses[lastIdentifier.text_hash].emplace_back(new_selector); break;
+		case SelectorIdentifierType::ID:    m_OrderedIDs[lastIdentifier.text_hash].emplace_back(new_selector); break;
+		case SelectorIdentifierType::TAG:   m_OrderedTags[lastIdentifier.text_hash].emplace_back(new_selector); break;
+		case SelectorIdentifierType::CLASS: m_OrderedClasses[lastIdentifier.text_hash].emplace_back(new_selector); break;
 		default:
 			assert(false);
 			break;

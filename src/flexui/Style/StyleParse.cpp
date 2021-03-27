@@ -3,6 +3,8 @@
 #include "flexui/Style/NamedColors.hpp"
 #include "flexui/Style/StyleSheet.hpp"
 
+#include "flexui/Selectors/SelectorParser.hpp"
+
 #include <cmath>
 #include <cstring>  // memcpy
 
@@ -23,16 +25,6 @@ namespace flexui {
 	/// Check if the character is valid for a CSS identifier
 	inline bool isIdent(char c) {
 		return isIdentStart(c) || (c >= '0' && c <= '9');
-	}
-
-	/// Check if the character is a CSS nesting operator
-	inline bool isNestingOperator(char c) {
-		return c == '>' || c == '+' || c == '~';
-	}
-
-	/// Check if the character is a CSS selector marker
-	inline bool isSelectorMarker(char c) {
-		return c == '*' || c == '#' || c == '.' || c == ':';
 	}
 
 	/// Check if the character is a valid decimal digit
@@ -92,153 +84,7 @@ namespace flexui {
 		return result;
 	}
 
-	bool ParseSingleStyleSelector(const std::string& input, StyleSelector& selector, StyleParseResult& parseResult)
-	{
-		selector = { };
-		selector.rule = nullptr;
-		selector.specificity = 0;
-		selector.order = 0;
-
-		size_t pos = 0;
-		StyleSelectorRelationship next_rel = StyleSelectorRelationship::NONE;
-
-		while (pos < input.size()) {
-			consumeWhiteSpace(input, pos);
-			if (pos >= input.size())
-				break; // no more
-
-			char chr = input[pos];
-			bool marker = isSelectorMarker(chr);
-
-			if (isIdentStart(chr) || marker) {
-				if (marker)
-					pos++; // skip marker
-
-				StyleIdentifierType type;
-				bool is_wildcard = false;
-
-				switch (chr) {
-				case '#': type = StyleIdentifierType::ID; break;
-				default:  type = StyleIdentifierType::TAG; break;
-				case '.': type = StyleIdentifierType::CLASS; break;
-				case '*': type = StyleIdentifierType::TAG; is_wildcard = true; break;
-				case ':':
-					// check for unsupported pseudo-elements
-					if (pos < input.size() && input[pos] == ':') {
-						parseResult.warnings.emplace_back("Pseudo-elements are not supported");
-						return false;
-					}
-
-					std::string pseudo = parseIdentifier(input, pos);
-
-					StylePseudoStates state;
-					switch (HashStr(pseudo.c_str())) {
-					case HashStr("hover"):    state = StylePseudoStates::HOVER; break;
-					case HashStr("disabled"): state = StylePseudoStates::DISABLED; break;
-					case HashStr("checked"):  state = StylePseudoStates::CHECKED; break;
-					case HashStr("active"):   state = StylePseudoStates::ACTIVE; break;
-					case HashStr("focus"):    state = StylePseudoStates::FOCUS; break;
-					default:
-						parseResult.warnings.emplace_back("Unsupported pseudo state '" + pseudo + "'");
-						return false;
-					}
-
-					// elem:pseudo
-					if (next_rel == StyleSelectorRelationship::NONE && selector.parts.size() > 0) {
-						selector.parts.back().pseudo_states |= state;
-					}
-					// :pseudo
-					// elem > :pseudo
-					else {
-						// create wildcard tag
-						StyleSelectorPart part = { };
-						part.identifier.type = StyleIdentifierType::TAG;
-						part.identifier.text = "*";
-						part.identifier.computeHash();
-						part.prev_relationship = StyleSelectorRelationship::NONE;
-						part.pseudo_states = state;
-						selector.parts.emplace_back(part);
-					}
-
-					if (input[pos] == ' ') // check for space
-						next_rel = StyleSelectorRelationship::DESCENDANT;
-					else
-						next_rel = StyleSelectorRelationship::NONE;
-
-					continue; // skip the rest
-				}
-
-				StyleSelectorPart part = { };
-				part.identifier.type = type;
-				part.identifier.text = is_wildcard ? "*" : parseIdentifier(input, pos);
-				part.identifier.computeHash();
-				part.prev_relationship = next_rel;
-				part.pseudo_states = StylePseudoStates::NONE;
-
-				// FUI_LOG_DEBUG("(selector type " << std::to_string((int)part.identifier.type) << ")" << part.identifier.text);
-
-				selector.parts.emplace_back(part);
-
-				if (input[pos] == ' ') // check for space
-					next_rel = StyleSelectorRelationship::DESCENDANT;
-				else
-					next_rel = StyleSelectorRelationship::NONE;
-			}
-			else if (isNestingOperator(chr)) {
-				pos++; // skip operator
-
-				switch (chr) {
-				case '>': next_rel = StyleSelectorRelationship::CHILD; break;
-				case '+': next_rel = StyleSelectorRelationship::ADJACENT_SIBLING; break;
-				case '~': next_rel = StyleSelectorRelationship::GENERAL_SIBLING; break;
-				}
-
-				// FUI_LOG_DEBUG("(nesting op)" << chr);
-			}
-			else if (chr == '[') {
-				parseResult.warnings.emplace_back("Attribute selectors are not supported");
-				return false;
-			}
-			else {
-				parseResult.errors.emplace_back("Unexpected character '" + std::string(1, chr) + "'");
-				return false;
-			}
-		}
-
-		if (selector.parts.size() > 0) {
-			selector.computeSpecificity();
-			return true;
-		}
-		else {
-			return false;
-		}
-	}
-
-	bool ParseStyleSelectors(const std::string& input, std::vector<StyleSelector>& selectors, StyleParseResult& parseResult)
-	{
-		bool any = false;
-
-		size_t pos = 0;
-		while (pos < input.size()) {
-			size_t selector_end = input.find(",", pos);
-			if (selector_end == std::string::npos)
-				selector_end = input.size();
-
-			std::string single_selector = input.substr(pos, selector_end - pos);
-
-			StyleSelector selector;
-			if (ParseSingleStyleSelector(single_selector, selector, parseResult)) {
-				selectors.emplace_back(selector);
-				any = true;
-			}
-
-			pos = selector_end + 1;
-		}
-
-		return any;
-	}
-
-	bool parseNumber(const std::string& input, int& pos, StyleNumber& output, StyleParseResult& parseResult) {
+	bool parseNumber(const std::string& input, int& pos, StyleNumber& output, ParseResult& parseResult) {
 		bool valid = false;
 		bool negative = false;
 		bool mantissa = false;
@@ -286,7 +132,7 @@ namespace flexui {
 		return valid;
 	}
 
-	bool parseLength(const std::string& input, StyleLength& output, StyleParseResult& parseResult) {
+	bool parseLength(const std::string& input, StyleLength& output, ParseResult& parseResult) {
 		int pos = 0;
 		if (parseNumber(input, pos, output.number, parseResult)) {
 			// number parsed
@@ -342,7 +188,7 @@ namespace flexui {
 		return false;
 	}
 
-	bool parseColor(const std::string& input, StyleColor& output, StyleParseResult& parseResult) {
+	bool parseColor(const std::string& input, StyleColor& output, ParseResult& parseResult) {
 		if (input.size() < 2)
 			return false;
 
@@ -464,7 +310,7 @@ namespace flexui {
 		return false;
 	}
 
-	bool parseString(const std::string& input, std::string& output, StyleParseResult& parseResult)
+	bool parseString(const std::string& input, std::string& output, ParseResult& parseResult)
 	{
 		if (input.size() < 2) // must have at least two quotes
 			return false;
@@ -483,7 +329,7 @@ namespace flexui {
 		return true;
 	}
 
-	bool ParseStyleProperty(const std::string& name, const std::string& raw_value, StyleRule& rule, StyleParseResult& parseResult)
+	bool ParseStyleProperty(const std::string& name, const std::string& raw_value, StyleRule& rule, ParseResult& parseResult)
 	{
 		using ID = StylePropertyID;
 
@@ -708,7 +554,7 @@ namespace flexui {
 	}
 
 	// strip comments and consecutive spaces
-	std::string sanitizeSource(const std::string& input, StyleParseResult& parseResult) {
+	std::string sanitizeSource(const std::string& input, ParseResult& parseResult) {
 		std::string result;
 
 		bool before_whitespace = false;
@@ -747,7 +593,7 @@ namespace flexui {
 		return result;
 	}
 
-	bool parseRule(const std::string& source, StyleRule& rule, StyleParseResult& parseResult) {
+	bool parseRule(const std::string& source, StyleRule& rule, ParseResult& parseResult) {
 		rule.properties.clear();
 
 		size_t pos = 0;
@@ -807,7 +653,7 @@ namespace flexui {
 		return rule.properties.size() > 0;
 	}
 
-	StyleSheet* ParseStyleSheet(const std::string& raw_source, StyleParseResult& parseResult)
+	StyleSheet* ParseStyleSheet(const std::string& raw_source, ParseResult& parseResult)
 	{
 		parseResult.errors.clear();
 		parseResult.warnings.clear();
@@ -830,8 +676,8 @@ namespace flexui {
 			std::string selectors_str = source.substr(pos, block_start - pos);
 			std::string properties_str = source.substr(block_start + 1, block_end - block_start - 1);
 
-			std::vector<StyleSelector> selectors;
-			if (ParseStyleSelectors(selectors_str, selectors, parseResult)) {
+			std::vector<Selector> selectors;
+			if (ParseSelectors(selectors_str, selectors, parseResult)) {
 				StyleRule rule = { };
 				if (parseRule(properties_str, rule, parseResult)) {
 					if (rule.properties.size() > 0) { // only add if is has at least one property

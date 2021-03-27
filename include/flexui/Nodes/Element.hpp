@@ -4,9 +4,9 @@
 #include <string>
 
 #include "flexui/Nodes/ContainerNode.hpp"
-
 #include "flexui/Math.hpp"
 #include "flexui/Style/StyleDefinitions.hpp"
+#include "flexui/Selectors/Selector.hpp"
 
 namespace flexui {
 
@@ -27,8 +27,8 @@ namespace flexui {
 		void setID(const std::string& id);
 		void addClass(const std::string& klass);
 		void setStyleProperty(const StyleProperty& property);
-		void setPseudoStates(const StylePseudoStates states);
-		void removePseudoStates(const StylePseudoStates states);
+		void setPseudoStates(const SelectorPseudoState states);
+		void removePseudoStates(const SelectorPseudoState states);
 
 		Rect getBoundingRect() const { return Rect(); };
 		Rect getContentRect() const;
@@ -50,9 +50,9 @@ namespace flexui {
 		friend class StyleTreeUpdater;
 
 		friend class StyleSelectorMatcher;
-		StyleIdentifier m_ID, m_Tag;
-		std::vector<StyleIdentifier> m_Classes;
-		StylePseudoStates m_PseudoStates;
+		SelectorIdentifier m_ID, m_Tag;
+		std::vector<SelectorIdentifier> m_Classes;
+		SelectorPseudoState m_PseudoStates;
 		StyleRule m_InlineRules;
 
 		friend class StyleEngine;

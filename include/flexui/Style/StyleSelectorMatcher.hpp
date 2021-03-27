@@ -19,8 +19,6 @@ namespace flexui {
 	class StyleSelectorMatcher {
 	public:
 
-		static bool MatchesSelector(Element* element, StyleSelector* selector);
-
 		/// May insert (very few) duplicates
 		static void FindMatches(Element* element, std::vector<StyleSheet*>& sheets, std::vector<SelectorMatch>& matches);
 

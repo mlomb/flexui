@@ -3,6 +3,8 @@
 #include <map>
 #include <string>
 
+#include "flexui/Style/StyleDefinitions.hpp"
+
 namespace flexui {
     // See https://www.w3.org/TR/css-color-3/#svg-color
     const std::map<std::string, StyleColor> NAMED_COLORS = {

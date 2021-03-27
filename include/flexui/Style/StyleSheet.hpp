@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "StyleDefinitions.hpp"
+#include "flexui/Selectors/Selector.hpp"
 
 namespace flexui {
 
