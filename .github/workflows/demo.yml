@@ -1,6 +1,9 @@
 name: Web demo
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 env:
   EM_VERSION: 2.0.9
