@@ -70,8 +70,7 @@ namespace flexui {
 						// create wildcard tag
 						SelectorPart part = { };
 						part.identifier.type = SelectorIdentifierType::TAG;
-						part.identifier.text = "*";
-						part.identifier.computeHash();
+						part.identifier.value = "*";
 						part.prev_rel = SelectorRelationship::NONE;
 						part.pseudos = state;
 						selector.emplace_back(part);
@@ -87,8 +86,7 @@ namespace flexui {
 
 				SelectorPart part = { };
 				part.identifier.type = type;
-				part.identifier.text = is_wildcard ? "*" : parseIdentifier(input_selector, pos);
-				part.identifier.computeHash();
+				part.identifier.value = is_wildcard ? "*" : parseIdentifier(input_selector, pos);
 				part.prev_rel = next_rel;
 				part.pseudos = SelectorPseudoState::NONE;
 

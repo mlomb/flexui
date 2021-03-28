@@ -9,11 +9,10 @@ namespace flexui {
 
 	Element::Element(const std::string& tag) :
 		m_ComputedStyle(nullptr),
-		m_PseudoStates(SelectorPseudoState::NONE)
+		m_PseudoStates(SelectorPseudoState::NONE),
+		m_ID(""),
+		m_Tag(tag)
 	{
-		setID("");
-		setTag(tag);
-
 		m_Layout = new ElementLayoutObject(this);
 	}
 
@@ -73,29 +72,16 @@ namespace flexui {
         }
     }
 
-	void Element::setID(const std::string& id)
-	{
-		m_ID = { SelectorIdentifierType::ID, id };
-		m_ID.computeHash();
-	}
-
-	void Element::setTag(const std::string& tag)
-	{
-		m_Tag = { SelectorIdentifierType::TAG, tag };
-		m_Tag.computeHash();
-	}
-
 	void Element::addClass(const std::string& klass)
 	{
-		SelectorIdentifier si = { SelectorIdentifierType::CLASS, klass };
-		si.computeHash();
+		HashedString _klass;
 
 		for (auto it = m_Classes.begin(); it != m_Classes.end(); it++) {
-			if ((*it).text_hash == si.text_hash)
+			if ((*it) == _klass)
 				return; // already present
 		}
 
-		m_Classes.emplace_back(si);
+		m_Classes.emplace_back(_klass);
 	}
 
     void Element::setPseudoStates(const SelectorPseudoState states)
@@ -136,11 +122,11 @@ namespace flexui {
 	{
 		std::string dbg = ContainerNode::getDebugInfo();
 
-		if (m_ID.text.size() > 0)
-			dbg += "#" + m_ID.text;
+		if (m_ID.str().size() > 0)
+			dbg += "#" + m_ID.str();
 
 		for (auto klass : m_Classes)
-			dbg += " ." + klass.text;
+			dbg += " ." + klass.str();
 
 		return dbg;
 	}

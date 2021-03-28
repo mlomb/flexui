@@ -17,7 +17,7 @@ namespace flexui {
 				b++;
 				break;
 			case SelectorIdentifierType::TAG:
-				if (part.identifier.text.size() == 1 && part.identifier.text[0] == '*') {
+				if (part.identifier.value.str().size() == 1 && part.identifier.value.str()[0] == '*') {
 					// ignore wildcard
 				}
 				else

@@ -7,6 +7,7 @@
 #include "flexui/Math.hpp"
 #include "flexui/Style/StyleDefinitions.hpp"
 #include "flexui/Selectors/Selector.hpp"
+#include "flexui/Misc/String.hpp"
 
 namespace flexui {
 
@@ -24,9 +25,8 @@ namespace flexui {
 		Element(const std::string& tag);
 		virtual ~Element();
 
-		void setID(const std::string& id);
+		void setID(const std::string& id) { m_ID = id; };
 		void addClass(const std::string& klass);
-		void setStyleProperty(const StyleProperty& property);
 		void setPseudoStates(const SelectorPseudoState states);
 		void removePseudoStates(const SelectorPseudoState states);
 
@@ -35,9 +35,14 @@ namespace flexui {
 		bool isVisible() const;
 		const StyleComputed* getComputedStyle() const { return m_ComputedStyle; };
 
-		std::string getNodeName() const override { return m_Tag.text; }
+		std::string getNodeName() const override { return m_Tag; }
 		std::string getDebugInfo() const override;
 		NodeType getNodeType() const override { return NodeType::ELEMENT; }
+
+		const HashedString& getID() const { return m_ID; }
+		const HashedString& getTag() const { return m_Tag; }
+		const std::vector<HashedString>& getClasses() const { return m_Classes; }
+		SelectorPseudoState getPseudoStates() const { return m_PseudoStates; }
 
 		//virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) { return Vec2(); };
 
@@ -50,16 +55,14 @@ namespace flexui {
 		friend class StyleTreeUpdater;
 
 		friend class StyleSelectorMatcher;
-		SelectorIdentifier m_ID, m_Tag;
-		std::vector<SelectorIdentifier> m_Classes;
+		HashedString m_ID, m_Tag;
+		std::vector<HashedString> m_Classes;
 		SelectorPseudoState m_PseudoStates;
 		StyleRule m_InlineRules;
 
 		friend class StyleEngine;
 
 		StyleComputed* m_ComputedStyle;
-
-		void setTag(const std::string& tag);
 	};
 
 }

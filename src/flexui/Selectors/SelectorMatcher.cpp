@@ -24,17 +24,17 @@ namespace flexui {
 
                 matchesPart =
                     // match pseudos
-                    ((part.pseudos & current->m_PseudoStates) == part.pseudos)
+                    ((part.pseudos & current->getPseudoStates()) == part.pseudos)
                     &&
                     (
                         (
                             // wildcard always matches
                             part.identifier.type == SelectorIdentifierType::TAG &&
-                            part.identifier.text_hash == HashStr("*")
+                            part.identifier.value == HashedString("*")
                             ) ||
-                        current->m_ID == part.identifier ||
-                        current->m_Tag == part.identifier ||
-                        std::find(current->m_Classes.begin(), current->m_Classes.end(), part.identifier) != current->m_Classes.end()
+                        (part.identifier.type == SelectorIdentifierType::ID && current->getID() == part.identifier.value) ||
+                        (part.identifier.type == SelectorIdentifierType::TAG && current->getTag() == part.identifier.value) ||
+                        std::find(current->getClasses().begin(), current->getClasses().end(), part.identifier) != current->getClasses().end()
                         );
 
             }
