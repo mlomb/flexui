@@ -3,11 +3,11 @@
 #include <map>
 #include <string>
 
-#include "flexui/Style/StyleDefinitions.hpp"
+#include "flexui/Misc/Color.hpp"
 
 namespace flexui {
     // See https://www.w3.org/TR/css-color-3/#svg-color
-    const std::map<std::string, StyleColor> NAMED_COLORS = {
+    const std::map<std::string, Color> NAMED_COLORS = {
         { "transparent", 0x00000000 },
         { "aliceblue", 0xFFFFF8F0 },
         { "antiquewhite", 0xFFD7EBFA },

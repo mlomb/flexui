@@ -4,6 +4,7 @@
 
 #include "flexui/Math.hpp"
 #include "flexui/Render/Font.hpp"
+#include "flexui/Misc/Color.hpp"
 
 namespace flexui {
 

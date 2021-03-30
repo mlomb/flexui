@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm> // for min, max
-#include <cstdint>
 
 namespace flexui {
 
@@ -46,5 +45,4 @@ namespace flexui {
 		}
 	};
 
-	typedef uint32_t Color;
 }

@@ -1,10 +1,11 @@
 # Style
 
-## StyleSelector
+## StyleProperty
 
 ## StyleRule
 
-
+Remarks:
+* Custom style properties are not supported
 
 ## Definitions
 

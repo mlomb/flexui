@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flexui/Style/StyleDefinitions.hpp"
+#include "flexui/Misc/Color.hpp"
 
 namespace flexui {
 
@@ -29,7 +30,7 @@ namespace flexui {
 		StyleValueComputed<StyleLength> paddingRight;
 		StyleValueComputed<StyleLength> paddingBottom;
 
-		StyleValueComputed<StyleColor> borderColor;
+		StyleValueComputed<Color> borderColor;
 		StyleValueComputed<StyleLength> borderTopLeftRadius;
 		StyleValueComputed<StyleLength> borderTopRightRadius;
 		StyleValueComputed<StyleLength> borderBottomLeftRadius;
@@ -39,8 +40,8 @@ namespace flexui {
 		StyleValueComputed<StyleLength> borderRightWidth;
 		StyleValueComputed<StyleLength> borderBottomWidth;
 
-		StyleValueComputed<StyleNumber> flexGrow;
-		StyleValueComputed<StyleNumber> flexShrink;
+		StyleValueComputed<float> flexGrow;
+		StyleValueComputed<float> flexShrink;
 		StyleValueComputed<StyleLength> flexBasis;
 		StyleValueComputed<FlexDirection> flexDirection;
 		StyleValueComputed<FlexWrap> flexWrap;
@@ -56,8 +57,8 @@ namespace flexui {
 		StyleValueComputed<StyleLength> right;
 		StyleValueComputed<StyleLength> bottom;
 
-		StyleValueComputed<StyleColor> color;
-		StyleValueComputed<StyleColor> backgroundColor;
+		StyleValueComputed<Color> color;
+		StyleValueComputed<Color> backgroundColor;
 
 		StyleValueComputed<Overflow> overflow;
 		StyleValueComputed<Display> display;
@@ -66,7 +67,7 @@ namespace flexui {
 		StyleValueComputed<StyleLength> fontSize;
 		StyleValueComputed<WhiteSpace> whiteSpace;
 
-		StyleValueComputed<StyleCursor> cursor;
+		StyleValueComputed<Cursor> cursor;
 
 		void applyProperty(const StyleProperty& property);
 		void applyRule(const StyleRule& rule);

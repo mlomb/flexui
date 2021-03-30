@@ -21,7 +21,7 @@ namespace flexui {
 		void addStyleSheet(StyleSheet* stylesheet);
 
 		const std::vector<StyleSheet*>& getStyleSheets() const;		
-		StyleCursor getCurrentCusor() const;
+		Cursor getCurrentCusor() const;
 
 	private:
 		Document* m_Document;

@@ -14,7 +14,7 @@ namespace flexui {
 
     bool ParseSingleSelector(const std::string& input_selector, Selector& selector, ParseResult& parseResult)
     {
-		selector = { };
+		selector.clear();
 
 		size_t pos = 0;
 		SelectorRelationship next_rel = SelectorRelationship::NONE;

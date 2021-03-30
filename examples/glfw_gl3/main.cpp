@@ -525,11 +525,11 @@ void main_loop() {
 		#ifndef __EMSCRIPTEN__
         switch (cursor) {
         default:
-        case StyleCursor::AUTO:
-        case StyleCursor::DEFAULT:
+        case Cursor::AUTO:
+        case Cursor::DEFAULT:
             glfwSetCursor(window, NULL);
             break;
-        case StyleCursor::POINTER:
+        case Cursor::POINTER:
             glfwSetCursor(window, cursor_pointer);
             break;
         }

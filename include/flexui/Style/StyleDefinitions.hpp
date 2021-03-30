@@ -2,10 +2,13 @@
 
 #include <vector>
 #include <string>
+#include <stdint.h>
 
 #include <yoga/YGEnums.h>
-#include "flexui/Math.hpp"
+
 #include "flexui/Render/Font.hpp"
+#include "flexui/Selectors/Selector.hpp"
+#include "flexui/Misc/Color.hpp"
 
 // weird macros
 #undef RELATIVE
@@ -13,68 +16,6 @@
 #undef OVERFLOW
 
 namespace flexui {
-
-	enum class StylePropertyID {
-		WIDTH,
-		HEIGHT,
-		MIN_WIDTH,
-		MIN_HEIGHT,
-		MAX_WIDTH,
-		MAX_HEIGHT,
-
-		MARGIN_LEFT,
-		MARGIN_TOP,
-		MARGIN_RIGHT,
-		MARGIN_BOTTOM,
-
-		PADDING_LEFT,
-		PADDING_TOP,
-		PADDING_RIGHT,
-		PADDING_BOTTOM,
-
-		BORDER_COLOR,
-		BORDER_TOP_LEFT_RADIUS,
-		BORDER_TOP_RIGHT_RADIUS,
-		BORDER_BOTTOM_LEFT_RADIUS,
-		BORDER_BOTTOM_RIGHT_RADIUS,
-		BORDER_LEFT_WIDTH,
-		BORDER_TOP_WIDTH,
-		BORDER_RIGHT_WIDTH,
-		BORDER_BOTTOM_WIDTH,
-
-		FLEX_GROW,
-		FLEX_SHRINK,
-		FLEX_BASIS,
-		FLEX_DIRECTION,
-		FLEX_WRAP,
-
-		ALIGN_SELF,
-		ALIGN_ITEMS,
-		ALIGN_CONTENT,
-		JUSTIFY_CONTENT,
-
-		POSITION,
-		LEFT,
-		TOP,
-		RIGHT,
-		BOTTOM,
-
-		COLOR,
-		BACKGROUND_COLOR,
-
-		OVERFLOW,
-		DISPLAY,
-
-		TEXT_ALIGN, // TODO: !
-		FONT_FAMILY,
-		FONT_SIZE,
-		WHITE_SPACE,
-
-		CURSOR,
-
-		// always keep it last
-		LAST_PROPERTY_INVALID
-	};
 
 	enum class Position {
 		RELATIVE = YGPositionType::YGPositionTypeRelative,
@@ -130,7 +71,7 @@ namespace flexui {
 		NOWRAP,
 	};
 
-	enum class StyleCursor {
+	enum class Cursor {
 		AUTO,
 		DEFAULT,
 		NONE,
@@ -159,42 +100,9 @@ namespace flexui {
 		VH
 	};
 
-	typedef float StyleNumber;
-
 	struct StyleLength {
 		StyleLengthUnit unit;
-		StyleNumber number;
-	};
-
-	typedef Color StyleColor;
-
-	struct StyleValue {
-		std::string string;
-		union {
-			StyleNumber number;
-			StyleLength length;
-			StyleColor color;
-
-			Position position;
-			FlexDirection direction;
-			FlexWrap wrap;
-			Align align;
-			Justify justify;
-			TextAlign textAlign;
-			WhiteSpace whiteSpace;
-			Display display;
-			Overflow overflow;
-			StyleCursor cursor;
-		};
-	};
-
-	struct StyleProperty {
-		StylePropertyID id;
-		StyleValue value;
-	};
-
-	struct StyleRule {
-		std::vector<StyleProperty> properties;
+		float number;
 	};
 
 }
