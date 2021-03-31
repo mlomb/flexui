@@ -3,7 +3,7 @@
 #include <cassert>
 
 namespace flexui {
-
+	/*
 	StyleSheet::StyleSheet()
 	{
 	}
@@ -45,5 +45,5 @@ namespace flexui {
 			break;
 		}
 	}
-
+	*/
 }

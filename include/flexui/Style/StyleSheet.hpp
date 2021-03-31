@@ -8,6 +8,11 @@
 
 namespace flexui {
 
+	struct StyleSheet {
+
+	};
+
+	/*
 	class StyleSheet {
 	public:
 		StyleSheet();
@@ -26,5 +31,5 @@ namespace flexui {
 
 		IdentifierLookupTable m_OrderedIDs, m_OrderedTags, m_OrderedClasses;
 	};
-
+	*/
 }

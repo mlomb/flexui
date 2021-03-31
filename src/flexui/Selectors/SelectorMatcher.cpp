@@ -34,7 +34,7 @@ namespace flexui {
                             ) ||
                         (part.identifier.type == SelectorIdentifierType::ID && current->getID() == part.identifier.value) ||
                         (part.identifier.type == SelectorIdentifierType::TAG && current->getTag() == part.identifier.value) ||
-                        std::find(current->getClasses().begin(), current->getClasses().end(), part.identifier) != current->getClasses().end()
+                        std::find(current->getClasses().begin(), current->getClasses().end(), part.identifier.value) != current->getClasses().end()
                         );
 
             }

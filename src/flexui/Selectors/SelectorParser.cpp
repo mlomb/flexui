@@ -12,6 +12,30 @@ namespace flexui {
 		return c == '>' || c == '+' || c == '~';
 	}
 
+	/// Check if the character is a valid start for a CSS identifier
+	inline bool isIdentStart(char c) {
+		return
+			(c >= 'a' && c <= 'z') ||
+			(c >= 'A' && c <= 'Z') ||
+			(c == '-') || (c == '_');
+	}
+
+	/// Check if the character is valid for a CSS identifier
+	inline bool isIdent(char c) {
+		return isIdentStart(c) || (c >= '0' && c <= '9');
+	}
+
+	/// Parses a single CSS identifier from pos
+	std::string parseIdentifier(const std::string& input, size_t& pos) {
+		std::string result;
+		while (pos < input.size() && isIdent(input[pos])) {
+			result.push_back(input[pos]);
+			pos++;
+		}
+		return result;
+	}
+
+
     bool ParseSingleSelector(const std::string& input_selector, Selector& selector, ParseResult& parseResult)
     {
 		selector.clear();
@@ -20,7 +44,7 @@ namespace flexui {
 		SelectorRelationship next_rel = SelectorRelationship::NONE;
 
 		while (pos < input_selector.size()) {
-			consumeWhiteSpace(input_selector, pos);
+			parser::ConsumeWhiteSpace(input_selector, pos);
 			if (pos >= input_selector.size())
 				break; // no more
 

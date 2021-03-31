@@ -15,7 +15,7 @@ namespace flexui {
         unsigned char* data = nullptr;
         size_t size = 0;
 
-        if (familyName == "default") {
+        if (true || familyName == "default") {
             data = (unsigned char*)GetDefaultFontData();
             size = GetDefaultFontSize();
         }

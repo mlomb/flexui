@@ -42,7 +42,7 @@ namespace flexui {
 
         auto computed_style = getParentComputedStyle();
 
-        if (!getDocument()->getResourceProvider())
+        if (!computed_style || !getDocument()->getResourceProvider())
             return;
 
         std::shared_ptr<Font> font = getDocument()->getResourceProvider()->getFont(computed_style->fontFamily.value);

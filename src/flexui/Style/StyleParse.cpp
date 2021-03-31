@@ -2,6 +2,7 @@
 
 #include "flexui/Style/NamedColors.hpp"
 #include "flexui/Style/StyleSheet.hpp"
+#include "flexui/Style/StyleRule.hpp"
 
 #include "flexui/Selectors/SelectorParser.hpp"
 
@@ -13,67 +14,6 @@
 /// moving around instead of copying all the time (substrs)
 
 namespace flexui {
-
-	/// Check if the character is a valid start for a CSS identifier
-	inline bool isIdentStart(char c) {
-		return
-			(c >= 'a' && c <= 'z') ||
-			(c >= 'A' && c <= 'Z') ||
-			(c == '-') || (c == '_');
-	}
-
-	/// Check if the character is valid for a CSS identifier
-	inline bool isIdent(char c) {
-		return isIdentStart(c) || (c >= '0' && c <= '9');
-	}
-
-	/// Check if the character is a valid decimal digit
-	bool isNumeric(char c) {
-		return c >= '0' && c <= '9';
-	}
-
-	/// Check if the character is a valid hex digit
-	bool isHex(char c) {
-		return
-			(c >= 'a' && c <= 'f') ||
-			(c >= 'A' && c <= 'F') ||
-			isNumeric(c);
-	}
-
-	/// Converts a hex digit to its decimal representation
-	unsigned char hexToDec(unsigned char c) {
-		if (c >= '0' && c <= '9') return c - '0';
-		if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-		if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-		return 0;
-	}
-
-	/// Converts a two digit hex to its decimal representation
-	unsigned char hexToDec(unsigned char l, unsigned char r) {
-		return 16 * hexToDec(l) + hexToDec(r);
-	}
-
-	/// Converts decimal colors to Color
-	Color buildColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
-		// AABBGGRR
-		return ((uint32_t)(a) << 24) | ((uint32_t)(b) << 16) | ((uint32_t)(g) << 8) | ((uint32_t)(r));
-	}
-
-	/// Advances pos until there is no more whitespace
-	void consumeWhiteSpace(const std::string& input, size_t& pos) {
-		while (pos < input.size() && std::isspace(input[pos]))
-			pos++;
-	}
-
-	/// Parses a single CSS identifier from pos
-	std::string parseIdentifier(const std::string& input, size_t& pos) {
-		std::string result;
-		while (pos < input.size() && isIdent(input[pos])) {
-			result.push_back(input[pos]);
-			pos++;
-		}
-		return result;
-	}
 
 
 	// strip comments and consecutive spaces
@@ -117,6 +57,7 @@ namespace flexui {
 	}
 
 	bool parseRule(const std::string& source, StyleRule& rule, ParseResult& parseResult) {
+		/*
 		rule.properties.clear();
 
 		size_t pos = 0;
@@ -174,6 +115,8 @@ namespace flexui {
 		} while (pos < source.size());
 
 		return rule.properties.size() > 0;
+		*/
+		return false;
 	}
 
 	StyleSheet* ParseStyleSheet(const std::string& raw_source, ParseResult& parseResult)
@@ -201,7 +144,7 @@ namespace flexui {
 
 			std::vector<Selector> selectors;
 			if (ParseSelectors(selectors_str, selectors, parseResult)) {
-				StyleRule rule = { };
+				/*StyleRule rule = { };
 				if (parseRule(properties_str, rule, parseResult)) {
 					if (rule.properties.size() > 0) { // only add if is has at least one property
 						int rule_ref = sheet->addRule(rule);
@@ -212,7 +155,7 @@ namespace flexui {
 							sheet->addSelector(selector, rule_ref);
 						}
 					}
-				}
+				}*/
 			}
 
 			pos = block_end + 1;

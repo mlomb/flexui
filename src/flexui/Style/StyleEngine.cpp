@@ -1,6 +1,5 @@
 #include "flexui/Style/StyleEngine.hpp"
 
-#include "flexui/Style/StyleSelectorMatcher.hpp"
 #include "flexui/Style/StyleComputed.hpp"
 #include "flexui/Nodes/Element.hpp"
 #include "flexui/Nodes/Document.hpp"
@@ -46,6 +45,7 @@ namespace flexui {
 
 	void StyleEngine::calcStyles(Element* element)
 	{
+		/*
 		m_MatchedSelectors.clear();
 		StyleSelectorMatcher::FindMatches(element, m_StyleSheets, m_MatchedSelectors);
 
@@ -58,7 +58,7 @@ namespace flexui {
 		/*StyleHash selectorsHash = 0;
 		for (const SelectorMatch& match : m_MatchedSelectors) {
 			match.
-		}*/
+		}* /
 
 		StyleComputed* computedStyle = new StyleComputed();
 		*computedStyle = GetDefaultStyleValues(); // copy defaults
@@ -75,6 +75,7 @@ namespace flexui {
 		element->m_ComputedStyle = computedStyle;
 
 		static_cast<ElementLayoutObject*>(element->getLayoutObject())->syncStyles();
+		*/
 	}
 
 	Cursor StyleEngine::getCurrentCusor() const

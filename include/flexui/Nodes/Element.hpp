@@ -58,7 +58,7 @@ namespace flexui {
 		HashedString m_ID, m_Tag;
 		std::vector<HashedString> m_Classes;
 		SelectorPseudoState m_PseudoStates;
-		StyleRule m_InlineRules;
+		// StyleRule m_InlineRules;
 
 		friend class StyleEngine;
 

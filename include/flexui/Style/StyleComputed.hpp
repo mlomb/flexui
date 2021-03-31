@@ -1,7 +1,7 @@
 #pragma once
 
-#include "flexui/Style/StyleDefinitions.hpp"
-#include "flexui/Misc/Color.hpp"
+#include "flexui/Style/StyleProperty.hpp"
+#include "flexui/Style/StyleRule.hpp"
 
 namespace flexui {
 

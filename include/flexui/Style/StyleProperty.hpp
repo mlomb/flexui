@@ -1,5 +1,8 @@
 #pragma once
 
+#include <vector>
+#include <string>
+
 #include "flexui/Style/StyleDefinitions.hpp"
 #include "flexui/Misc/Parser.hpp"
 
@@ -69,7 +72,7 @@ namespace flexui {
 
 	struct StyleValue {
 		union {
-			std::string* string;
+			String* string;
 
 			float number;
 			StyleLength length;
@@ -93,20 +96,22 @@ namespace flexui {
 	public:
 		// The ownership of any valid pointer in the StyleValue parameter will
 		// be transfered to this StyleProperty (for deletion)
-		StyleProperty(const StylePropertyID id, const StyleValue& value, bool important = false);
+		StyleProperty(const StylePropertyID id, const StyleValue& value);
 		StyleProperty();
 		~StyleProperty();
 
 		// disable copying
 		StyleProperty(const StyleProperty&) = delete;
+		StyleProperty& operator = (const StyleProperty&) = delete;
+		// enable move
+		StyleProperty(StyleProperty&&) = default;
+		StyleProperty& operator = (StyleProperty&&) = default;
 
 		bool isValid() const { return m_ID != StylePropertyID::LAST_PROPERTY_INVALID;  }
-		bool isImportant() const { return m_Important; }
 		StylePropertyID getID() const { return m_ID; }
 		const StyleValue& getValue() const { return m_Value; }
 
 	private:
-		bool m_Important;
 		StylePropertyID m_ID;
 		StyleValue m_Value;
 	};
@@ -117,6 +122,6 @@ namespace flexui {
 	/// The properties are inserted into a vector because some style properties
 	/// may expand into multiple (i.e margin: 5px will expand to 4 properties: left, right, etc)
 	/// Returns true if at least one property is inserted
-	bool ParseStyleProperty(const std::string& line, std::vector<StyleProperty>& properties, ParseResult& parseResult);
+	bool ParseStylePropertyLine(const std::string&line, std::vector<StyleProperty>& properties, ParseResult& parseResult);
 
 }

@@ -3,13 +3,13 @@
 #include <vector>
 
 #include "flexui/Style/StyleDefinitions.hpp"
-#include "flexui/Style/StyleSelectorMatcher.hpp"
 
 namespace flexui {
 
 	class ContainerNode;
 	class Document;
 	class StyleSheet;
+	class Element;
 	
 	class StyleEngine {
 	public:
@@ -30,7 +30,7 @@ namespace flexui {
 		void calcStyles(Element* element);
 
 		std::vector<StyleSheet*> m_StyleSheets;
-		std::vector<SelectorMatch> m_MatchedSelectors;
+		//std::vector<SelectorMatch> m_MatchedSelectors;
 	};
 
 }

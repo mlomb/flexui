@@ -1,4 +1,5 @@
 #include "flexui/Style/StyleComputed.hpp"
+
 #include <cstring>  // memcpy
 
 namespace flexui {
@@ -7,12 +8,12 @@ namespace flexui {
 	{
 		using ID = StylePropertyID;
 
-		switch (property.id) {
+		switch (property.getID()) {
 		#define SAVE_PROP(id, name, key) \
 		case id: \
 			name.populated = true; \
 			name.inherited = false; \
-			name.value = property.value.key; \
+			name.value = property.getValue().key; \
 			break;
 
 		SAVE_PROP(ID::WIDTH,      width, length);
@@ -65,7 +66,7 @@ namespace flexui {
 		SAVE_PROP(ID::OVERFLOW, overflow, overflow);
 		SAVE_PROP(ID::DISPLAY, display, display);
 
-		SAVE_PROP(ID::FONT_FAMILY, fontFamily, string);
+		//SAVE_PROP(ID::FONT_FAMILY, fontFamily, string);
 		SAVE_PROP(ID::FONT_SIZE, fontSize, length);
 		SAVE_PROP(ID::WHITE_SPACE, whiteSpace, whiteSpace);
 
@@ -75,8 +76,8 @@ namespace flexui {
 
 	void StyleComputed::applyRule(const StyleRule& rule)
 	{
-		for (const StyleProperty& prop : rule.properties)
-			applyProperty(prop);
+		//for (const StyleProperty& prop : rule.properties)
+		//	applyProperty(prop);
 	}
 
 	void StyleComputed::inherit(const StyleComputed& source)
@@ -182,7 +183,7 @@ namespace flexui {
 		SET_LENGTH(fontSize, 14, StyleLengthUnit::PX);
 		SET_ENUM(whiteSpace, WhiteSpace::NORMAL);
 
-		SET_ENUM(cursor, StyleCursor::AUTO);
+		SET_ENUM(cursor, Cursor::AUTO);
 
 		#undef SET_NUMBER
 		#undef SET_LENGTH

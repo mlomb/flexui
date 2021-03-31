@@ -24,6 +24,7 @@ using namespace glm;
 #include <flexui/Providers/ResourceProvider.hpp>
 #include <flexui/Style/StyleSheet.hpp>
 #include <flexui/Style/StyleParse.hpp>
+#include <flexui/Style/StyleProperty.hpp>
 #include <flexui/Nodes/Text.hpp>
 #include <flexui/Nodes/Elements/Button.hpp>
 #include <flexui/Nodes/Elements/Slider.hpp>
@@ -428,7 +429,7 @@ void init_ui() {
 	assert(loaded);
 
 	doc = new Document(new ResourceProviderImpl(), new TextureProviderImpl());
-	doc->getStyleEngine().addStyleSheet(ss);
+	// doc->getStyleEngine().addStyleSheet(ss);
 	doc->appendChild(loaded);
 
 	PrintTree(doc);
@@ -594,11 +595,20 @@ int main(int, char**) {
 	std::cout << "OpenGL version supported " << version << std::endl;
 
 	flexui::Selector ss;
-	flexui::ParseResult sr;
-	flexui::ParseSingleSelector("#container .buttons > button.fancy + test:hover", ss, sr);
+	flexui::ParseResult pr;
+	flexui::ParseSingleSelector("#container .buttons > button.fancy + test:hover", ss, pr);
 
 	flexui::HashedString hs1 = "pepe";
 	flexui::HashedString hs2 = "asd";
+
+	{
+		std::vector<flexui::StyleProperty> props;
+		flexui::ParseStylePropertyLine("margin: 5px", props, pr);
+		flexui::ParseStylePropertyLine("background-color: magenta", props, pr);
+		flexui::ParseStylePropertyLine("margin  5px", props, pr);
+		flexui::ParseStylePropertyLine("", props, pr);
+		flexui::ParseStylePropertyLine("font-family: \"pepe\"", props, pr);
+	}
 
 	init();
 

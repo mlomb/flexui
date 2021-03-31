@@ -42,7 +42,7 @@ Let's consider the following selector:
 #container .buttons > button.fancy + test:hover
 ```
 
-The `Selector` generated will be a list of the following `SelectorPart`s:
+The `Selector` generated with [ParseSingleSelector](SelectorParser.hpp) be a list of the following `SelectorPart`s:
 
 ```
 identifer="container" (ID)  prev_rel=NONE             pseudos=00000000

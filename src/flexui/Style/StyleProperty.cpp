@@ -17,6 +17,11 @@ namespace flexui {
 			isNumeric(c);
 	}
 
+	/// Check if the character is a valid CSS property
+	inline bool isPropertyNameChar(const char c) {
+		return (c == '-') || (c >= 'a' && c <= 'z');
+	}
+
 	/// Converts decimal colors to Color
 	Color buildColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
 		// AABBGGRR
@@ -34,15 +39,6 @@ namespace flexui {
 	/// Converts a two digit hex to its decimal representation
 	unsigned char hexToDec(unsigned char l, unsigned char r) {
 		return 16 * hexToDec(l) + hexToDec(r);
-	}
-
-	// Removes all spaces and transforms to lowercase
-	std::string sanitize(const std::string& input) {
-		std::string result;
-		for (const char& c : input)
-			if (!std::isspace(c))
-				result.push_back(std::tolower(c));
-		return result;
 	}
 
 	bool parseNumber(const std::string& input, int& pos, float& output, ParseResult& parseResult) {
@@ -290,24 +286,62 @@ namespace flexui {
 		return true;
 	}
 
-
-	bool ParseStyleProperty(const std::string& line, std::vector<StyleProperty>& properties, ParseResult& parseResult)
+	bool ParseStylePropertyLine(const std::string& line, std::vector<StyleProperty>& properties, ParseResult& parseResult)
 	{
-		/*
+		// Example of valid property lines:
+		// 
+		// margin: 5px
+		// margin-left: 5px
+		// color: #ff00ff
+		// background-color: rgba(255, 0, 255, 0.5)
+		// font-family: "default"
+		// justify-content: flex-start
+
+		size_t pos = 0;
+		parser::ConsumeWhiteSpace(line, pos);
+
+		// consume a property name
+		size_t property_name_start = pos;
+		while (pos < line.size() && isPropertyNameChar(line[pos]))
+			pos++;
+		size_t property_name_end = pos;
+
+		if (property_name_start == property_name_end) {
+			parseResult.errors.push_back("Missing property name");
+			return false;
+		}
+
+		parser::ConsumeWhiteSpace(line, pos);
+
+		// next char must be :
+		if (pos >= line.size() || line[pos] != ':') {
+			parseResult.errors.push_back("Missing :");
+			return false;
+		}
+
+		pos++; // consume :
+		parser::ConsumeWhiteSpace(line, pos);
+
+		// consume whitespace backwards
+		size_t tail = line.size() - 1;
+		while (tail > pos && std::isspace(line[tail]))
+			tail--;
+
+		// TODO: avoid this copy
+		std::string raw_value = line.substr(pos, tail);
+
 		using ID = StylePropertyID;
 
 		StyleValue value = { 0 };
-		bool important = false;
-
-		std::string sanitized_value = sanitize(raw_value);
-		
+		ID id = ID::LAST_PROPERTY_INVALID; // for enums
 		int dummy = 0; // for parseNumber
+		
+		switch (HashStrLen(line.c_str() + property_name_start, property_name_end - property_name_start)) {
 
-		switch (HashStr(sanitize(name).c_str())) {
 		#define PARSE_PROP(func, prop_name, prop_id, prop_key) \
 		case HashStr(prop_name): \
-			if (func(sanitized_value, value.prop_key, parseResult)) { \
-				property = StyleProperty(prop_id, value, important); \
+			if (func(raw_value, value.prop_key, parseResult)) { \
+				properties.emplace_back(prop_id, value); \
 				return true; \
 			} \
 			break;
@@ -318,25 +352,25 @@ namespace flexui {
 
 		#define NUMBER_PROPERTY(prop_name, prop_id) \
 		case HashStr(prop_name): \
-			if (parseNumber(sanitized_value, dummy, value.number, parseResult)) { \
-				property = StyleProperty(prop_id, value, important); \
+			if (parseNumber(raw_value, dummy, value.number, parseResult)) { \
+				properties.emplace_back(prop_id, value); \
 				return true; \
 			} \
 			break;
 
 		#define PARSE_ENUM_START(prop_name, prop_id) \
 		case HashStr(prop_name): \
-			ID id = prop_id; \
-			switch (HashStr(sanitized_value.c_str())) {
+			id = prop_id; \
+			switch (HashStr(raw_value.c_str())) {
 
 		#define PARSE_ENUM_ENTRY(key, a, b) \
 			case HashStr(a): value.key = b; break; \
 
 		#define PARSE_ENUM_END() \
 			default: \
-				return false; /* no match * / \
+				return false; /* no match */ \
 			} \
-			property = StyleProperty(id, value, important); \
+			properties.emplace_back(id, value); \
 			return true;
 
 		/// -----------------------
@@ -463,15 +497,11 @@ namespace flexui {
 		// shorthands
 		#define FOUR_LENGTH_SHORTHAND(prop_name, a, b, c, d) \
 		case HashStr(prop_name): \
-			if (parseLength(value, prop.value.length, parseResult)) { \
-				prop.id = a; \
-				rule.properties.emplace_back(prop); \
-				prop.id = b; \
-				rule.properties.emplace_back(prop); \
-				prop.id = c; \
-				rule.properties.emplace_back(prop); \
-				prop.id = d; \
-				rule.properties.emplace_back(prop); \
+			if (parseLength(raw_value, value.length, parseResult)) { \
+				properties.emplace_back(a, value); \
+				properties.emplace_back(b, value); \
+				properties.emplace_back(c, value); \
+				properties.emplace_back(d, value); \
 				return true; \
 			} \
 			break;
@@ -508,25 +538,22 @@ namespace flexui {
 		// TODO: flex shorthand
 
 		default:
-			parseResult.warnings.emplace_back("Property '" + name + "' is not supported");
+			parseResult.warnings.emplace_back("Property '" + line.substr(property_name_start, property_name_end - property_name_start) + "' is not supported");
 			break;
 		}
 
-		*/
-		return false;
+		return true;
 	}
 
-	StyleProperty::StyleProperty(const StylePropertyID id, const StyleValue& value, bool important) :
+	StyleProperty::StyleProperty(const StylePropertyID id, const StyleValue& value) :
 		m_ID(id),
-		m_Value(value),
-		m_Important(important)
+		m_Value(value)
 	{
 	}
 
 	StyleProperty::StyleProperty() :
 		m_ID(StylePropertyID::LAST_PROPERTY_INVALID),
-		m_Value({ 0 }),
-		m_Important(false)
+		m_Value({ 0 })
 	{
 	}
 

@@ -22,19 +22,19 @@ namespace flexui {
 	};
 
 	enum class SelectorPseudoState : uint8_t {
-		NONE =          0,
-		HOVER =    1 << 0,
+		NONE = 0,
+		HOVER = 1 << 0,
 		DISABLED = 1 << 1,
-		CHECKED =  1 << 2,
-		ACTIVE =   1 << 3,
-		FOCUS =    1 << 4
+		CHECKED = 1 << 2,
+		ACTIVE = 1 << 3,
+		FOCUS = 1 << 4
 	};
 
 	struct SelectorIdentifier {
 		SelectorIdentifierType type;
 		HashedString value;
 	};
-	
+
 	struct SelectorPart {
 		SelectorIdentifier identifier;
 		SelectorRelationship prev_rel;
