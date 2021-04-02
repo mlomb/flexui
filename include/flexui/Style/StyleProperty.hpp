@@ -122,12 +122,12 @@ namespace flexui {
 	/// The properties are inserted into a vector because some style properties
 	/// may expand into multiple (i.e margin: 5px will expand to 4 properties: left, right, etc)
 	/// Returns true if at least one property is inserted
-	bool ParseStylePropertyLine(const StringSection& line, std::vector<StyleProperty>& properties, ParseResult& parseResult);
+	bool ParseStylePropertyLine(const StringSection& line, std::vector<StyleProperty>& properties, ParseResult& pr);
 
 	/// Parse a full block of style properties separated by `;`
 	/// The properties will be inserted into the `properties` vector
 	/// (the vector will not be cleared)
 	/// Returns true if at least one property was parsed
-	bool ParseStylePropertiesBlock(const StringSection& block, std::vector<StyleProperty>& properties, ParseResult& parseResult);
+	bool ParseStylePropertiesBlock(const StringSection& block, std::vector<StyleProperty>& properties, ParseResult& pr);
 
 }

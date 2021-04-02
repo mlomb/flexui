@@ -3,9 +3,9 @@
 #include <unordered_map>
 #include <vector>
 
-#include "flexui/Style/StyleProperty.hpp"
-#include "flexui/Selectors/Selector.hpp"
 #include "flexui/Misc/Parser.hpp"
+#include "flexui/Selectors/Selector.hpp"
+#include "flexui/Style/StyleProperty.hpp"
 
 namespace flexui {
 

@@ -17,7 +17,7 @@ namespace flexui {
 		return ((uint32_t)(a) << 24) | ((uint32_t)(b) << 16) | ((uint32_t)(g) << 8) | ((uint32_t)(r));
 	}
 
-	bool parseNumber(const StringSection& input, int& pos, float& output, ParseResult& parseResult) {
+	bool parseNumber(const StringSection& input, int& pos, float& output, ParseResult& pr) {
 		bool valid = false;
 		bool negative = false;
 		bool mantissa = false;
@@ -31,13 +31,13 @@ namespace flexui {
 					negative = true;
 				}
 				else {
-					parseResult.warnings.emplace_back("Unexpected '-'");
+					pr.warnings.emplace_back("Unexpected '-'");
 					return false; // unexpected -
 				}
 			}
 			else if (chr == '.') {
 				if (mantissa) {
-					parseResult.warnings.emplace_back("Unexpected '.'");
+					pr.warnings.emplace_back("Unexpected '.'");
 					return false; // unexpected .
 				}
 				mantissa = true;
@@ -65,9 +65,9 @@ namespace flexui {
 		return valid;
 	}
 
-	bool parseLength(const StringSection& input, StyleLength& output, ParseResult& parseResult) {
+	bool parseLength(const StringSection& input, StyleLength& output, ParseResult& pr) {
 		int pos = 0;
-		if (parseNumber(input, pos, output.number, parseResult)) {
+		if (parseNumber(input, pos, output.number, pr)) {
 			// number parsed
 			if (pos < input.length()) {
 				// more to read, must be a unit
@@ -97,7 +97,7 @@ namespace flexui {
 				
 				if(output.unit == StyleLengthUnit::AUTO){
 					// invalid unit
-					parseResult.warnings.emplace_back("Unexpected character '" + std::string(1, input[pos]) + "' parsing length");
+					pr.warnings.emplace_back("Unexpected character '" + std::string(1, input[pos]) + "' parsing length");
 					return false; // unexpected character
 				}
 			}
@@ -105,7 +105,7 @@ namespace flexui {
 				// by default pixels
 				output.unit = StyleLengthUnit::PX;
 				// annoying if using something like: margin: 0;
-				// parseResult.warnings.emplace_back("Defaulting to pixels due absence of length unit");
+				// pr.warnings.emplace_back("Defaulting to pixels due absence of length unit");
 			}
 
 			return true;
@@ -121,7 +121,7 @@ namespace flexui {
 		return false;
 	}
 
-	bool parseColor(const StringSection& input, Color& output, ParseResult& parseResult) {
+	bool parseColor(const StringSection& input, Color& output, ParseResult& pr) {
 		if (input.length() < 2)
 			return false;
 
@@ -140,7 +140,7 @@ namespace flexui {
 					return true;
 				}
 				else {
-					parseResult.warnings.emplace_back("Invalid #RGB hex value");
+					pr.warnings.emplace_back("Invalid #RGB hex value");
 					return false; // invalid hex
 				}
 			}
@@ -161,12 +161,12 @@ namespace flexui {
 					return true;
 				}
 				else {
-					parseResult.warnings.emplace_back("Invalid #RRGGBB hex value");
+					pr.warnings.emplace_back("Invalid #RRGGBB hex value");
 					return false; // invalid hex
 				}
 			}
 			else {
-				parseResult.warnings.emplace_back("Invalid size for hex number (" + std::to_string(input.length()) + ")");
+				pr.warnings.emplace_back("Invalid size for hex number (" + std::to_string(input.length()) + ")");
 				return false; // invalid size for hex number
 			}
 		}
@@ -177,7 +177,7 @@ namespace flexui {
 			float components[4];
 
 			for (int i = 0; i < num_components; i++) {
-				if (parseNumber(input, pos, components[i], parseResult)) {
+				if (parseNumber(input, pos, components[i], pr)) {
 					if (pos < input.length()) {
 						if (input[pos] == '%') {
 							pos++; // skip %
@@ -187,14 +187,14 @@ namespace flexui {
 
 							// next component
 							if (i + 1 >= num_components) {
-								parseResult.warnings.emplace_back("Too many components for rgb/a");
+								pr.warnings.emplace_back("Too many components for rgb/a");
 								return false; // too many components
 							}
 						}
 						else if (input[pos] == ')') {
 							// check if matched all components
 							if (i + 1 < num_components) {
-								parseResult.warnings.emplace_back("Too few components for rgb/a");
+								pr.warnings.emplace_back("Too few components for rgb/a");
 								return false; // too few components
 							}
 
@@ -208,12 +208,12 @@ namespace flexui {
 						}
 					}
 					else {
-						parseResult.warnings.emplace_back("Incomplete rgb/a color");
+						pr.warnings.emplace_back("Incomplete rgb/a color");
 						return false;
 					}
 				}
 				else {
-					parseResult.warnings.emplace_back("Could not parse component number " + std::to_string(i) + " of rgb/a color");
+					pr.warnings.emplace_back("Could not parse component number " + std::to_string(i) + " of rgb/a color");
 					return false;
 				}
 			}
@@ -234,16 +234,16 @@ namespace flexui {
 				return true;
 			}
 			else {
-				parseResult.warnings.emplace_back("Named color '" + input.str() + "' not found");
+				pr.warnings.emplace_back("Named color '" + input.str() + "' not found");
 				return false;
 			}
 		}
 
-		parseResult.warnings.emplace_back("Expected color definition");
+		pr.warnings.emplace_back("Expected color definition");
 		return false;
 	}
 
-	bool parseString(const StringSection& input, String*& output, ParseResult& parseResult)
+	bool parseString(const StringSection& input, String*& output, ParseResult& pr)
 	{
 		if (input.length() < 2) // must have at least two quotes
 			return false;
@@ -262,7 +262,7 @@ namespace flexui {
 		return true;
 	}
 
-	bool ParseStylePropertyLine(const StringSection& line, std::vector<StyleProperty>& properties, ParseResult& parseResult)
+	bool ParseStylePropertyLine(const StringSection& line, std::vector<StyleProperty>& properties, ParseResult& pr)
 	{
 		// Example of valid property lines:
 		// 
@@ -283,7 +283,7 @@ namespace flexui {
 		size_t property_name_end = pos;
 
 		if (property_name_start == property_name_end) {
-			parseResult.errors.push_back("Missing property name");
+			pr.errors.push_back("Missing property name");
 			return false;
 		}
 
@@ -291,7 +291,7 @@ namespace flexui {
 
 		// next char must be :
 		if (pos >= line.length() || line[pos] != ':') {
-			parseResult.errors.push_back("Missing :");
+			pr.errors.push_back("Missing :");
 			return false;
 		}
 
@@ -316,7 +316,7 @@ namespace flexui {
 
 		#define PARSE_PROP(func, prop_name, prop_id, prop_key) \
 		case HashStr(prop_name): \
-			if (func(raw_value, value.prop_key, parseResult)) { \
+			if (func(raw_value, value.prop_key, pr)) { \
 				properties.emplace_back(prop_id, value); \
 				return true; \
 			} \
@@ -328,7 +328,7 @@ namespace flexui {
 
 		#define NUMBER_PROPERTY(prop_name, prop_id) \
 		case HashStr(prop_name): \
-			if (parseNumber(raw_value, dummy, value.number, parseResult)) { \
+			if (parseNumber(raw_value, dummy, value.number, pr)) { \
 				properties.emplace_back(prop_id, value); \
 				return true; \
 			} \
@@ -473,7 +473,7 @@ namespace flexui {
 		// shorthands
 		#define FOUR_LENGTH_SHORTHAND(prop_name, a, b, c, d) \
 		case HashStr(prop_name): \
-			if (parseLength(raw_value, value.length, parseResult)) { \
+			if (parseLength(raw_value, value.length, pr)) { \
 				properties.emplace_back(a, value); \
 				properties.emplace_back(b, value); \
 				properties.emplace_back(c, value); \
@@ -514,20 +514,20 @@ namespace flexui {
 		// TODO: flex shorthand
 
 		default:
-			parseResult.warnings.emplace_back("Property '" + property_name.str() + "' is not supported");
+			pr.warnings.emplace_back("Property '" + property_name.str() + "' is not supported");
 			break;
 		}
 
 		return true;
 	}
 
-	bool ParseStylePropertiesBlock(const StringSection& block, std::vector<StyleProperty>& properties, ParseResult& parseResult)
+	bool ParseStylePropertiesBlock(const StringSection& block, std::vector<StyleProperty>& properties, ParseResult& pr)
 	{
 		bool any = false;
 
 		size_t pos = 0;
 		while (pos < block.length()) {
-			any |= ParseStylePropertyLine(block.section_until(';', pos), properties, parseResult);
+			any |= ParseStylePropertyLine(block.section_until(';', pos), properties, pr);
 			pos++; // skip ,
 		}
 

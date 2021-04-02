@@ -8,8 +8,8 @@ namespace flexui {
 
 	class ContainerNode;
 	class Document;
-	class StyleSheet;
 	class Element;
+	class StyleSheet;
 	
 	class StyleEngine {
 	public:
@@ -31,6 +31,10 @@ namespace flexui {
 
 		std::vector<StyleSheet*> m_StyleSheets;
 		//std::vector<SelectorMatch> m_MatchedSelectors;
+
+		typedef std::unordered_map<uint32_t, std::vector<std::shared_ptr<StyleRule>>> IdentifierLookupTable;
+
+		IdentifierLookupTable m_OrderedIDs, m_OrderedTags, m_OrderedClasses;
 	};
 
 }

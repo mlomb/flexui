@@ -33,7 +33,7 @@ namespace flexui {
 		return input.section(start_abs, pos).str();
 	}
 
-    bool ParseSingleSelector(const StringSection& input_selector, Selector& selector, ParseResult& parseResult)
+    bool ParseSingleSelector(const StringSection& input_selector, Selector& selector, ParseResult& pr)
     {
 		selector.clear();
 
@@ -63,7 +63,7 @@ namespace flexui {
 				case ':':
 					// check for unsupported pseudo-elements (::)
 					if (pos < input_selector.length() && input_selector[pos] == ':') {
-						parseResult.warnings.emplace_back("Pseudo-elements are not supported");
+						pr.warnings.emplace_back("Pseudo-elements are not supported");
 						return false;
 					}
 
@@ -77,7 +77,7 @@ namespace flexui {
 					case HashStr("active"):   state = PseudoStates::ACTIVE; break;
 					case HashStr("focus"):    state = PseudoStates::FOCUS; break;
 					default:
-						parseResult.warnings.emplace_back("Unsupported pseudo state '" + pseudo.str() + "'");
+						pr.warnings.emplace_back("Unsupported pseudo state '" + pseudo.str() + "'");
 						return false;
 					}
 
@@ -132,11 +132,11 @@ namespace flexui {
 				// FUI_LOG_DEBUG("(nesting op)" << chr);
 			}
 			else if (chr == '[') {
-				parseResult.warnings.emplace_back("Attribute selectors are not supported");
+				pr.warnings.emplace_back("Attribute selectors are not supported");
 				return false;
 			}
 			else {
-				parseResult.errors.emplace_back("Unexpected character '" + std::string(1, chr) + "'");
+				pr.errors.emplace_back("Unexpected character '" + std::string(1, chr) + "'");
 				return false;
 			}
 		}
@@ -144,7 +144,7 @@ namespace flexui {
 		return selector.size();
     }
 
-    bool ParseSelectors(const StringSection& input_selectors, std::vector<Selector>& selectors, ParseResult& parseResult)
+    bool ParseSelectors(const StringSection& input_selectors, std::vector<Selector>& selectors, ParseResult& pr)
     {
 		// we have to track if we add a new selector
 		// we can't use selectors.size() because the caller
@@ -156,7 +156,7 @@ namespace flexui {
 			auto single_selector = input_selectors.section_until(',', pos);
 
 			Selector selector;
-			if (ParseSingleSelector(single_selector, selector, parseResult)) {
+			if (ParseSingleSelector(single_selector, selector, pr)) {
 				selectors.emplace_back(selector);
 				any = true;
 			}
