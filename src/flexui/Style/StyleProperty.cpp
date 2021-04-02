@@ -41,14 +41,14 @@ namespace flexui {
 		return 16 * hexToDec(l) + hexToDec(r);
 	}
 
-	bool parseNumber(const std::string& input, int& pos, float& output, ParseResult& parseResult) {
+	bool parseNumber(const StringSection& input, int& pos, float& output, ParseResult& parseResult) {
 		bool valid = false;
 		bool negative = false;
 		bool mantissa = false;
 		int mantissa_place = 1;
 		float value = 0;
 
-		while (pos < input.size()) {
+		while (pos < input.length()) {
 			char chr = input[pos];
 			if (chr == '-') {
 				if (pos == 0) {
@@ -89,18 +89,18 @@ namespace flexui {
 		return valid;
 	}
 
-	bool parseLength(const std::string& input, StyleLength& output, ParseResult& parseResult) {
+	bool parseLength(const StringSection& input, StyleLength& output, ParseResult& parseResult) {
 		int pos = 0;
 		if (parseNumber(input, pos, output.number, parseResult)) {
 			// number parsed
-			if (pos < input.size()) {
+			if (pos < input.length()) {
 				// more to read, must be a unit
 				
 				// set as AUTO, if continues to be AUTO after parsing, the unit was invalid
 				output.unit = StyleLengthUnit::AUTO;
 
 				if (input[pos] == '%') output.unit = StyleLengthUnit::PERCENT;
-				else if (pos + 1 < input.size()) { // enough for two char unit
+				else if (pos + 1 < input.length()) { // enough for two char unit
 					if(false) { }
 					#define CHECK_LENGTH_UNIT(a, b, _unit) \
 					else if (input[pos] == a && input[pos + 1] == b) output.unit = _unit;
@@ -134,7 +134,7 @@ namespace flexui {
 
 			return true;
 		}
-		else if (input.size() >= 4) {
+		else if (input.length() >= 4) {
 			// check if auto
 			if (input[0] == 'a' && input[1] == 'u' && input[2] == 't' && input[3] == 'o') {
 				output.unit = StyleLengthUnit::AUTO;
@@ -145,13 +145,13 @@ namespace flexui {
 		return false;
 	}
 
-	bool parseColor(const std::string& input, Color& output, ParseResult& parseResult) {
-		if (input.size() < 2)
+	bool parseColor(const StringSection& input, Color& output, ParseResult& parseResult) {
+		if (input.length() < 2)
 			return false;
 
 		if (input[0] == '#') { // hex color
 			// #RGB
-			if (input.size() == 4) {
+			if (input.length() == 4) {
 				if (isHex(input[1]) &&
 					isHex(input[2]) &&
 					isHex(input[3])) {
@@ -169,7 +169,7 @@ namespace flexui {
 				}
 			}
 			// #RRGGBB
-			else if (input.size() == 7) {
+			else if (input.length() == 7) {
 				if (isHex(input[1]) &&
 					isHex(input[2]) &&
 					isHex(input[3]) &&
@@ -190,11 +190,11 @@ namespace flexui {
 				}
 			}
 			else {
-				parseResult.warnings.emplace_back("Invalid size for hex number (" + std::to_string(input.size()) + ")");
+				parseResult.warnings.emplace_back("Invalid size for hex number (" + std::to_string(input.length()) + ")");
 				return false; // invalid size for hex number
 			}
 		}
-		else if (input.find("rgb") == 0 && input.size() > 5) { // rgb/a color
+		else if (input.length() > 5 && input[0] == 'r' && input[1] == 'g' && input[2] == 'b') { // rgb/a color
 			bool has_alpha = input[3] == 'a';
 			int num_components = has_alpha ? 4 : 3;
 			int pos = has_alpha ? 5 : 4;
@@ -202,7 +202,7 @@ namespace flexui {
 
 			for (int i = 0; i < num_components; i++) {
 				if (parseNumber(input, pos, components[i], parseResult)) {
-					if (pos < input.size()) {
+					if (pos < input.length()) {
 						if (input[pos] == '%') {
 							pos++; // skip %
 						}
@@ -252,13 +252,13 @@ namespace flexui {
 			//      the map NAMED_COLORS is empty
 			// printf("size: %lu\n", NAMED_COLORS.size());
 
-			auto it = NAMED_COLORS.find(input);
+			auto it = NAMED_COLORS.find(input.str());
 			if (it != NAMED_COLORS.end()) {
 				output = (*it).second;
 				return true;
 			}
 			else {
-				parseResult.warnings.emplace_back("Named color '" + input + "' not found");
+				parseResult.warnings.emplace_back("Named color '" + input.str() + "' not found");
 				return false;
 			}
 		}
@@ -267,26 +267,26 @@ namespace flexui {
 		return false;
 	}
 
-	bool parseString(const std::string& input, std::string*& output, ParseResult& parseResult)
+	bool parseString(const StringSection& input, String*& output, ParseResult& parseResult)
 	{
-		if (input.size() < 2) // must have at least two quotes
+		if (input.length() < 2) // must have at least two quotes
 			return false;
 
-		bool _single = input[0] == '"' || input[input.size() - 1] == '"';
-		bool _double = input[0] == '\'' || input[input.size() - 1] == '\'';
+		bool _single = input[0] == '"' || input[input.length() - 1] == '"';
+		bool _double = input[0] == '\'' || input[input.length() - 1] == '\'';
 
 		if (!_single && !_double)
 			return false;
 
-		const size_t off = 1;
-        const size_t count = input.size() - 2;
+		const size_t start = 1;
+        const size_t end = input.length() - 1;
 
-		output = new std::string(input.substr(off, count));
+		output = new std::string(input.section(start, end).str());
 
 		return true;
 	}
 
-	bool ParseStylePropertyLine(const std::string& line, std::vector<StyleProperty>& properties, ParseResult& parseResult)
+	bool ParseStylePropertyLine(const StringSection& line, std::vector<StyleProperty>& properties, ParseResult& parseResult)
 	{
 		// Example of valid property lines:
 		// 
@@ -302,7 +302,7 @@ namespace flexui {
 
 		// consume a property name
 		size_t property_name_start = pos;
-		while (pos < line.size() && isPropertyNameChar(line[pos]))
+		while (pos < line.length() && isPropertyNameChar(line[pos]))
 			pos++;
 		size_t property_name_end = pos;
 
@@ -314,7 +314,7 @@ namespace flexui {
 		parser::ConsumeWhiteSpace(line, pos);
 
 		// next char must be :
-		if (pos >= line.size() || line[pos] != ':') {
+		if (pos >= line.length() || line[pos] != ':') {
 			parseResult.errors.push_back("Missing :");
 			return false;
 		}
@@ -323,12 +323,12 @@ namespace flexui {
 		parser::ConsumeWhiteSpace(line, pos);
 
 		// consume whitespace backwards
-		size_t tail = line.size() - 1;
+		size_t tail = line.length() - 1;
 		while (tail > pos && std::isspace(line[tail]))
 			tail--;
 
-		// TODO: avoid this copy
-		std::string raw_value = line.substr(pos, tail);
+		StringSection property_name = line.section(property_name_start, property_name_end);
+		StringSection raw_value = line.section(pos, tail + 1);
 
 		using ID = StylePropertyID;
 
@@ -336,7 +336,7 @@ namespace flexui {
 		ID id = ID::LAST_PROPERTY_INVALID; // for enums
 		int dummy = 0; // for parseNumber
 		
-		switch (HashStrLen(line.c_str() + property_name_start, property_name_end - property_name_start)) {
+		switch (property_name.hash()) {
 
 		#define PARSE_PROP(func, prop_name, prop_id, prop_key) \
 		case HashStr(prop_name): \
@@ -361,7 +361,7 @@ namespace flexui {
 		#define PARSE_ENUM_START(prop_name, prop_id) \
 		case HashStr(prop_name): \
 			id = prop_id; \
-			switch (HashStr(raw_value.c_str())) {
+			switch (raw_value.hash()) {
 
 		#define PARSE_ENUM_ENTRY(key, a, b) \
 			case HashStr(a): value.key = b; break; \
@@ -538,11 +538,24 @@ namespace flexui {
 		// TODO: flex shorthand
 
 		default:
-			parseResult.warnings.emplace_back("Property '" + line.substr(property_name_start, property_name_end - property_name_start) + "' is not supported");
+			parseResult.warnings.emplace_back("Property '" + property_name.str() + "' is not supported");
 			break;
 		}
 
 		return true;
+	}
+
+	bool ParseStylePropertiesBlock(const StringSection& block, std::vector<StyleProperty>& properties, ParseResult& parseResult)
+	{
+		bool any = false;
+
+		size_t pos = 0;
+		while (pos < block.length()) {
+			any |= ParseStylePropertyLine(block.section_until(';', pos), properties, parseResult);
+			pos++; // skip ,
+		}
+
+		return any;
 	}
 
 	StyleProperty::StyleProperty(const StylePropertyID id, const StyleValue& value) :

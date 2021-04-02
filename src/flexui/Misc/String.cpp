@@ -45,6 +45,11 @@ namespace flexui {
 		return section(start_abs - m_Start, pos);
 	}
 
+	uint32_t StringSection::hash() const
+	{
+		return HashStrLen(m_String->c_str() + m_Start, length());
+	}
+
 	String StringSection::str() const
 	{
 		return m_String->substr(m_Start, length());

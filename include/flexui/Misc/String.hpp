@@ -44,6 +44,7 @@ namespace flexui {
 		StringSection section(const size_t start, const size_t end) const;
 		/// Generate a subsection until the next occurrence of char
 		StringSection section_until(const char c, size_t& pos) const;
+		uint32_t hash() const;
 
 		std::string str() const; // warning: string allocation
 		char operator[](const size_t i) const;

@@ -608,6 +608,15 @@ int main(int, char**) {
 		flexui::ParseStylePropertyLine("margin  5px", props, pr);
 		flexui::ParseStylePropertyLine("", props, pr);
 		flexui::ParseStylePropertyLine("font-family: \"pepe\"", props, pr);
+
+		std::vector<flexui::StyleProperty> props2;
+		flexui::ParseStylePropertiesBlock(R"(
+			margin  :  5px ;
+			background-color   :  magenta   ;
+			margin  5px;
+			padding:5px  ;
+			font-family:"pepe"
+		)", props2, pr);
 	}
 
 	{
