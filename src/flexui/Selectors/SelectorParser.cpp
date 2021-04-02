@@ -26,26 +26,23 @@ namespace flexui {
 	}
 
 	/// Parses a single CSS identifier from pos
-	std::string parseIdentifier(const std::string& input, size_t& pos) {
-		std::string result;
-		while (pos < input.size() && isIdent(input[pos])) {
-			result.push_back(input[pos]);
+	inline HashedString parseIdentifier(const StringSection& input, size_t& pos) {
+		size_t start_abs = pos;
+		while (pos < input.length() && isIdent(input[pos]))
 			pos++;
-		}
-		return result;
+		return input.section(start_abs, pos).str();
 	}
 
-
-    bool ParseSingleSelector(const std::string& input_selector, Selector& selector, ParseResult& parseResult)
+    bool ParseSingleSelector(const StringSection& input_selector, Selector& selector, ParseResult& parseResult)
     {
 		selector.clear();
 
 		size_t pos = 0;
 		SelectorRelationship next_rel = SelectorRelationship::NONE;
 
-		while (pos < input_selector.size()) {
+		while (pos < input_selector.length()) {
 			parser::ConsumeWhiteSpace(input_selector, pos);
-			if (pos >= input_selector.size())
+			if (pos >= input_selector.length())
 				break; // no more
 
 			char chr = input_selector[pos];
@@ -61,26 +58,26 @@ namespace flexui {
 				switch (chr) {
 				case '#': type = SelectorIdentifierType::ID; break;
 				default:  type = SelectorIdentifierType::TAG; break;
-				case '.': type = SelectorIdentifierType::CLASS; break;
 				case '*': type = SelectorIdentifierType::TAG; is_wildcard = true; break;
+				case '.': type = SelectorIdentifierType::CLASS; break;
 				case ':':
-					// check for unsupported pseudo-elements
-					if (pos < input_selector.size() && input_selector[pos] == ':') {
+					// check for unsupported pseudo-elements (::)
+					if (pos < input_selector.length() && input_selector[pos] == ':') {
 						parseResult.warnings.emplace_back("Pseudo-elements are not supported");
 						return false;
 					}
 
-					std::string pseudo = parseIdentifier(input_selector, pos);
+					HashedString pseudo = parseIdentifier(input_selector, pos);
 
-					SelectorPseudoState state;
-					switch (HashStr(pseudo.c_str())) {
-					case HashStr("hover"):    state = SelectorPseudoState::HOVER; break;
-					case HashStr("disabled"): state = SelectorPseudoState::DISABLED; break;
-					case HashStr("checked"):  state = SelectorPseudoState::CHECKED; break;
-					case HashStr("active"):   state = SelectorPseudoState::ACTIVE; break;
-					case HashStr("focus"):    state = SelectorPseudoState::FOCUS; break;
+					PseudoStates state;
+					switch (pseudo.hash()) {
+					case HashStr("hover"):    state = PseudoStates::HOVER; break;
+					case HashStr("disabled"): state = PseudoStates::DISABLED; break;
+					case HashStr("checked"):  state = PseudoStates::CHECKED; break;
+					case HashStr("active"):   state = PseudoStates::ACTIVE; break;
+					case HashStr("focus"):    state = PseudoStates::FOCUS; break;
 					default:
-						parseResult.warnings.emplace_back("Unsupported pseudo state '" + pseudo + "'");
+						parseResult.warnings.emplace_back("Unsupported pseudo state '" + pseudo.str() + "'");
 						return false;
 					}
 
@@ -100,7 +97,7 @@ namespace flexui {
 						selector.emplace_back(part);
 					}
 
-					if (input_selector[pos] == ' ') // check for space
+					if (pos < input_selector.length() && input_selector[pos] == ' ') // check for space
 						next_rel = SelectorRelationship::DESCENDANT;
 					else
 						next_rel = SelectorRelationship::NONE;
@@ -112,13 +109,13 @@ namespace flexui {
 				part.identifier.type = type;
 				part.identifier.value = is_wildcard ? "*" : parseIdentifier(input_selector, pos);
 				part.prev_rel = next_rel;
-				part.pseudos = SelectorPseudoState::NONE;
+				part.pseudos = PseudoStates::NONE;
 
 				// FUI_LOG_DEBUG("(selector type " << std::to_string((int)part.identifier.type) << ")" << part.identifier.text);
 
 				selector.emplace_back(part);
 
-				if (input_selector[pos] == ' ') // check for space
+				if (pos < input_selector.length() && input_selector[pos] == ' ') // check for space
 					next_rel = SelectorRelationship::DESCENDANT;
 				else
 					next_rel = SelectorRelationship::NONE;
@@ -147,7 +144,7 @@ namespace flexui {
 		return selector.size();
     }
 
-    bool ParseSelectors(const std::string& input_selectors, std::vector<Selector>& selectors, ParseResult& parseResult)
+    bool ParseSelectors(const StringSection& input_selectors, std::vector<Selector>& selectors, ParseResult& parseResult)
     {
 		// we have to track if we add a new selector
 		// we can't use selectors.size() because the caller
@@ -155,12 +152,8 @@ namespace flexui {
 		bool any = false;
 
 		size_t pos = 0;
-		while (pos < input_selectors.size()) {
-			size_t selector_end = input_selectors.find(",", pos);
-			if (selector_end == std::string::npos)
-				selector_end = input_selectors.size();
-
-			std::string single_selector = input_selectors.substr(pos, selector_end - pos);
+		while (pos < input_selectors.length()) {
+			auto single_selector = input_selectors.section_until(',', pos);
 
 			Selector selector;
 			if (ParseSingleSelector(single_selector, selector, parseResult)) {
@@ -168,7 +161,7 @@ namespace flexui {
 				any = true;
 			}
 
-			pos = selector_end + 1;
+			pos++; // skip ,
 		}
 
 		return any;

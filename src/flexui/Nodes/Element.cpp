@@ -9,7 +9,7 @@ namespace flexui {
 
 	Element::Element(const std::string& tag) :
 		m_ComputedStyle(nullptr),
-		m_PseudoStates(SelectorPseudoState::NONE),
+		m_PseudoStates(PseudoStates::NONE),
 		m_ID(""),
 		m_Tag(tag)
 	{
@@ -58,16 +58,16 @@ namespace flexui {
     {
         switch (evt->type) {
         case EventTypeID::MOUSE_ENTER:
-            setPseudoStates(SelectorPseudoState::HOVER);
+            setPseudoStates(PseudoStates::HOVER);
             break;
         case EventTypeID::MOUSE_LEAVE:
-            removePseudoStates(SelectorPseudoState::HOVER);
+            removePseudoStates(PseudoStates::HOVER);
             break;
         case EventTypeID::CAPTURE_IN:
-            setPseudoStates(SelectorPseudoState::ACTIVE);
+            setPseudoStates(PseudoStates::ACTIVE);
             break;
         case EventTypeID::CAPTURE_OUT:
-            removePseudoStates(SelectorPseudoState::ACTIVE);
+            removePseudoStates(PseudoStates::ACTIVE);
             break;
         }
     }
@@ -84,12 +84,12 @@ namespace flexui {
 		m_Classes.emplace_back(_klass);
 	}
 
-    void Element::setPseudoStates(const SelectorPseudoState states)
+    void Element::setPseudoStates(const PseudoStates states)
     {
         m_PseudoStates |= states;
     }
 
-    void Element::removePseudoStates(const SelectorPseudoState states)
+    void Element::removePseudoStates(const PseudoStates states)
     {
         m_PseudoStates &= ~states;
     }

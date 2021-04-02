@@ -610,6 +610,20 @@ int main(int, char**) {
 		flexui::ParseStylePropertyLine("font-family: \"pepe\"", props, pr);
 	}
 
+	{
+		using namespace flexui;
+
+
+		StringSection str = StringSection("abcdef");
+		auto a = str.section(0, 3);
+		auto b = str.section(1, 2);
+		auto c = str.section(0, 1);
+		auto d = str.section(0, 0);
+		auto k = c[0];
+		auto f = c.length();
+
+	}
+
 	init();
 
 	main_loop_running = true;

@@ -6,6 +6,7 @@
 #include "flexui/Nodes/ContainerNode.hpp"
 #include "flexui/Math.hpp"
 #include "flexui/Style/StyleDefinitions.hpp"
+#include "flexui/Style/StyleRule.hpp"
 #include "flexui/Selectors/Selector.hpp"
 #include "flexui/Misc/String.hpp"
 
@@ -27,8 +28,8 @@ namespace flexui {
 
 		void setID(const std::string& id) { m_ID = id; };
 		void addClass(const std::string& klass);
-		void setPseudoStates(const SelectorPseudoState states);
-		void removePseudoStates(const SelectorPseudoState states);
+		void setPseudoStates(const PseudoStates states);
+		void removePseudoStates(const PseudoStates states);
 
 		Rect getBoundingRect() const { return Rect(); };
 		Rect getContentRect() const;
@@ -42,7 +43,7 @@ namespace flexui {
 		const HashedString& getID() const { return m_ID; }
 		const HashedString& getTag() const { return m_Tag; }
 		const std::vector<HashedString>& getClasses() const { return m_Classes; }
-		SelectorPseudoState getPseudoStates() const { return m_PseudoStates; }
+		PseudoStates getPseudoStates() const { return m_PseudoStates; }
 
 		//virtual Vec2 measureContent(float width, MeasureMode widthMode, float height, MeasureMode heightMode) { return Vec2(); };
 
@@ -57,8 +58,8 @@ namespace flexui {
 		friend class StyleSelectorMatcher;
 		HashedString m_ID, m_Tag;
 		std::vector<HashedString> m_Classes;
-		SelectorPseudoState m_PseudoStates;
-		// StyleRule m_InlineRules;
+		PseudoStates m_PseudoStates;
+		StyleRule m_InlineRule;
 
 		friend class StyleEngine;
 

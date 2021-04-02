@@ -8,7 +8,7 @@
 
 namespace flexui {
 
-	// A single rule from a stylesheet
+	// A single style rule
 	class StyleRule {
 	public:
 		StyleRule();

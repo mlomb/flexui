@@ -3,6 +3,8 @@
 #include <vector>
 #include <string>
 
+#include "flexui/Misc/String.hpp"
+
 namespace flexui {
 
 	struct ParseResult {
@@ -14,8 +16,8 @@ namespace flexui {
 	namespace parser {
 
 		/// Advances pos until there is no more whitespace
-		inline void ConsumeWhiteSpace(const std::string& input, size_t& pos) {
-			while (pos < input.size() && std::isspace(input[pos]))
+		inline void ConsumeWhiteSpace(const StringSection& input, size_t& pos) {
+			while (pos < input.length() && std::isspace(input[pos]))
 				pos++;
 		}
 

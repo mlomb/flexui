@@ -17,9 +17,9 @@ Supported relationships are:
     | `CHILD` | > | only inmmediate child elements |
     | `ADJACENT_SIBLING` | + | matches the second element only if it immediately follows the first |
     | `GENERAL_SIBLING` | ~ | all iterations of the second element that are followed by the first |
-3. A `SelectorPseudoState` that stores pseudo-states as a bitfield so they can be combined (ie. button:active:hover).  
+3. A `PseudoStates` that stores pseudo-states as a bitfield so they can be combined (ie. button:active:hover).  
 Pseudo-states are predefined and only the following are supported:
-    | SelectorPseudoState | CSS syntax |
+    | PseudoStates | CSS syntax |
     | - | - |
     | `NONE` | N/A |
     | `HOVER` | :hover |
