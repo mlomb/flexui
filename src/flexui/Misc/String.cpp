@@ -1,5 +1,7 @@
 #include "flexui/Misc/String.hpp"
 
+#include <cstring>
+
 #include "flexui/Log.hpp"
 
 namespace flexui {
