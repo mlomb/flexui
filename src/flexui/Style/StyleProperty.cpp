@@ -1,5 +1,7 @@
 #include "flexui/Style/StyleProperty.hpp"
 
+#include <cmath> // powf
+
 #include "flexui/Style/NamedColors.hpp"
 
 namespace flexui {
