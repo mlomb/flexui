@@ -23,7 +23,6 @@ using namespace glm;
 #include <flexui/Providers/TextureProvider.hpp>
 #include <flexui/Providers/ResourceProvider.hpp>
 #include <flexui/Style/StyleSheet.hpp>
-#include <flexui/Style/StyleParse.hpp>
 #include <flexui/Style/StyleProperty.hpp>
 #include <flexui/Nodes/Text.hpp>
 #include <flexui/Nodes/Elements/Button.hpp>

@@ -3,33 +3,30 @@
 #include <unordered_map>
 #include <vector>
 
-#include "StyleDefinitions.hpp"
+#include "flexui/Style/StyleProperty.hpp"
 #include "flexui/Selectors/Selector.hpp"
+#include "flexui/Misc/Parser.hpp"
 
 namespace flexui {
 
-	struct StyleSheet {
-
+	// A single style rule from a stylesheet
+	struct StyleRule {
+		std::vector<Selector> selectors;
+		std::vector<StyleProperty> properties;
 	};
 
-	/*
 	class StyleSheet {
 	public:
 		StyleSheet();
 		~StyleSheet();
 
-		int addRule(const StyleRule& rule);
-		void addSelector(const StyleSelector& selector, int rule_ref);
+		void addRule(const std::shared_ptr<StyleRule>& rule);
+		const std::vector<std::shared_ptr<StyleRule>>& getRules() const { return m_Rules; }
 
 	private:
-		std::vector<StyleSelector*> m_Selectors;
-		std::vector<StyleRule*> m_Rules;
-
-		friend class StyleSelectorMatcher;
-
-		typedef std::unordered_map<StrHash, std::vector<StyleSelector*>> IdentifierLookupTable;
-
-		IdentifierLookupTable m_OrderedIDs, m_OrderedTags, m_OrderedClasses;
+		std::vector<std::shared_ptr<StyleRule>> m_Rules;
 	};
-	*/
+
+	StyleSheet* ParseStyleSheet(const std::string& css, ParseResult& pr);
+
 }

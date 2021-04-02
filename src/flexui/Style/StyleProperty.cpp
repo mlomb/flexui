@@ -6,19 +6,6 @@
 
 namespace flexui {
 
-	/// Check if the character is a valid decimal digit
-	bool isNumeric(char c) {
-		return c >= '0' && c <= '9';
-	}
-
-	/// Check if the character is a valid hex digit
-	bool isHex(char c) {
-		return
-			(c >= 'a' && c <= 'f') ||
-			(c >= 'A' && c <= 'F') ||
-			isNumeric(c);
-	}
-
 	/// Check if the character is a valid CSS property
 	inline bool isPropertyNameChar(const char c) {
 		return (c == '-') || (c >= 'a' && c <= 'z');
@@ -28,19 +15,6 @@ namespace flexui {
 	Color buildColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
 		// AABBGGRR
 		return ((uint32_t)(a) << 24) | ((uint32_t)(b) << 16) | ((uint32_t)(g) << 8) | ((uint32_t)(r));
-	}
-
-	/// Converts a hex digit to its decimal representation
-	unsigned char hexToDec(unsigned char c) {
-		if (c >= '0' && c <= '9') return c - '0';
-		if (c >= 'a' && c <= 'f') return c - 'a' + 10;
-		if (c >= 'A' && c <= 'F') return c - 'A' + 10;
-		return 0;
-	}
-
-	/// Converts a two digit hex to its decimal representation
-	unsigned char hexToDec(unsigned char l, unsigned char r) {
-		return 16 * hexToDec(l) + hexToDec(r);
 	}
 
 	bool parseNumber(const StringSection& input, int& pos, float& output, ParseResult& parseResult) {
@@ -68,7 +42,7 @@ namespace flexui {
 				}
 				mantissa = true;
 			}
-			else if (isNumeric(chr)) {
+			else if (parser::IsNumeric(chr)) {
 				int num = chr - '0';
 				if (!mantissa) {
 					// whole part
@@ -154,13 +128,13 @@ namespace flexui {
 		if (input[0] == '#') { // hex color
 			// #RGB
 			if (input.length() == 4) {
-				if (isHex(input[1]) &&
-					isHex(input[2]) &&
-					isHex(input[3])) {
+				if (parser::IsHex(input[1]) &&
+					parser::IsHex(input[2]) &&
+					parser::IsHex(input[3])) {
 					output = buildColor(
-						hexToDec(input[1], input[1]),
-						hexToDec(input[2], input[2]),
-						hexToDec(input[3], input[3]),
+						parser::HexToDec(input[1], input[1]),
+						parser::HexToDec(input[2], input[2]),
+						parser::HexToDec(input[3], input[3]),
 						(unsigned char)0xFF
 					);
 					return true;
@@ -172,16 +146,16 @@ namespace flexui {
 			}
 			// #RRGGBB
 			else if (input.length() == 7) {
-				if (isHex(input[1]) &&
-					isHex(input[2]) &&
-					isHex(input[3]) &&
-					isHex(input[4]) &&
-					isHex(input[5]) &&
-					isHex(input[6])) {
+				if (parser::IsHex(input[1]) &&
+					parser::IsHex(input[2]) &&
+					parser::IsHex(input[3]) &&
+					parser::IsHex(input[4]) &&
+					parser::IsHex(input[5]) &&
+					parser::IsHex(input[6])) {
 					output = buildColor(
-						hexToDec(input[1], input[2]),
-						hexToDec(input[3], input[4]),
-						hexToDec(input[5], input[6]),
+						parser::HexToDec(input[1], input[2]),
+						parser::HexToDec(input[3], input[4]),
+						parser::HexToDec(input[5], input[6]),
 						(unsigned char)0xFF
 					);
 					return true;

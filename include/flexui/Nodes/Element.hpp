@@ -6,7 +6,7 @@
 #include "flexui/Nodes/ContainerNode.hpp"
 #include "flexui/Math.hpp"
 #include "flexui/Style/StyleDefinitions.hpp"
-#include "flexui/Style/StyleRule.hpp"
+#include "flexui/Style/StyleProperty.hpp"
 #include "flexui/Selectors/Selector.hpp"
 #include "flexui/Misc/String.hpp"
 
@@ -59,7 +59,7 @@ namespace flexui {
 		HashedString m_ID, m_Tag;
 		std::vector<HashedString> m_Classes;
 		PseudoStates m_PseudoStates;
-		StyleRule m_InlineRule;
+		std::vector<StyleProperty> m_InlineStyleProperties;
 
 		friend class StyleEngine;
 

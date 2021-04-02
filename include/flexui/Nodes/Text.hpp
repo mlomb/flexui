@@ -6,7 +6,7 @@
 
 namespace flexui {
 
-	class StyleComputed;
+	struct StyleComputed;
 
 	// Text node
 	class Text : public Node {

@@ -1,9 +1,11 @@
 #pragma once
 
-#include "flexui/Style/StyleProperty.hpp"
-#include "flexui/Style/StyleRule.hpp"
+#include "flexui/Style/StyleDefinitions.hpp"
 
 namespace flexui {
+
+	class StyleProperty;
+	struct StyleRule;
 
 	template<typename T>
 	struct StyleValueComputed {

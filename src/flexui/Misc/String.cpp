@@ -40,9 +40,7 @@ namespace flexui {
 	{
 		size_t start_abs = m_Start + pos;
 		size_t end_abs = m_String->find(c, start_abs);
-		if (end_abs == std::string::npos)
-			end_abs = m_String->length();
-
+		end_abs = end_abs > m_End ? m_End : end_abs;
 		pos = end_abs - m_Start;
 		return section(start_abs - m_Start, pos);
 	}

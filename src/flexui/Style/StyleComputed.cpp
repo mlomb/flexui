@@ -2,6 +2,8 @@
 
 #include <cstring>  // memcpy
 
+#include "flexui/Style/StyleProperty.hpp"
+
 namespace flexui {
 
 	void StyleComputed::applyProperty(const StyleProperty& property)
