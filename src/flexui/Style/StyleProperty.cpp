@@ -17,12 +17,14 @@ namespace flexui {
 		return ((uint32_t)(a) << 24) | ((uint32_t)(b) << 16) | ((uint32_t)(g) << 8) | ((uint32_t)(r));
 	}
 
-	bool parseNumber(const StringSection& input, int& pos, float& output, ParseResult& pr) {
+	bool parseNumber(const StringSection& input, size_t& pos, float& output, ParseResult& pr) {
 		bool valid = false;
 		bool negative = false;
 		bool mantissa = false;
 		int mantissa_place = 1;
 		float value = 0;
+
+		parser::ConsumeWhiteSpace(input, pos);
 
 		while (pos < input.length()) {
 			char chr = input[pos];
@@ -66,7 +68,7 @@ namespace flexui {
 	}
 
 	bool parseLength(const StringSection& input, StyleLength& output, ParseResult& pr) {
-		int pos = 0;
+		size_t pos = 0;
 		if (parseNumber(input, pos, output.number, pr)) {
 			// number parsed
 			if (pos < input.length()) {
@@ -171,9 +173,10 @@ namespace flexui {
 			}
 		}
 		else if (input.length() > 5 && input[0] == 'r' && input[1] == 'g' && input[2] == 'b') { // rgb/a color
+			auto k = input.str();
 			bool has_alpha = input[3] == 'a';
 			int num_components = has_alpha ? 4 : 3;
-			int pos = has_alpha ? 5 : 4;
+			size_t pos = has_alpha ? 5 : 4;
 			float components[4];
 
 			for (int i = 0; i < num_components; i++) {
@@ -276,6 +279,9 @@ namespace flexui {
 		size_t pos = 0;
 		parser::ConsumeWhiteSpace(line, pos);
 
+		if (pos >= line.length())
+			return false;
+
 		// consume a property name
 		size_t property_name_start = pos;
 		while (pos < line.length() && isPropertyNameChar(line[pos]))
@@ -310,7 +316,7 @@ namespace flexui {
 
 		StyleValue value = { 0 };
 		ID id = ID::LAST_PROPERTY_INVALID; // for enums
-		int dummy = 0; // for parseNumber
+		size_t dummy = 0; // for parseNumber
 		
 		switch (property_name.hash()) {
 
