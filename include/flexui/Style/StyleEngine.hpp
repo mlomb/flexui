@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "flexui/Style/StyleDefinitions.hpp"
+#include "flexui/Style/StyleSheet.hpp" // StyleRule
 
 namespace flexui {
 
