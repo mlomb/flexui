@@ -11,8 +11,5 @@ if(NOT EMSCRIPTEN)
 	add_subdirectory(libs/glew EXCLUDE_FROM_ALL)
 endif()
 
-# glm
-add_subdirectory(libs/glm EXCLUDE_FROM_ALL)
-
 # examples
 add_subdirectory(glfw_gl3)

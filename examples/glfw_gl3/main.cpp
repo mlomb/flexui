@@ -13,10 +13,6 @@
 
 #include <GLFW/glfw3.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
-
 #include <flexui/Nodes/Element.hpp>
 #include <flexui/Render/Painter.hpp> // TODO: move structs to another file
 #include <flexui/Render/RenderEngine.hpp>
