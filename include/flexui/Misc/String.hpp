@@ -8,13 +8,13 @@ namespace flexui {
 
 	typedef std::string String;
 
-	constexpr const uint32_t HashStrLen(const char* str, const size_t length, const int i = 0)
+	constexpr const uint32_t HashStrLen(const char* str, const size_t length, const size_t i = 0)
 	{
 		// TODO: maybe find a better hash
 		return i != length ? (HashStrLen(str, length, i + 1) * 33) ^ str[i] : 5381;
 	}
 
-	constexpr const uint32_t HashStr(const char* str, const int i = 0)
+	constexpr const uint32_t HashStr(const char* str, const size_t i = 0)
 	{
 		// TODO: maybe find a better hash
 		return str[i] ? (HashStr(str, i + 1) * 33) ^ str[i] : 5381;
