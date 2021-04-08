@@ -1,3 +1,4 @@
+
 #include "flexui/Style/StyleEngine.hpp"
 
 #include "flexui/Style/StyleComputed.hpp"
@@ -23,14 +24,38 @@ namespace flexui {
 		calcStylesRecursive(m_Document);
 	}
 
-	void StyleEngine::addStyleSheet(StyleSheet* stylesheet)
+	void StyleEngine::addStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet)
 	{
 		m_StyleSheets.push_back(stylesheet);
+		// TODO: add rules to index
 	}
 
-	const std::vector<StyleSheet*>& StyleEngine::getStyleSheets() const
+	void StyleEngine::removeStyleSheet(const std::weak_ptr<StyleSheet>& stylesheet)
+	{
+		auto it = std::find(m_StyleSheets.begin(), m_StyleSheets.end(), stylesheet);
+		if (it != m_StyleSheets.end()) {
+			// TODO: remove rules from index
+			m_StyleSheets.erase(it);
+		}
+	}
+
+	const std::vector<std::shared_ptr<StyleSheet>>& StyleEngine::getStyleSheets() const
 	{
 		return m_StyleSheets;
+	}
+
+	void StyleEngine::_attachedToTree(Node* node)
+	{
+		if (node->getNodeType() == NodeType::ELEMENT) {
+			Element* e = static_cast<Element*>(node);
+			//m_OrderedIDs.insert(e->getID().hash(), e->);
+		}
+		printf("NODE: %s\n", node->getDebugInfo().c_str());
+	}
+
+	void StyleEngine::_detachedFromTree(Node* node)
+	{
+
 	}
 
 	void StyleEngine::calcStylesRecursive(ContainerNode* node)

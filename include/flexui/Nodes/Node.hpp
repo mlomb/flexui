@@ -9,6 +9,7 @@
 
 namespace flexui {
 
+	class ContainerNode;
 	class Element;
 	class Document;
 	class LayoutObject;
@@ -16,6 +17,7 @@ namespace flexui {
 
 	enum class NodeType {
 		COMMENT,
+		STYLESHEET, // TODO: !
 		DOCUMENT,
 		ELEMENT,
 		TEXT
@@ -31,7 +33,7 @@ namespace flexui {
 		virtual std::string getDebugInfo() const { return getNodeName(); };
 		virtual void drawContent(Painter& painter) { };
 
-		Node* getParentNode() const { return m_Parent; }
+		ContainerNode* getParentNode() const { return m_Parent; }
 		Node* getPreviousSibling() const { return m_PreviousSibling; }
 		Node* getNextSibling() const { return m_NextSibling; }
 		Document* getDocument() const { return m_Document; }
@@ -43,14 +45,17 @@ namespace flexui {
 	protected:
 		Node();
 
-		int m_Depth;
-		Document* m_Document;
 		LayoutObject* m_Layout;
 
 	private:
+		friend class Document;
 		friend class ContainerNode;
-		Node *m_Parent;
+
+		ContainerNode* m_Parent;
 		Node *m_PreviousSibling, *m_NextSibling;
+
+		int m_Depth;
+		Document* m_Document;
 	};
 
 }

@@ -1,8 +1,7 @@
 #include "flexui/Nodes/ContainerNode.hpp"
 
 #include "flexui/Log.hpp"
-#include "flexui/Layout/LayoutObject.hpp"
-#include "flexui/Layout/Yoga.hpp"
+#include "flexui/Nodes/Document.hpp"
 
 namespace flexui {
 
@@ -19,11 +18,11 @@ namespace flexui {
 	void ContainerNode::appendChild(Node* child_node)
 	{
 		// remove child from parent first
-		if (child_node->getParentNode()) {
+		if (child_node->m_Parent) {
 			FUI_ASSERT(child_node->isContainerNode());
-			static_cast<ContainerNode*>(child_node->getParentNode())->removeChild(child_node);
+			static_cast<ContainerNode*>(child_node->m_Parent)->removeChild(child_node);
 		}
-		FUI_ASSERT(child_node->getParentNode() == nullptr);
+		FUI_ASSERT(child_node->m_Parent == nullptr);
 
 		child_node->m_Parent = this;
 		if (m_LastChild) {
@@ -35,36 +34,45 @@ namespace flexui {
 		}
 		m_LastChild = child_node;
 
-		// keep tree in sync (TODO: find a better way to do this)
-		if (child_node->getLayoutObject()) {
-			if (YGNode* yogaNode = getLayoutObject()->getYogaNode()) {
-				YGNodeInsertChild(yogaNode, child_node->getLayoutObject()->getYogaNode(), YGNodeGetChildCount(yogaNode));
-			}
-		}
-
-		child_node->m_Document = m_Document;
-		child_node->m_Depth = m_Depth + 1;
-		if(child_node->isContainerNode())
-			static_cast<ContainerNode*>(child_node)->propagateHierarchyData();
+		AttachToTree(child_node);
 	}
 
 	void ContainerNode::removeChild(Node* child_node)
 	{
 		// TODO: !
+		FUI_ASSERT(false);
+
+		DeatchFromTree(child_node);
 	}
 
-	void ContainerNode::propagateHierarchyData()
+	void ContainerNode::AttachToTree(Node* child)
 	{
-		for (Node* child = getFirstChild(); child; child = child->getNextSibling()) {
-			if (child->m_Document != m_Document && child->m_Depth != m_Depth + 1) {
+		Node* parent = child->getParentNode(); FUI_ASSERT(parent);
+		Document* doc = parent->m_Document;
 
-				child->m_Document = m_Document;
-				child->m_Depth = m_Depth + 1;
+		// the child shouldn't be attached to the tree
+		FUI_ASSERT(child->m_Document == nullptr);
 
-				if (child->isContainerNode())
-					static_cast<ContainerNode*>(child)->propagateHierarchyData();
+		child->m_Document = doc;
+		child->m_Depth = child->getParentNode()->m_Depth + 1;
+
+		if (doc) {
+			doc->getStyleEngine()._attachedToTree(child);
+			doc->getLayoutEngine()._attachedToTree(child);
+		}
+
+		if (child->isContainerNode()) {
+			Node* sub_child = static_cast<ContainerNode*>(child)->getFirstChild();
+			while (sub_child) {
+				AttachToTree(sub_child);
+				sub_child = sub_child->getNextSibling();
 			}
 		}
+	}
+
+	void ContainerNode::DeatchFromTree(Node* child)
+	{
+		// TODO: !
 	}
 
 }
