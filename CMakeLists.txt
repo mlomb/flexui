@@ -17,3 +17,5 @@ option(FLEXUI_BUILD_EXAMPLES "Build flexui examples" ON)
 if(FLEXUI_BUILD_EXAMPLES)
 	add_subdirectory(examples)
 endif()
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
