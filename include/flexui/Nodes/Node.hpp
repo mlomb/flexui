@@ -17,7 +17,7 @@ namespace flexui {
 
 	enum class NodeType {
 		COMMENT,
-		STYLESHEET, // TODO: !
+		STYLE,
 		DOCUMENT,
 		ELEMENT,
 		TEXT
@@ -45,17 +45,15 @@ namespace flexui {
 	protected:
 		Node();
 
+		int m_Depth;
+		Document* m_Document;
 		LayoutObject* m_Layout;
 
 	private:
-		friend class Document;
 		friend class ContainerNode;
 
 		ContainerNode* m_Parent;
 		Node *m_PreviousSibling, *m_NextSibling;
-
-		int m_Depth;
-		Document* m_Document;
 	};
 
 }

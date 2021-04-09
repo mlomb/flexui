@@ -10,6 +10,7 @@
 // Elements
 #include "flexui/Nodes/Node.hpp"
 #include "flexui/Nodes/Text.hpp"
+#include "flexui/Nodes/Style.hpp"
 #include "flexui/Nodes/Comment.hpp"
 #include "flexui/Nodes/Elements/Button.hpp"
 #include "flexui/Nodes/Elements/Slider.hpp"
@@ -64,9 +65,21 @@ namespace flexui {
             const char* name = xml_element->Value();
             FUI_DEBUG_ASSERT(name != nullptr);
 
+            uint32_t name_hash = HashStr(name);
+
+			if (name_hash == HashStr("style")) {
+                // style element
+                std::string css = "";
+                XMLText* text_node = xml_node->FirstChild() ? xml_node->FirstChild()->ToText() : NULL;
+                if (text_node) {
+                    css = text_node->Value();
+                }
+                return new Style(css);
+			}
+
             Element* element = nullptr;
 
-            switch (HashStr(name)) {
+            switch (name_hash) {
             case HashStr("button"): element = new Button(); break;
             case HashStr("slider"): element = new Slider(); break;
             default:
@@ -114,7 +127,16 @@ namespace flexui {
             return nullptr;
         }
 
-        // convert XML to Nodes
-        return parseNode(doc.RootElement(), parseResult);
+		// convert XML to Nodes
+        Element* element = new Element("div");
+		XMLNode* xml_node = doc.FirstChild();
+        while (xml_node) {
+            Node* node = parseNode(xml_node, parseResult);
+            if(node)
+                element->appendChild(node);
+            xml_node = xml_node->NextSibling();
+        }
+        // TODO: if the document only has one child, return that instead
+        return element;
     }
 }

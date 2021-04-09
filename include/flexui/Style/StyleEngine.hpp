@@ -5,6 +5,7 @@
 #include "flexui/Style/StyleDefinitions.hpp"
 #include "flexui/Style/StyleSheet.hpp"
 #include "flexui/Nodes/TreeScope.hpp"
+#include "flexui/Selectors/IdentifierIndex.hpp"
 
 namespace flexui {
 
@@ -21,7 +22,7 @@ namespace flexui {
 		void performStyles();
 
 		void addStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet);
-		void removeStyleSheet(const std::weak_ptr<StyleSheet>& stylesheet);
+		void removeStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet);
 
 		const std::vector<std::shared_ptr<StyleSheet>>& getStyleSheets() const;
 		Cursor getCurrentCusor() const;
@@ -38,9 +39,8 @@ namespace flexui {
 		std::vector<std::shared_ptr<StyleSheet>> m_StyleSheets;
 		//std::vector<SelectorMatch> m_MatchedSelectors;
 
-		typedef std::unordered_map<uint32_t, std::vector<std::shared_ptr<StyleRule>>> IdentifierLookupTable;
-
-		IdentifierLookupTable m_OrderedIDs, m_OrderedTags, m_OrderedClasses;
+		IdentifierIndex<std::shared_ptr<StyleRule>> m_RulesIndex;
+		IdentifierIndex<Element*> m_ElementsIndex;
 	};
 
 }

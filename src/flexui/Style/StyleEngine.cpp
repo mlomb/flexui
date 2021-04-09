@@ -2,6 +2,7 @@
 #include "flexui/Style/StyleEngine.hpp"
 
 #include "flexui/Style/StyleComputed.hpp"
+#include "flexui/Nodes/Style.hpp"
 #include "flexui/Nodes/Element.hpp"
 #include "flexui/Nodes/Document.hpp"
 #include "flexui/Layout/ElementLayoutObject.hpp"
@@ -27,10 +28,17 @@ namespace flexui {
 	void StyleEngine::addStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet)
 	{
 		m_StyleSheets.push_back(stylesheet);
-		// TODO: add rules to index
+		for (const std::shared_ptr<StyleRule>& rule : stylesheet->getRules()) {
+			for (const Selector& selector : rule->selectors) {
+				if (selector.size() > 0) {
+					const auto& last_part = selector.back();
+					m_RulesIndex.addIdentifier(last_part.identifier.type, last_part.identifier.value.hash(), rule);
+				}
+			}
+		}
 	}
 
-	void StyleEngine::removeStyleSheet(const std::weak_ptr<StyleSheet>& stylesheet)
+	void StyleEngine::removeStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet)
 	{
 		auto it = std::find(m_StyleSheets.begin(), m_StyleSheets.end(), stylesheet);
 		if (it != m_StyleSheets.end()) {
@@ -46,9 +54,17 @@ namespace flexui {
 
 	void StyleEngine::_attachedToTree(Node* node)
 	{
-		if (node->getNodeType() == NodeType::ELEMENT) {
+		if (node->getNodeType() == NodeType::STYLE) {
+			Style* s = static_cast<Style*>(node);
+			addStyleSheet(s->getStyleSheet());
+		} else if (node->getNodeType() == NodeType::ELEMENT) {
 			Element* e = static_cast<Element*>(node);
-			//m_OrderedIDs.insert(e->getID().hash(), e->);
+			// add element to index
+			m_ElementsIndex.addIdentifier(SelectorIdentifierType::ID, e->getID().hash(), e);
+			m_ElementsIndex.addIdentifier(SelectorIdentifierType::TAG, e->getTag().hash(), e);
+			for (auto klass : e->getClasses()) {
+				m_ElementsIndex.addIdentifier(SelectorIdentifierType::CLASS, klass.hash(), e);
+			}
 		}
 		printf("NODE: %s\n", node->getDebugInfo().c_str());
 	}
