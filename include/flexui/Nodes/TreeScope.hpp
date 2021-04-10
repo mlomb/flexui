@@ -9,7 +9,7 @@ namespace flexui {
 		TreeScope() { };
 		virtual ~TreeScope() { };
 
-		/* Internal calls */
+		// internal calls
 		virtual void _attachedToTree(Node* node) { };
 		virtual void _detachedFromTree(Node* node) { };
 

@@ -8,9 +8,9 @@
 namespace flexui {
 
 	enum class SelectorIdentifierType : uint8_t {
-		ID,
-		TAG,
-		CLASS
+		ID    = 0,
+		TAG   = 1,
+		CLASS = 2
 	};
 
 	enum class SelectorRelationship : uint8_t {

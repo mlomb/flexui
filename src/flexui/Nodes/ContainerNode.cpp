@@ -71,10 +71,8 @@ namespace flexui {
 		child->m_Document = doc;
 		child->m_Depth = child->getParentNode()->m_Depth + 1;
 
-		if (doc) {
-			doc->getStyleEngine()._attachedToTree(child);
-			doc->getLayoutEngine()._attachedToTree(child);
-		}
+		if (doc)
+			doc->_attachedToTree(child);
 
 		if (child->isContainerNode()) {
 			Node* sub_child = static_cast<ContainerNode*>(child)->getFirstChild();

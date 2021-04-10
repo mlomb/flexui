@@ -77,12 +77,12 @@ namespace flexui {
 	{
 		if (m_Document && !m_ID.empty()) {
 			// remove the ID from the index
-			m_Document->getStyleEngine()._removeElementID(m_ID, this);
+			m_Document->_removeElementID(m_ID, this);
 		}
 		m_ID = id;
 		if (m_Document && !m_ID.empty()) {
 			// add the ID to the index
-			m_Document->getStyleEngine()._addElementID(m_ID, this);
+			m_Document->_addElementID(m_ID, this);
 		}
 	}
 
@@ -99,7 +99,7 @@ namespace flexui {
 		m_Classes.emplace_back(klass);
 		if (m_Document) {
 			// add the ID to the index
-			m_Document->getStyleEngine()._addElementClass(klass, this);
+			m_Document->_addElementClass(klass, this);
 		}
 	}
 

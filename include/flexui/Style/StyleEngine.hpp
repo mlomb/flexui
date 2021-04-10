@@ -24,27 +24,21 @@ namespace flexui {
 		void addStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet);
 		void removeStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet);
 
-		const std::vector<std::shared_ptr<StyleSheet>>& getStyleSheets() const;
 		Cursor getCurrentCusor() const;
 
+		// internal calls
 		void _attachedToTree(Node* node) override;
 		void _detachedFromTree(Node* node) override;
 
-		void _addElementID(const HashedString& id, Element* element);
-		void _addElementClass(const HashedString& klass, Element* element);
-		void _removeElementID(const HashedString& id, Element* element);
-		void _removeElementClass(const HashedString& klass, Element* element);
-
 	private:
-		Document* m_Document;
 
 		void calcStylesRecursive(ContainerNode* parent);
 		void calcStyles(Element* element);
 
-		std::vector<std::shared_ptr<StyleSheet>> m_StyleSheets;
+		Document* m_Document;
 
+		std::vector<std::shared_ptr<StyleSheet>> m_StyleSheets;
 		IdentifierIndex<std::shared_ptr<StyleRule>> m_RulesIndex;
-		IdentifierIndex<Element*> m_ElementsIndex;
 	};
 
 }

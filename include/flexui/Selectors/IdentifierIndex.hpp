@@ -1,11 +1,13 @@
 #pragma once
 
+#include <vector>
 #include <unordered_map>
 
 #include "flexui/Selectors/Selector.hpp"
 
 namespace flexui {
 
+	// Note: does not check for duplicates
 	template<typename T>
 	class IdentifierIndex {
 	public:
@@ -30,13 +32,14 @@ namespace flexui {
 	template<typename T>
 	inline void IdentifierIndex<T>::removeIdentifier(const SelectorIdentifierType type, const uint32_t hash, T value)
 	{
-		// TODO: !
-		/*auto it1 = m_Identifiers[type].find(hash);
-		if (it1 != m_Identifiers[type].end()) {
-
-		}*/
+		auto& it1 = m_Identifiers[(int)type].find(hash);
+		if (it1 != m_Identifiers[(int)type].end()) {
+			auto& hash_vec = (*it1).second;
+			auto& it2 = std::find(hash_vec.begin(), hash_vec.end(), value);
+			if (it2 != hash_vec.end()) {
+				hash_vec.erase(it2);
+			}
+		}
 	}
 
 }
-
-

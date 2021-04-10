@@ -8,6 +8,7 @@
 #include "flexui/Layout/LayoutEngine.hpp"
 #include "flexui/Render/RenderEngine.hpp"
 #include "flexui/Events/EventsController.hpp"
+#include "flexui/Nodes/TreeScope.hpp"
 
 namespace flexui {
 
@@ -16,7 +17,7 @@ namespace flexui {
 	class TextureProvider;
 
 	// A Document is the root for all other nodes
-	class Document : public ContainerNode {
+	class Document : public ContainerNode, public TreeScope {
 	public:
 		Document(ResourceProvider* resource_provider, TextureProvider* texture_provider);
 		~Document() override;
@@ -31,6 +32,18 @@ namespace flexui {
 		TextureProvider* getTextureProvider() const { return m_TextureProvider; }
 
 		Element* findElementsAt(Node* node, const Vec2& point, std::vector<Element*>* found = nullptr);
+		Element* querySelector(const String& selector);
+		std::vector<Element*> querySelectorAll(const String& selector);
+
+		// internal calls
+		void _attachedToTree(Node* node) override;
+		void _detachedFromTree(Node* node) override;
+		void _addElementID(const HashedString& id, Element* element);
+		void _addElementTag(const HashedString& tag, Element* element);
+		void _addElementClass(const HashedString& klass, Element* element);
+		void _removeElementID(const HashedString& id, Element* element);
+		void _removeElementTag(const HashedString& tag, Element* element);
+		void _removeElementClass(const HashedString& klass, Element* element);
 
 	private:
 		StyleEngine m_StyleEngine;
@@ -40,6 +53,8 @@ namespace flexui {
 
 		ResourceProvider* m_ResourceProvider;
 		TextureProvider* m_TextureProvider;
+
+		IdentifierIndex<Element*> m_ElementsIndex;
 	};
 
 }
