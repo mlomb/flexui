@@ -42,8 +42,8 @@ namespace flexui {
 	{
 		auto it = std::find(m_StyleSheets.begin(), m_StyleSheets.end(), stylesheet);
 		if (it != m_StyleSheets.end()) {
-			// TODO: remove rules from index
 			m_StyleSheets.erase(it);
+			// TODO: remove rules from index
 		}
 	}
 
@@ -54,24 +54,52 @@ namespace flexui {
 
 	void StyleEngine::_attachedToTree(Node* node)
 	{
-		if (node->getNodeType() == NodeType::STYLE) {
+		switch (node->getNodeType()) {
+		case NodeType::STYLE:
+		{
 			Style* s = static_cast<Style*>(node);
-			addStyleSheet(s->getStyleSheet());
-		} else if (node->getNodeType() == NodeType::ELEMENT) {
-			Element* e = static_cast<Element*>(node);
-			// add element to index
-			m_ElementsIndex.addIdentifier(SelectorIdentifierType::ID, e->getID().hash(), e);
-			m_ElementsIndex.addIdentifier(SelectorIdentifierType::TAG, e->getTag().hash(), e);
-			for (auto klass : e->getClasses()) {
-				m_ElementsIndex.addIdentifier(SelectorIdentifierType::CLASS, klass.hash(), e);
-			}
+			std::shared_ptr<StyleSheet> ss = s->getStyleSheet();
+			if (ss)
+				addStyleSheet(ss);
+			break;
 		}
-		printf("NODE: %s\n", node->getDebugInfo().c_str());
+		case NodeType::ELEMENT:
+		{
+			Element* e = static_cast<Element*>(node);
+			// add existing identifiers to index
+			_addElementID(e->getID(), e);
+			m_ElementsIndex.addIdentifier(SelectorIdentifierType::TAG, e->getTag().hash(), e);
+			for (auto& klass : e->getClasses()) {
+				_addElementClass(klass, e);
+			}
+			break;
+		}
+		}
 	}
 
 	void StyleEngine::_detachedFromTree(Node* node)
 	{
-
+		switch (node->getNodeType()) {
+		case NodeType::STYLE:
+		{
+			Style* s = static_cast<Style*>(node);
+			std::shared_ptr<StyleSheet> ss = s->getStyleSheet();
+			if (ss)
+				removeStyleSheet(ss);
+			break;
+		}
+		case NodeType::ELEMENT:
+		{
+			Element* e = static_cast<Element*>(node);
+			// remove identifiers from index
+			_removeElementID(e->getID(), e);
+			m_ElementsIndex.removeIdentifier(SelectorIdentifierType::TAG, e->getTag().hash(), e);
+			for (auto& klass : e->getClasses()) {
+				_removeElementClass(klass, e);
+			}
+			break;
+		}
+		}
 	}
 
 	void StyleEngine::calcStylesRecursive(ContainerNode* node)
@@ -123,5 +151,25 @@ namespace flexui {
 	{
 		Element* underCursor = m_Document->getEventsController().getElementOverMouse();
 		return underCursor ? underCursor->m_ComputedStyle->cursor.value : Cursor::AUTO;
+	}
+
+	void StyleEngine::_addElementID(const HashedString& id, Element* element)
+	{
+		m_ElementsIndex.addIdentifier(SelectorIdentifierType::ID, id.hash(), element);
+	}
+
+	void StyleEngine::_addElementClass(const HashedString& klass, Element* element)
+	{
+		m_ElementsIndex.addIdentifier(SelectorIdentifierType::CLASS, klass.hash(), element);
+	}
+
+	void StyleEngine::_removeElementID(const HashedString& id, Element* element)
+	{
+		m_ElementsIndex.removeIdentifier(SelectorIdentifierType::ID, id.hash(), element);
+	}
+
+	void StyleEngine::_removeElementClass(const HashedString& klass, Element* element)
+	{
+		m_ElementsIndex.removeIdentifier(SelectorIdentifierType::CLASS, klass.hash(), element);
 	}
 }

@@ -39,8 +39,23 @@ namespace flexui {
 
 	void ContainerNode::removeChild(Node* child_node)
 	{
-		// TODO: !
-		FUI_ASSERT(false);
+		FUI_ASSERT(child_node->m_Parent == this);
+
+		child_node->m_Parent = nullptr;
+
+		// connect pointers
+		if (child_node->m_PreviousSibling) {
+			child_node->m_PreviousSibling->m_NextSibling = child_node->m_NextSibling;
+		}
+		else {
+			m_FirstChild = child_node->m_NextSibling;
+		}
+		if (child_node->m_NextSibling) {
+			child_node->m_NextSibling->m_PreviousSibling = child_node->m_PreviousSibling;
+		}
+		else {
+			m_LastChild = child_node->m_PreviousSibling;
+		}
 
 		DeatchFromTree(child_node);
 	}

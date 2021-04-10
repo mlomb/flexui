@@ -30,6 +30,11 @@ namespace flexui {
 		void _attachedToTree(Node* node) override;
 		void _detachedFromTree(Node* node) override;
 
+		void _addElementID(const HashedString& id, Element* element);
+		void _addElementClass(const HashedString& klass, Element* element);
+		void _removeElementID(const HashedString& id, Element* element);
+		void _removeElementClass(const HashedString& klass, Element* element);
+
 	private:
 		Document* m_Document;
 
@@ -37,7 +42,6 @@ namespace flexui {
 		void calcStyles(Element* element);
 
 		std::vector<std::shared_ptr<StyleSheet>> m_StyleSheets;
-		//std::vector<SelectorMatch> m_MatchedSelectors;
 
 		IdentifierIndex<std::shared_ptr<StyleRule>> m_RulesIndex;
 		IdentifierIndex<Element*> m_ElementsIndex;

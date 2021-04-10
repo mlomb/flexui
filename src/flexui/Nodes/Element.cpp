@@ -4,6 +4,7 @@
 #include "flexui/Style/StyleComputed.hpp"
 #include "flexui/Events/Events.hpp"
 #include "flexui/Layout/ElementLayoutObject.hpp"
+#include "flexui/Nodes/Document.hpp"
 
 namespace flexui {
 
@@ -72,16 +73,34 @@ namespace flexui {
         }
     }
 
-	void Element::addClass(const std::string& klass)
+	void Element::setID(const HashedString& id)
 	{
-		HashedString _klass;
+		if (m_Document && !m_ID.empty()) {
+			// remove the ID from the index
+			m_Document->getStyleEngine()._removeElementID(m_ID, this);
+		}
+		m_ID = id;
+		if (m_Document && !m_ID.empty()) {
+			// add the ID to the index
+			m_Document->getStyleEngine()._addElementID(m_ID, this);
+		}
+	}
+
+	void Element::addClass(const HashedString& klass)
+	{
+		if (klass.empty())
+			return;
 
 		for (auto it = m_Classes.begin(); it != m_Classes.end(); it++) {
-			if ((*it) == _klass)
+			if ((*it) == klass)
 				return; // already present
 		}
 
-		m_Classes.emplace_back(_klass);
+		m_Classes.emplace_back(klass);
+		if (m_Document) {
+			// add the ID to the index
+			m_Document->getStyleEngine()._addElementClass(klass, this);
+		}
 	}
 
     void Element::setPseudoStates(const PseudoStates states)

@@ -26,9 +26,10 @@ namespace flexui {
 
 		operator const String&() const { return _value; }
 
+		const bool empty() const { return _hash == HashStr(""); }
 		const String& str() const { return _value; }
 		const uint32_t hash() const { return _hash; }
-		
+
 		bool operator ==(const HashedString& oth) const { return _hash == oth._hash; }
 
 	private:

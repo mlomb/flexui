@@ -26,8 +26,8 @@ namespace flexui {
 		Element(const std::string& tag);
 		virtual ~Element();
 
-		void setID(const std::string& id) { m_ID = id; };
-		void addClass(const std::string& klass);
+		void setID(const HashedString& id);
+		void addClass(const HashedString& klass);
 		void setPseudoStates(const PseudoStates states);
 		void removePseudoStates(const PseudoStates states);
 
