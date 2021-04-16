@@ -429,8 +429,11 @@ void init_ui() {
 
 	PrintTree(doc);
 
-	doc->querySelector("select");
-	doc->querySelectorAll("select");
+	auto s = doc->querySelector("select");
+
+	s->getParentElement()->removeChild(s);
+
+	auto s2 = doc->querySelector("select");
 
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
 		doc->getEventsController().sendMouseMove({ (float)xpos, (float)ypos });

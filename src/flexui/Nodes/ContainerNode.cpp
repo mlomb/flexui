@@ -85,7 +85,22 @@ namespace flexui {
 
 	void ContainerNode::DeatchFromTree(Node* child)
 	{
-		// TODO: !
+		// the child should be attached to the tree
+		FUI_ASSERT(child->m_Document != nullptr);
+
+		if (child->m_Document)
+			child->m_Document->_detachedFromTree(child);
+
+		child->m_Document = nullptr;
+		child->m_Depth = child->getParentNode() ? child->getParentNode()->m_Depth + 1 : 0;
+
+		if (child->isContainerNode()) {
+			Node* sub_child = static_cast<ContainerNode*>(child)->getFirstChild();
+			while (sub_child) {
+				DeatchFromTree(sub_child);
+				sub_child = sub_child->getNextSibling();
+			}
+		}
 	}
 
 }
