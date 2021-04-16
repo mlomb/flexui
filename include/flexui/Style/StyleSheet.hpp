@@ -27,6 +27,6 @@ namespace flexui {
 		std::vector<std::shared_ptr<StyleRule>> m_Rules;
 	};
 
-	StyleSheet* ParseStyleSheet(const std::string& css, ParseResult& pr);
+	StyleSheet* ParseStyleSheet(const std::string& css, ParseResult* pr = nullptr);
 
 }

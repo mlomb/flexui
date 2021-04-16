@@ -8,8 +8,7 @@ namespace flexui {
 		m_CSSSource(css),
 		m_StyleSheet(NULL)
 	{
-		ParseResult pr;
-		m_StyleSheet = std::shared_ptr<StyleSheet>(ParseStyleSheet(css, pr));
+		m_StyleSheet = std::shared_ptr<StyleSheet>(ParseStyleSheet(css));
 	}
 
 	Style::~Style() {

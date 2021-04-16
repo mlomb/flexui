@@ -410,7 +410,7 @@ void init_ui() {
 	#endif
 
 	ParseResult pr;
-	StyleSheet* ss = ParseStyleSheet(css_source, pr);
+	StyleSheet* ss = ParseStyleSheet(css_source, &pr);
 
 	for (auto s : pr.warnings) std::cout << "[CSS WARN] " << s << std::endl;
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
@@ -594,18 +594,18 @@ int main(int, char**) {
 
 	flexui::Selector ss;
 	flexui::ParseResult pr;
-	flexui::ParseSingleSelector("#container .buttons > button.fancy + test:hover", ss, pr);
+	flexui::ParseSingleSelector("#container .buttons > button.fancy + test:hover", ss, &pr);
 
 	flexui::HashedString hs1 = "pepe";
 	flexui::HashedString hs2 = "asd";
 
 	{
 		std::vector<flexui::StyleProperty> props;
-		flexui::ParseStylePropertyLine("margin: 5px", props, pr);
-		flexui::ParseStylePropertyLine("background-color: magenta", props, pr);
-		flexui::ParseStylePropertyLine("margin  5px", props, pr);
-		flexui::ParseStylePropertyLine("", props, pr);
-		flexui::ParseStylePropertyLine("font-family: \"pepe\"", props, pr);
+		flexui::ParseStylePropertyLine("margin: 5px", props, &pr);
+		flexui::ParseStylePropertyLine("background-color: magenta", props, &pr);
+		flexui::ParseStylePropertyLine("margin  5px", props, &pr);
+		flexui::ParseStylePropertyLine("", props, &pr);
+		flexui::ParseStylePropertyLine("font-family: \"pepe\"", props, &pr);
 
 		std::vector<flexui::StyleProperty> props2;
 		flexui::ParseStylePropertiesBlock(R"(
@@ -614,7 +614,7 @@ int main(int, char**) {
 			margin  5px;
 			padding:5px  ;
 			font-family:"pepe"
-		)", props2, pr);
+		)", props2, &pr);
 	}
 
 	{

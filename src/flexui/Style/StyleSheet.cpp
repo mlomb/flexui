@@ -5,7 +5,7 @@
 namespace flexui {
 
 	// strip comments and consecutive spaces
-	std::string sanitizeSource(const std::string& input, ParseResult& pr) {
+	std::string sanitizeSource(const std::string& input, ParseResult* pr) {
 		std::string result;
 		result.reserve(input.size());
 
@@ -39,13 +39,14 @@ namespace flexui {
 		}
 
 		if (inside_comment) {
-			pr.errors.emplace_back("Expected comment ending but found EOF");
+			if (pr)
+				pr->errors.emplace_back("Expected comment ending but found EOF");
 		}
 
 		return result;
 	}
 
-	StyleSheet* ParseStyleSheet(const std::string& raw_css, ParseResult& pr)
+	StyleSheet* ParseStyleSheet(const std::string& raw_css, ParseResult* pr)
 	{
 		StringSection css = sanitizeSource(raw_css, pr);
 
@@ -61,11 +62,13 @@ namespace flexui {
 			pos++; // skip }
 
 			if (selectors.length() == 0) {
-				pr.errors.push_back("Expected selector");
+				if (pr)
+					pr->errors.push_back("Expected selector");
 				break;
 			}
 			if (block.length() == 0) {
-				pr.errors.push_back("Expected properties block");
+				if (pr)
+					pr->errors.push_back("Expected properties block");
 				break;
 			}
 
