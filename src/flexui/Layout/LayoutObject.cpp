@@ -8,6 +8,7 @@ namespace flexui {
 	LayoutObject::LayoutObject()
 	{
 		m_YogaNode = YGNodeNew();
+		m_YogaNode->setDirty(true);
 		YGNodeSetContext(m_YogaNode, this);
 	}
 

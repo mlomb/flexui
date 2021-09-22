@@ -435,6 +435,8 @@ void init_ui() {
 
 	auto s2 = doc->querySelector("select");
 
+	PrintTree(doc);
+
     glfwSetCursorPosCallback(window, [](GLFWwindow* window, double xpos, double ypos) {
 		doc->getEventsController().sendMouseMove({ (float)xpos, (float)ypos });
 	});

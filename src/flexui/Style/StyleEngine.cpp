@@ -1,4 +1,3 @@
-
 #include "flexui/Style/StyleEngine.hpp"
 
 #include "flexui/Style/StyleComputed.hpp"
@@ -22,12 +21,13 @@ namespace flexui {
 
 	void StyleEngine::performStyles()
 	{
-		calcStylesRecursive(m_Document);
+		computeStyleRecursive(m_Document);
 	}
 
 	void StyleEngine::addStyleSheet(const std::shared_ptr<StyleSheet>& stylesheet)
 	{
 		m_StyleSheets.push_back(stylesheet);
+		// add rules from index
 		for (const std::shared_ptr<StyleRule>& rule : stylesheet->getRules()) {
 			for (const Selector& selector : rule->selectors) {
 				if (selector.size() > 0) {
@@ -42,8 +42,16 @@ namespace flexui {
 	{
 		auto it = std::find(m_StyleSheets.begin(), m_StyleSheets.end(), stylesheet);
 		if (it != m_StyleSheets.end()) {
+			// remove rules from index
+			for (const std::shared_ptr<StyleRule>& rule : stylesheet->getRules()) {
+				for (const Selector& selector : rule->selectors) {
+					if (selector.size() > 0) {
+						const auto& last_part = selector.back();
+						m_RulesIndex.removeIdentifier(last_part.identifier.type, last_part.identifier.value.hash(), rule);
+					}
+				}
+			}
 			m_StyleSheets.erase(it);
-			// TODO: remove rules from index
 		}
 	}
 
@@ -72,24 +80,28 @@ namespace flexui {
 		}
 	}
 
-	void StyleEngine::calcStylesRecursive(ContainerNode* node)
+	void StyleEngine::computeStyleRecursive(ContainerNode* node)
 	{
 		for (Node* child = node->getFirstChild(); child; child = child->getNextSibling()) {
-			if (child->getNodeType() == NodeType::ELEMENT) {
-				calcStyles(static_cast<Element*>(child));
-				calcStylesRecursive(static_cast<ContainerNode*>(child));
-			}
+			if (child->getNodeType() == NodeType::ELEMENT)
+				computeStyle(static_cast<Element*>(child));
+			if (child->isContainerNode())
+				computeStyleRecursive(static_cast<ContainerNode*>(child));
 		}
 	}
 
-	void StyleEngine::calcStyles(Element* element)
+	void StyleEngine::computeStyle(Element* element)
 	{
-		/*
 		m_MatchedSelectors.clear();
-		StyleSelectorMatcher::FindMatches(element, m_StyleSheets, m_MatchedSelectors);
+		m_RulesIndex.findMatches(element, m_MatchedSelectors);
 
 		// sorted by precedence
 		std::sort(m_MatchedSelectors.begin(), m_MatchedSelectors.end());
+
+		m_MatchedSelectors.clear();
+		/*
+		
+		StyleSelectorMatcher::FindMatches(element, m_StyleSheets, m_MatchedSelectors);
 
 		// TODO: calculate the hash of the matched selectors
 		//       and reuse the StyleComputed*

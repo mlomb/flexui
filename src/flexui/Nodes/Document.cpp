@@ -3,6 +3,8 @@
 #include "flexui/Layout/LayoutObject.hpp"
 #include "flexui/Style/StyleEngine.hpp"
 #include "flexui/Nodes/Element.hpp"
+#include "flexui/Selectors/SelectorParser.hpp"
+#include "flexui/Selectors/SelectorMatcher.hpp"
 
 namespace flexui {
 
@@ -59,14 +61,27 @@ namespace flexui {
 
 	Element* Document::querySelector(const String& selector)
 	{
-		return nullptr;
+		// TODO: optimize
+		auto v = querySelectorAll(selector);
+		return v.size() > 0 ? v[0] : nullptr;
 	}
 
 	std::vector<Element*> Document::querySelectorAll(const String& selector)
 	{
+		Selector s;
+		if (ParseSingleSelector(selector, s)) {
+			SelectorIdentifier& identifier = s.back().identifier;
+			const std::vector<Element*>& matching_last_identifier = m_ElementsIndex.findIdentifiers(identifier.type, identifier.value.hash());
+
+			std::vector<Element*> matches;
+			for (Element* e : matching_last_identifier) {
+				if (MatchesSelector(e, s))
+					matches.push_back(e);
+			}
+			return matches;
+		}
 		return std::vector<Element*>();
 	}
-
 
 	void Document::_attachedToTree(Node* node)
 	{

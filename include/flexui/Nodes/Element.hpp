@@ -17,6 +17,13 @@ namespace flexui {
 	class Surface;
     class Painter;
     class EventBase;
+	
+	enum class DirtyFlags : uint8_t {
+		NONE =          0,
+		STYLES =   1 << 0,
+		LAYOUT =   1 << 1,
+		GEOMETRY = 1 << 2
+	};
 
 	// A Element is the base class for all elements in the UI tree
 	//

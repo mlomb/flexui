@@ -32,13 +32,14 @@ namespace flexui {
 
 	private:
 
-		void calcStylesRecursive(ContainerNode* parent);
-		void calcStyles(Element* element);
+		void computeStyleRecursive(ContainerNode* parent);
+		void computeStyle(Element* element);
 
 		Document* m_Document;
 
 		std::vector<std::shared_ptr<StyleSheet>> m_StyleSheets;
 		IdentifierIndex<std::shared_ptr<StyleRule>> m_RulesIndex;
+		std::vector<std::shared_ptr<StyleRule>> m_MatchedSelectors;
 	};
 
 }
