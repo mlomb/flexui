@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.12)
 
 add_executable(glfw_gl3 main.cpp)
 target_link_libraries(glfw_gl3 flexui)
