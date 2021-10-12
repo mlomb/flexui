@@ -5,6 +5,7 @@
 
 #include "flexui/Nodes/Element.hpp"
 #include "flexui/Selectors/Selector.hpp"
+#include "flexui/Selectors/SelectorMatcher.hpp"
 
 namespace flexui {
 
@@ -60,8 +61,9 @@ namespace flexui {
 	template<typename T>
 	inline void IdentifierIndex<T>::findMatches(const Element* elem, std::vector<T>& matches)
 	{
-        const StrHash empty_id = HashStr("");
+        const uint32_t empty_id = HashStr("");
 
+		/*
         SelectorMatch match;
 
         #define FAST_LOOKUP(type, str_hash) \
@@ -85,6 +87,7 @@ namespace flexui {
 
         for (auto& klass : element->m_Classes)
             FAST_LOOKUP(klass.text_hash, m_OrderedClasses);
+		*/
 	}
 
 }
