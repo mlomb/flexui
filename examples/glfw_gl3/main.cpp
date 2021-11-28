@@ -388,9 +388,7 @@ void init_ui() {
 			border-color: #242424;
 			border-width: 1px;
 			border-radius: 4px;
-		}
-
-	)";
+		})";
 	std::string xml_source = u8R"(
 		<Element class="aaa">
 			<!-- comment -->
@@ -405,7 +403,7 @@ void init_ui() {
 	)";
 
 	#ifdef _WIN32
-	xml_source = std::string(std::istreambuf_iterator<char>(std::ifstream("input.xml").rdbuf()), std::istreambuf_iterator<char>());
+	xml_source += std::string(std::istreambuf_iterator<char>(std::ifstream("input.xml").rdbuf()), std::istreambuf_iterator<char>());
 	css_source += std::string(std::istreambuf_iterator<char>(std::ifstream("input.css").rdbuf()), std::istreambuf_iterator<char>());
 	#endif
 
@@ -416,7 +414,7 @@ void init_ui() {
 	for (auto s : pr.errors) std::cout << "[CSS ERR] " << s << std::endl;
 
 	XMLParseResult pr2;
-    Node* loaded = ParseXML(xml_source, pr2);
+	Node* loaded = ParseXML(xml_source, pr2);
 
 	for (auto s : pr2.warnings) std::cout << "[XML WARN] " << s << std::endl;
 	for (auto s : pr2.errors) std::cout << "[XML ERR] " << s << std::endl;
@@ -431,7 +429,7 @@ void init_ui() {
 
 	auto s = doc->querySelector("select");
 
-	s->getParentElement()->removeChild(s);
+	// s->getParentElement()->removeChild(s);
 
 	auto s2 = doc->querySelector("select");
 
