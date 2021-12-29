@@ -95,12 +95,11 @@ namespace flexui {
 		m_MatchedSelectors.clear();
 		m_RulesIndex.findMatches(element, m_MatchedSelectors);
 
-		// sorted by precedence
-		std::sort(m_MatchedSelectors.begin(), m_MatchedSelectors.end());
+		// sorted by precedence (broken)
+		//std::sort(m_MatchedSelectors.begin(), m_MatchedSelectors.end());
 
-		m_MatchedSelectors.clear();
 		/*
-		
+		m_MatchedSelectors.clear();
 		StyleSelectorMatcher::FindMatches(element, m_StyleSheets, m_MatchedSelectors);
 
 		// TODO: calculate the hash of the matched selectors
@@ -109,13 +108,17 @@ namespace flexui {
 		/*StyleHash selectorsHash = 0;
 		for (const SelectorMatch& match : m_MatchedSelectors) {
 			match.
-		}* /
+		}*/
 
 		StyleComputed* computedStyle = new StyleComputed();
 		*computedStyle = GetDefaultStyleValues(); // copy defaults
-		for (const SelectorMatch& match : m_MatchedSelectors) {
-			FUI_ASSERT(match.selector->rule);
-			computedStyle->applyRule(*match.selector->rule);
+		for (const auto& match : m_MatchedSelectors) {
+			for (const auto& sel : match->selectors) {
+				if (MatchesSelector(element, sel)) {
+					computedStyle->applyRule(*match);
+					break;
+				}
+			}
 		}
 
 		// TODO: inline styles
@@ -126,7 +129,6 @@ namespace flexui {
 		element->m_ComputedStyle = computedStyle;
 
 		static_cast<ElementLayoutObject*>(element->getLayoutObject())->syncStyles();
-		*/
 	}
 
 	Cursor StyleEngine::getCurrentCusor() const

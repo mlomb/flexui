@@ -362,7 +362,7 @@ void init_ui() {
 			background-color: rgba(255, 0, 255, 0.05);
 		}*/
 
-		button {
+		Button {
 			color: #D9D9D9;
 			background-color: #656565;
 			padding-left: 3px;
@@ -374,11 +374,15 @@ void init_ui() {
 			border-radius: 3px;
 			cursor: pointer;
 		}
-		button:hover, slider:hover {
+		Button:hover, slider:hover {
 			background-color: #828282;
 		}
-		button:active {
+		Button:active {
 			background-color: orange;
+		}
+
+		Text:hover {
+			color: red;
 		}
 
 		slider {
@@ -422,7 +426,7 @@ void init_ui() {
 	assert(loaded);
 
 	doc = new Document(new ResourceProviderImpl(), new TextureProviderImpl());
-	// doc->getStyleEngine().addStyleSheet(ss);
+	doc->getStyleEngine().addStyleSheet(std::make_shared<StyleSheet>(*ss));
 	doc->appendChild(loaded);
 
 	PrintTree(doc);

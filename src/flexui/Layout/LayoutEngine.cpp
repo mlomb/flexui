@@ -34,9 +34,9 @@ namespace flexui {
 		// keep tree in sync (TODO: find a better way to do this)
 		if (node->getLayoutObject()) {
 			// TODO: !
-			/*if (YGNode* yogaNode = node->getParentNode()->getLayoutObject()->getYogaNode()) {
+			if (YGNode* yogaNode = node->getParentNode()->getLayoutObject()->getYogaNode()) {
 				YGNodeInsertChild(yogaNode, node->getLayoutObject()->getYogaNode(), YGNodeGetChildCount(yogaNode));
-			}*/
+			}
 		}
 	}
 

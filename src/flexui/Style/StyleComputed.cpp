@@ -3,6 +3,7 @@
 #include <cstring>  // memcpy
 
 #include "flexui/Style/StyleProperty.hpp"
+#include "flexui/Style/StyleSheet.hpp"
 
 namespace flexui {
 
@@ -78,8 +79,8 @@ namespace flexui {
 
 	void StyleComputed::applyRule(const StyleRule& rule)
 	{
-		//for (const StyleProperty& prop : rule.properties)
-		//	applyProperty(prop);
+		for (const StyleProperty& prop : rule.properties)
+			applyProperty(prop);
 	}
 
 	void StyleComputed::inherit(const StyleComputed& source)

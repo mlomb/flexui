@@ -59,35 +59,29 @@ namespace flexui {
 	}
 
 	template<typename T>
-	inline void IdentifierIndex<T>::findMatches(const Element* elem, std::vector<T>& matches)
+	inline void IdentifierIndex<T>::findMatches(const Element* element, std::vector<T>& matches)
 	{
         const uint32_t empty_id = HashStr("");
 
-		/*
-        SelectorMatch match;
+		const auto& relevant = findIdentifiers(SelectorIdentifierType::TAG, HashStr("*"));
 
-        #define FAST_LOOKUP(type, str_hash) \
+
+		#define FAST_LOOKUP(type, str_hash) \
         { \
 			const auto& relevant = findIdentifiers(type, str_hash); \
-            for (StyleSelector* selector : relevant) { \
-                if (MatchesSelector(element, selector)) { \
-                    match.selector = selector; \
-                    matches.push_back(match); \
-                } \
-            } \
+			for (auto& t : relevant) { \
+				matches.push_back(t); \
+			} \
         }
 
 		FAST_LOOKUP(SelectorIdentifierType::TAG, HashStr("*")); // match wildcard
+        FAST_LOOKUP(SelectorIdentifierType::TAG, element->getTag().hash());
 
-        FAST_LOOKUP(HashStr("*"), m_OrderedTags);
-        FAST_LOOKUP(element->m_Tag.text_hash, m_OrderedTags);
+        if (element->getID().hash() != empty_id)
+            FAST_LOOKUP(SelectorIdentifierType::ID, element->getID().hash());
 
-        if (element->m_ID.text_hash != empty_id)
-            FAST_LOOKUP(element->m_ID.text_hash, m_OrderedIDs);
-
-        for (auto& klass : element->m_Classes)
-            FAST_LOOKUP(klass.text_hash, m_OrderedClasses);
-		*/
+        for (auto& klass : element->getClasses())
+            FAST_LOOKUP(SelectorIdentifierType::CLASS, klass.hash());
 	}
 
 }
